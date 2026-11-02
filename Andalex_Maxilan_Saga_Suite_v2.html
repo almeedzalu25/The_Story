@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANDALEX SAGA // Maxilan Empire & Maxer Genesis Suite</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            navyHeader: '#0a192f',
+            navyDark: '#071120',
+            navyBorder: '#1e3a5f',
+            accentCyan: '#00b4d8',
+            accentTeal: '#059669',
+            accentAmber: '#d97706',
+            accentRose: '#e11d48',
+            paperBg: '#f8fafc',
+            paperCard: '#ffffff',
+            paperBorder: '#e2e8f0',
+            textDark: '#0f172a',
+            textMuted: '#64748b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+            serif: ['Georgia', 'Cambria', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00b4d8; }
+    
+    .paper-shadow {
+      box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Print & PDF Export Formatting */
+    @media print {
+      body * { visibility: hidden; }
+      #print-manuscript-zone, #print-manuscript-zone * { visibility: visible; }
+      #print-manuscript-zone {
+        position: absolute; left: 0; top: 0; width: 100%;
+        color: #000 !important; background: #fff !important;
+        padding: 2.5cm 2cm; font-family: 'Georgia', serif; font-size: 11pt; line-height: 1.6;
+      }
+      .page-break { page-break-after: always; break-after: page; }
+      header, nav, #toast, .modal, .no-print { display: none !important; }
+    }
+
+    /* CBT Reader Styling */
+    #cbt-reader-modal {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #f8fafc; color: #0f172a;
+      display: none; flex-direction: column;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .cbt-header {
+      height: 58px; background: #0a192f; border-bottom: 1px solid #1e3a5f;
+      padding: 0 1.25rem; display: flex; align-items: center; justify-content: space-between;
+      color: #fff;
+    }
+    .cbt-grid-btn {
+      width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; transition: all 0.15s ease;
+      border: 1px solid #e2e8f0; background: #ffffff; color: #64748b;
+    }
+    .cbt-grid-btn:hover { border-color: #00b4d8; color: #00b4d8; background: #f0fdfa; }
+    .cbt-grid-btn.cbt-active {
+      background: #00b4d8 !important; color: #ffffff !important;
+      border-color: #00b4d8 !important; box-shadow: 0 0 12px rgba(0, 180, 216, 0.4);
+    }
+    .cbt-grid-btn.cbt-visited {
+      border-color: rgba(5, 150, 105, 0.4); color: #059669; background: #ecfdf5;
+    }
+    .cbt-article-body p {
+      text-indent: 1.25cm; text-align: justify; margin-bottom: 1.2rem; line-height: 1.85;
+    }
+  </style>
+</head>
+<body class="bg-paperBg text-textDark min-h-screen font-sans selection:bg-cyan-100 selection:text-cyan-900 flex flex-col">
+
+  <!-- HUD Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-5 py-3 rounded-xl bg-navyDark text-cyan-300 border border-cyan-500 text-xs sm:text-sm font-mono shadow-2xl">
+    <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400"></i>
+    <span id="toast-text">Notifikasi</span>
+  </div>
+
+  <!-- Global Header (Blue Dark Navy Theme) -->
+  <header class="bg-navyHeader text-white border-b border-navyBorder sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-600 to-blue-900 border border-cyan-400/40 flex items-center justify-center text-cyan-200 shadow-md">
+          <i data-lucide="orbit" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-mono text-[10px] font-semibold tracking-widest text-cyan-400 uppercase">ANDALEX SAGA // AUTHOR STUDIO</span>
+          <h1 class="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-2">
+            MAXILAN COLOSSAL ENGINE <span class="hidden md:inline text-[10px] px-2 py-0.5 rounded bg-navyBorder/80 text-cyan-200 font-mono font-normal">SISTEM 7 BINTANG · 1.284 PLANET</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Quick Actions Header -->
+      <div class="flex items-center gap-2">
+        <div class="hidden lg:flex items-center gap-3 px-3.5 py-1.5 rounded-lg bg-navyDark/70 border border-navyBorder text-xs font-mono">
+          <span class="text-slate-400">Target Maxer:</span>
+          <span class="text-amber-400 font-bold">3 Kuintiliun</span>
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-400">Fusi:</span>
+          <span class="text-emerald-400 font-bold">72 Jam Pon Farr</span>
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-400">DB:</span>
+          <span class="text-cyan-400 font-bold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> IndexedDB
+          </span>
+        </div>
+        <button onclick="openCbtReader(0)" title="Buka Mode Baca CBT E-Book" class="px-3 py-1.5 rounded-lg bg-navyDark hover:bg-slate-800 border border-navyBorder hover:border-cyan-400 text-cyan-200 text-xs font-mono flex items-center gap-1.5 transition-all">
+          <i data-lucide="book-open-check" class="w-4 h-4 text-cyan-400"></i>
+          <span class="hidden sm:inline">Ebook Reader</span>
+        </button>
+        <button onclick="exportToPDF()" title="Cetak atau Ekspor Manuskrip ke PDF" class="px-3 py-1.5 rounded-lg bg-navyDark hover:bg-slate-800 border border-navyBorder hover:border-emerald-400 text-emerald-300 text-xs font-mono flex items-center gap-1.5 transition-all">
+          <i data-lucide="printer" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden sm:inline">Ekspor PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Secondary Nav Bar (Dark Navy Tabs) -->
+    <div class="border-t border-navyBorder/70 bg-navyDark/90">
+      <div id="main-nav-bar" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center overflow-x-auto no-scrollbar py-1 gap-1.5">
+        <button onclick="switchTab('tab-naskah')" id="btn-tab-naskah" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-2 border border-cyan-400/60 bg-navyHeader text-cyan-300 whitespace-nowrap shadow-sm">
+          <i data-lucide="feather" class="w-3.5 h-3.5"></i>
+          <span>1. Naskah Manuskrip (<span id="tab-naskah-counter">0</span>)</span>
+        </button>
+        <button onclick="switchTab('tab-generator')" id="btn-tab-generator" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-300 hover:text-white hover:bg-navyHeader/60 transition-all whitespace-nowrap">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>2. AI Novel Studio (LLM API)</span>
+        </button>
+        <button onclick="switchTab('tab-atlas')" id="btn-tab-atlas" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-300 hover:text-white hover:bg-navyHeader/60 transition-all whitespace-nowrap">
+          <i data-lucide="globe-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>3. Atlas Andalex (1.284 Planet)</span>
+        </button>
+        <button onclick="switchTab('tab-maxer')" id="btn-tab-maxer" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-300 hover:text-white hover:bg-navyHeader/60 transition-all whitespace-nowrap">
+          <i data-lucide="cpu" class="w-3.5 h-3.5 text-rose-400"></i>
+          <span>4. Matriks Maxer & Fusi 72 Jam</span>
+        </button>
+        <button onclick="switchTab('tab-workspace')" id="btn-tab-workspace" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-300 hover:text-white hover:bg-navyHeader/60 transition-all whitespace-nowrap">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5 text-cyan-300"></i>
+          <span>5. Workspace Catatan</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area: Latar Cerah & Teks Gelap Nyaman Dibaca -->
+  <main id="main-content-area" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: ARSIP NASKAH MANUSKRIP (PUTIH BERSIH & TIPOGRAFI INDAH)            -->
+    <!-- ========================================================================= -->
+    <div id="tab-naskah" class="tab-content space-y-6">
+      
+      <!-- Toolbar Header Naskah -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-cyan-50 text-cyan-700 border border-cyan-200">
+            <i data-lucide="feather" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Manuskrip Serial Andalex: Saga Kedigdayaan Maxilan</h2>
+            <p class="text-xs text-slate-500 font-mono">Penyimpanan Terintegrasi Pure-IndexedDB + Dual Shadow Mirror</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="openQuickImportModal()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm">
+            <i data-lucide="clipboard-paste" class="w-4 h-4"></i>
+            <span>Tempel Bab (1-Klik)</span>
+          </button>
+          <button onclick="openNewSectionModal()" class="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-xs font-mono flex items-center gap-1.5 transition-all shadow-sm">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i><span>Tambah Bab Manual</span>
+          </button>
+          <button onclick="copyAllManuscript()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono border border-slate-300 flex items-center gap-1.5 transition-all">
+            <i data-lucide="copy" class="w-4 h-4"></i><span>Salin Semua</span>
+          </button>
+          <button onclick="exportManuscriptJSON()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-cyan-700 text-xs font-mono border border-slate-300 flex items-center gap-1.5 transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i><span>Cadang JSON</span>
+          </button>
+          <button onclick="triggerImportManuscriptJSON()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-amber-700 text-xs font-mono border border-slate-300 flex items-center gap-1.5 transition-all">
+            <i data-lucide="upload" class="w-4 h-4"></i><span>Pulih JSON</span>
+          </button>
+          <input type="file" id="input-import-naskah" style="display:none;" onchange="handleImportManuscriptJSON(event)" accept=".json">
+        </div>
+      </div>
+
+      <!-- Stat Bar Naskah -->
+      <div class="grid grid-cols-3 gap-4 font-mono text-xs">
+        <div class="p-4 rounded-2xl bg-paperCard border border-paperBorder paper-shadow flex items-center justify-between">
+          <span class="text-slate-500 font-medium">Total Bagian / Bab:</span>
+          <span id="stat-total-chapters" class="font-bold text-cyan-700 text-lg">0</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-paperCard border border-paperBorder paper-shadow flex items-center justify-between">
+          <span class="text-slate-500 font-medium">Total Kata:</span>
+          <span id="stat-total-words" class="font-bold text-amber-600 text-lg">0</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-paperCard border border-paperBorder paper-shadow flex items-center justify-between">
+          <span class="text-slate-500 font-medium">Total Paragraf:</span>
+          <span id="stat-total-paragraphs" class="font-bold text-emerald-600 text-lg">0</span>
+        </div>
+      </div>
+
+      <!-- Cascade Chapter Selector -->
+      <div class="flex items-center gap-3 p-3.5 rounded-2xl bg-paperCard border border-paperBorder paper-shadow">
+        <span class="text-cyan-700 font-mono text-xs font-bold flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="layers" class="w-4 h-4"></i> Pilih Bagian:
+        </span>
+        <select id="chapter-cascade-select" onchange="handleCascadeChapterChange(this.value)" class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-mono text-slate-800 outline-none focus:border-cyan-500">
+          <option value="all">📖 Tampilkan Seluruh Bab (Waterfall View)</option>
+        </select>
+        <div class="flex gap-1.5 whitespace-nowrap">
+          <button type="button" onclick="navCascadeChapter(-1)" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-mono" title="Bab Sebelumnya">◀</button>
+          <button type="button" onclick="navCascadeChapter(1)" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-mono" title="Bab Berikutnya">▶</button>
+          <button type="button" onclick="handleCascadeChapterChange('all')" class="px-3 py-1.5 rounded-lg bg-cyan-50 hover:bg-cyan-100 border border-cyan-300 text-cyan-800 text-xs font-mono font-semibold" title="Reset Lihat Semua">Semua</button>
+        </div>
+      </div>
+
+      <!-- Wadah Kartu Bab Naskah -->
+      <div id="story-chapters-container" class="space-y-6"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: AI NOVEL STUDIO (DIRECT LLM API GENERATOR)                         -->
+    <!-- ========================================================================= -->
+    <div id="tab-generator" class="tab-content hidden space-y-6">
+      
+      <!-- Panel Pengaturan Kredensial API -->
+      <div class="bg-paperCard p-6 rounded-2xl border border-paperBorder paper-shadow space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="key" class="w-5 h-5 text-amber-600"></i> Kredensial & Mesin LLM (Client-Side Direct)
+            </h2>
+            <p class="text-xs text-slate-500 font-mono">Kunci API disimpan aman di peramban lokal (localStorage) Anda, tanpa perantara server.</p>
+          </div>
+          <div>
+            <span id="api-status-badge" class="px-3 py-1 rounded-full text-xs font-mono border border-rose-300 bg-rose-50 text-rose-700 font-medium">Belum Ada Kunci API</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+          <div>
+            <label class="block text-slate-700 font-semibold mb-1">Penyedia Layanan (Provider)</label>
+            <select id="llm-provider-select" onchange="handleProviderChange()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+              <option value="gemini">Google Gemini API (Official)</option>
+              <option value="openai">OpenAI / OpenRouter / Custom Endpoint</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-slate-700 font-semibold mb-1">Model LLM</label>
+            <input type="text" id="llm-model-input" value="gemini-1.5-pro" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-cyan-800 font-semibold focus:outline-none focus:border-cyan-600">
+          </div>
+
+          <div>
+            <label class="block text-slate-700 font-semibold mb-1 flex items-center justify-between">
+              <span>Kunci API (API Key)</span>
+              <button type="button" onclick="toggleApiKeyVisibility()" class="text-[11px] text-cyan-600 hover:underline">Lihat / Tutup</button>
+            </label>
+            <div class="relative">
+              <input type="password" id="llm-api-key" placeholder="AIzaSy... atau sk-..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 pr-16 text-slate-800 focus:outline-none focus:border-cyan-600">
+              <button type="button" onclick="saveApiKey()" class="absolute right-1.5 top-1 px-3 py-1 rounded-lg bg-navyHeader hover:bg-slate-800 text-white font-semibold text-[11px] transition-colors">Simpan</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="custom-endpoint-row" class="hidden font-mono text-xs">
+          <label class="block text-slate-700 font-semibold mb-1">Custom Base URL (Contoh: https://api.openai.com/v1 atau OpenRouter)</label>
+          <input type="text" id="llm-base-url" placeholder="https://api.openai.com/v1" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+        </div>
+      </div>
+
+      <!-- Studio Penulisan Bab -->
+      <div class="bg-paperCard p-6 rounded-2xl border border-paperBorder paper-shadow space-y-5">
+        <div class="border-b border-slate-200 pb-4">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-cyan-600"></i> Konsol Generator Bab Otomatis
+          </h2>
+          <p class="text-xs text-slate-500 font-mono mt-0.5">Sistem secara otomatis menyuntikkan kanon Sistem Andalex, peradaban Maxilan Level 4, artefak kuno, logika Fusi 72 jam, dan isolasi Valoria ke dalam prompt AI.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+          <div>
+            <label class="block text-slate-700 font-semibold mb-1">Nomor & Judul Bab</label>
+            <input type="text" id="gen-chapter-title" placeholder="Bagian 1: Badai Gravitasi di Koridor Asterion" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-1">Fokus Lokasi Zona</label>
+            <select id="gen-chapter-zone" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+              <option value="Zona Biosphere">Zona Biosphere (Earthlike / Super-Earth / Mega-Earth)</option>
+              <option value="Zona Inner">Zona Inner (Metal / Vulkanik / Arkologi Bawah Tanah)</option>
+              <option value="Zona Jovian">Zona Jovian (Andalex Prime / 320 Satelit / Kilang Gas)</option>
+              <option value="Zona Outer">Zona Outer (Dunia Beku / Perimeter 38 Tahun Cahaya)</option>
+              <option value="Suaka Valoria (AND-BIO-122)">Suaka Terisolasi Valoria (Feodal Abad ke-5 M)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-700 font-semibold mb-1">Target Format Naskah</label>
+            <input type="text" id="gen-chapter-format" value="10 Paragraf @ 8 Kalimat" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-amber-700 font-bold focus:outline-none focus:border-cyan-600">
+          </div>
+        </div>
+
+        <div class="space-y-1 font-mono text-xs">
+          <label class="block text-slate-700 font-semibold">Arahan Plot Khusus / Intrik Adegan</label>
+          <textarea id="gen-plot-instruction" rows="4" placeholder="Tuliskan arahan cerita untuk bab ini (contoh: Tampilkan pendaratan armada pelopor Maxilan di salah satu Super-Earth. Deskripsikan kontras antara dinginnya perwira Maxilan dengan sepasang Maxer yang mulai merasakan lonjakan jam ke-70 dorongan Fusi biologis mereka)..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-cyan-600 leading-relaxed font-sans text-sm"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div class="flex items-center gap-2 text-xs font-mono text-slate-600">
+            <input type="checkbox" id="gen-auto-canon" checked class="rounded border-slate-300 text-cyan-600 focus:ring-0">
+            <label for="gen-auto-canon">Suntikkan Kanon Otomatis (Maxilan Level 4, Artefak Kuno, Target 3 Kuintiliun, Fusi 72 Jam)</label>
+          </div>
+          <button id="btn-run-generate" onclick="generateChapterLLM()" class="px-6 py-2.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs font-mono flex items-center gap-2 transition-all shadow-md">
+            <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+            <span>Mulai Generate Bab</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Hasil Generasi -->
+      <div id="gen-result-card" class="bg-paperCard p-6 rounded-2xl border border-paperBorder paper-shadow space-y-4 hidden">
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div>
+            <span class="text-[11px] font-mono text-emerald-700 uppercase tracking-wider block font-bold">Draf Hasil Generasi AI</span>
+            <h3 id="gen-result-title" class="text-base font-bold text-slate-900"></h3>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <button onclick="saveGeneratedToManuscript()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center gap-1.5 transition-all shadow-sm">
+              <i data-lucide="check" class="w-4 h-4"></i> Masukkan ke Manuskrip
+            </button>
+            <button onclick="copyToClipboard(document.getElementById('gen-result-content').innerText, 'Draf tersalin!')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1">
+              <i data-lucide="copy" class="w-4 h-4"></i> Salin
+            </button>
+          </div>
+        </div>
+        <div id="gen-result-stats" class="text-xs font-mono text-slate-500"></div>
+        <div id="gen-result-content" class="text-slate-800 text-sm sm:text-base leading-relaxed font-sans text-justify space-y-4 pt-1"></div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: ATLAS SISTEM ANDALEX (1.284 PLANET & 4 ZONA)                      -->
+    <!-- ========================================================================= -->
+    <div id="tab-atlas" class="tab-content hidden space-y-6">
+      
+      <!-- Statistik Makro -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono">
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow">
+          <span class="text-xs text-slate-500 block">TOTAL MASSA SISTEM</span>
+          <div class="text-xl font-bold text-amber-600 mt-1">10.997 M☉</div>
+          <span class="text-[11px] text-slate-400">7 Bintang Hierarkis</span>
+        </div>
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow">
+          <span class="text-xs text-slate-500 block">DIAMETER BENTANG</span>
+          <div class="text-xl font-bold text-cyan-700 mt-1">38 Tahun Cahaya</div>
+          <span class="text-[11px] text-slate-400">2.400.000 AU Luar</span>
+        </div>
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow">
+          <span class="text-xs text-slate-500 block">POPULASI DUNIA</span>
+          <div class="text-xl font-bold text-emerald-600 mt-1">1.284 Planet</div>
+          <span class="text-[11px] text-slate-400">>18.000 Satelit Utama</span>
+        </div>
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow">
+          <span class="text-xs text-slate-500 block">SUAKA BERAKAL</span>
+          <div class="text-xl font-bold text-rose-600 mt-1">1 Planet (Valoria)</div>
+          <span class="text-[11px] text-slate-400">6,2 Miliar Manusia Feodal</span>
+        </div>
+      </div>
+
+      <!-- 4 Zona Rinci -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Zona Inner -->
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="flame" class="w-4 h-4 text-amber-500"></i> ZONA INNER (224 PLANET)
+            </h3>
+            <span class="text-xs font-mono text-amber-700 font-bold">17,45% Sistem</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed font-sans">
+            Wilayah radiasi ekstrem dan gravitasi kuat dekat Asterion (AND-A). Menjadi sentra penambangan mineral berat, reaktor fusi, dan peleburan lambung armada kapal perang Maxilan di kota bawah tanah.
+          </p>
+          <div class="p-3.5 bg-slate-50 rounded-xl font-mono text-[11px] text-slate-700 space-y-1 border border-slate-200">
+            <div>• 43 Mercury-like | 36 Metal World | 39 Volcanic World</div>
+            <div>• 34 Venus-like | 41 Desert World | 31 Lava World</div>
+            <div>• Satelit Utama: 1.454 (>7.500 km) | Daya Tampung: 600 Kuadriliun Maxer</div>
+          </div>
+        </div>
+
+        <!-- Zona Biosphere -->
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="trees" class="w-4 h-4 text-emerald-600"></i> ZONA BIOSPHERE (376 PLANET)
+            </h3>
+            <span class="text-xs font-mono text-emerald-700 font-bold">29,28% Sistem</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed font-sans">
+            Zona layak huni utama dengan 321 suaka alam liar murni dan 1 peradaban tunggal Valoria (AND-BIO-122). Menampung mega-arkologi inkubator biologis dan sintesis nutrisi cair bagi triliunan unit.
+          </p>
+          <div class="p-3.5 bg-slate-50 rounded-xl font-mono text-[11px] text-slate-700 space-y-1 border border-slate-200">
+            <div>• 96 Earthlike | 91 Super-Earth | 68 Oceanic World | 67 Mega-Earth</div>
+            <div>• 54 Mars-like | 5.392 Satelit Utama (~2.400 Pandora-Class)</div>
+            <div>• Luas Daratan: ~170 Triliun km² | Daya Tampung: 1,2 Kuintiliun Maxer</div>
+          </div>
+        </div>
+
+        <!-- Zona Jovian -->
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="disc" class="w-4 h-4 text-cyan-600"></i> ZONA JOVIAN (301 PLANET)
+            </h3>
+            <span class="text-xs font-mono text-cyan-700 font-bold">23,44% Sistem</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed font-sans">
+            Raksasa gas dan es kolosal yang dipimpin Andalex Prime (Ø 12.800.000 km, 320 satelit). Sentra kilang pemanenan gas bahan bakar sintetis dan dok perakitan armada antarbintang.
+          </p>
+          <div class="p-3.5 bg-slate-50 rounded-xl font-mono text-[11px] text-slate-700 space-y-1 border border-slate-200">
+            <div>• 112 Gas Giant | 73 Gas Planet | 68 Ice Giant | 48 Ice Planet</div>
+            <div>• 10.361 Satelit Utama (>7.500 km) & Cincin Orbital</div>
+            <div>• Daya Tampung: 750 Kuadriliun Maxer (Kota Terapung & Bulan)</div>
+          </div>
+        </div>
+
+        <!-- Zona Outer -->
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="snowflake" class="w-4 h-4 text-blue-500"></i> ZONA OUTER (383 PLANET)
+            </h3>
+            <span class="text-xs font-mono text-blue-700 font-bold">29,83% Sistem</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed font-sans">
+            Dunia batuan jauh dan es abadi. Membentang hingga garis batas 38 tahun cahaya sebagai benteng sensor perimeter, pertahanan armada, dan kriogenik komputasi.
+          </p>
+          <div class="p-3.5 bg-slate-50 rounded-xl font-mono text-[11px] text-slate-700 space-y-1 border border-slate-200">
+            <div>• 151 Frozen World | 142 Distant Terrestrial | 90 Dwarf Planet</div>
+            <div>• 1.295 Satelit Utama | Baterai Pertahanan Perimeter</div>
+            <div>• Daya Tampung: 450 Kuadriliun Maxer (Pangkalan Terluar)</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Kartu Khusus Valoria -->
+      <div class="bg-paperCard p-6 rounded-2xl border border-rose-200 paper-shadow space-y-3">
+        <div class="flex items-center justify-between border-b border-rose-100 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
+            <h3 class="text-sm font-bold text-slate-900">SUAKA TERISOLASI MUTLAK: VALORIA (AND-BIO-122)</h3>
+          </div>
+          <span class="text-xs font-mono text-rose-700 font-bold">Status: Cagar Alami & Klandestin</span>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed font-sans">
+          Planet berdiameter 58.300 km (gravitasi 2,97 g, mengorbit bintang AND-C di jarak 5.836 AU). Dihuni oleh 6,2 miliar manusia setara peradaban Bumi Abad ke-5 Masehi. Dibiarkan alami oleh Maxilan tanpa gangguan sampai mereka mencapai era kematangan sosial untuk dibimbing sebagai mitra organik. Terlarang dimasuki oleh unit Maxer demi mencegah kontaminasi kognitif.
+        </p>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: MATRIKS ENTITAS MAXER & FUSI 72 JAM                                -->
+    <!-- ========================================================================= -->
+    <div id="tab-maxer" class="tab-content hidden space-y-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-2">
+          <span class="text-xs font-mono text-slate-500 block">TARGET POPULASI PENUH</span>
+          <div class="text-2xl font-bold font-mono text-amber-600">3 Kuintiliun</div>
+          <p class="text-xs text-slate-600">2.500× lebih banyak dari seluruh populasi 1,2 kuadriliun bangsa Maxilan di Voskara.</p>
+        </div>
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-2">
+          <span class="text-xs font-mono text-slate-500 block">SIKLUS METABOLIK FUSI</span>
+          <div class="text-2xl font-bold font-mono text-emerald-600">Setiap 72 Jam</div>
+          <p class="text-xs text-slate-600">Dorongan insting purba ala Pon Farr Vulcan untuk regenerasi jaringan polimer dan stabilitas homeostatis.</p>
+        </div>
+        <div class="bg-paperCard p-5 rounded-2xl border border-paperBorder paper-shadow space-y-2">
+          <span class="text-xs font-mono text-slate-500 block">BATAS OPERASIONAL FISIK</span>
+          <div class="text-2xl font-bold font-mono text-cyan-700">60 – 150 Tahun</div>
+          <p class="text-xs text-slate-600">Langsung aktif di ekuivalen 25 tahun, steril total, dan rentan terhadap kematian fisik.</p>
+        </div>
+      </div>
+
+      <!-- 4 Model Spesialisasi Injeksi -->
+      <div class="bg-paperCard p-6 rounded-2xl border border-paperBorder paper-shadow space-y-4">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="dna" class="w-5 h-5 text-cyan-700"></i> 4 Model Spesialisasi Injeksi Matriks Maxer
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-emerald-700 font-bold">1. Bio-Agraris & Rekayasa Ekologi</span>
+              <span class="text-slate-500">Zona Biosphere</span>
+            </div>
+            <p class="text-slate-600 font-sans">
+              Diinjeksi kemampuan manajemen biosintesis pangan raksasa, stabilisasi atmosfer, dan pemeliharaan rantai pasok nutrisi cair bagi triliunan unit di sistem.
+            </p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-amber-700 font-bold">2. Sinter-Metalurgi & Industri Berat</span>
+              <span class="text-slate-500">Zona Inner</span>
+            </div>
+            <p class="text-slate-600 font-sans">
+              Diinjeksi ketahanan panas ekstrem dan adaptasi radiasi inti. Bertugas di kota bawah tanah planet logam untuk memproduksi lambung armor kapal antariksa.
+            </p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-cyan-700 font-bold">3. Kilang Atmosfer & Pilot Armada</span>
+              <span class="text-slate-500">Zona Jovian</span>
+            </div>
+            <p class="text-slate-600 font-sans">
+              Diinjeksi kalkulasi lintasan gravitasi multi-bintang, pengoperasian stasiun pemanen gas raksasa, dan perakitan ribuan kapal tempur di cincin orbital.
+            </p>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-rose-700 font-bold">4. Sensor Kriogenik & Pengawal Sistem</span>
+              <span class="text-slate-500">Zona Outer</span>
+            </div>
+            <p class="text-slate-600 font-sans">
+              Diinjeksi toleransi dingin mutlak mendekati nol Kelvin. Menjaga baterai pertahanan bentang 38 tahun cahaya dan jaringan deteksi dini dari pengintai luar.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: WORKSPACE CATATAN PLOT                                             -->
+    <!-- ========================================================================= -->
+    <div id="tab-workspace" class="tab-content hidden space-y-6">
+      <div class="bg-paperCard p-6 rounded-2xl border border-paperBorder paper-shadow space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="edit-3" class="w-5 h-5 text-cyan-700"></i> Ruang Kerja Plot & Catatan Skenario
+            </h2>
+            <p class="text-xs text-slate-500 font-mono">Tersimpan otomatis di IndexedDB & LocalStorage shadow mirror</p>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <button onclick="saveWorkspaceNotes()" class="px-3.5 py-1.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i> Simpan
+            </button>
+            <button onclick="copyToClipboard(document.getElementById('workspace-notes-area').value, 'Catatan tersalin!')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 transition-all">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
+            </button>
+          </div>
+        </div>
+        <textarea id="workspace-notes-area" rows="18" oninput="handleWorkspaceInput()" placeholder="Tuliskan rancangan pertempuran, target bab berikutnya, alur fusi, atau taktik armada di sini..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-4 text-xs font-mono text-slate-800 focus:outline-none focus:border-cyan-600 leading-relaxed"></textarea>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: TEMPEL CEPAT BAB OTOMATIS (1-KLIK)                                -->
+  <!-- ========================================================================= -->
+  <div id="quick-import-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="clipboard-paste" class="w-4 h-4 text-emerald-600"></i> Tempel Cepat Naskah dari Chat (Auto-Detect)
+        </h3>
+        <button onclick="closeQuickImportModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 font-mono">
+        Salin naskah dari hasil AI lalu tempel di sini. Baris pertama otomatis dijadikan <strong>Judul Bab</strong>.
+      </p>
+      <div>
+        <textarea id="quick-import-textarea" rows="12" placeholder="Tempelkan bab naskah di sini (contoh:
+### Bagian 1: Pancang Jangkar di Zona Biosfer
+
+Armada pelopor Maxilan membelah koridor gravitasi Asterion...)" class="w-full bg-slate-50 border border-slate-300 focus:border-emerald-600 rounded-xl p-3 text-slate-800 text-xs font-mono leading-relaxed outline-none"></textarea>
+      </div>
+      <div class="flex items-center justify-between pt-2 border-t border-slate-200 font-mono text-xs">
+        <span id="quick-import-stats" class="text-slate-500">0 Kata | 0 Paragraf</span>
+        <div class="flex items-center gap-2">
+          <button onclick="closeQuickImportModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700">Batal</button>
+          <button onclick="executeQuickImport()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-sm">Simpan ke Manuskrip</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TAMBAH BAB MANUAL -->
+  <div id="section-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 id="modal-title" class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-4 h-4 text-cyan-600"></i> Tambah Bagian Naskah Manual
+        </h3>
+        <button onclick="closeSectionModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <input type="hidden" id="modal-chapter-id">
+      <div class="space-y-3 font-mono text-xs">
+        <div>
+          <label class="block text-slate-700 font-semibold mb-1">Judul Bagian / Bab</label>
+          <input type="text" id="modal-chapter-title" placeholder="Contoh: Bagian 1: Badai Gravitasi Asterion" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+        </div>
+        <div>
+          <label class="block text-slate-700 font-semibold mb-1">Format / Keterangan Tag</label>
+          <input type="text" id="modal-chapter-tag" value="10 Paragraf @ 8 Kalimat" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+        </div>
+        <div>
+          <label class="block text-slate-700 font-semibold mb-1">Isi Narasi Cerita</label>
+          <textarea id="modal-chapter-content" rows="11" placeholder="Tulis atau tempel teks narasi cerita di sini..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-slate-800 focus:outline-none focus:border-cyan-600 leading-relaxed font-sans text-sm"></textarea>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeSectionModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono">Batal</button>
+        <button onclick="saveSectionModal()" class="px-5 py-2 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-semibold text-xs font-mono shadow-sm">Simpan Bagian</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CBT-STYLE READER MODAL -->
+  <div id="cbt-reader-modal">
+    <div class="cbt-header">
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <span style="background:rgba(0,180,216,0.2); border:1px solid #00b4d8; color:#00b4d8; font-family:monospace; font-size:0.75rem; padding:2px 8px; border-radius:4px; font-weight:bold;">
+          CBT READER MODE
+        </span>
+        <span id="cbt-top-indicator" style="font-size:0.85rem; color:#cbd5e1; font-family:monospace;">
+          Memuat naskah...
+        </span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <button onclick="cbtAdjustFont(-1)" style="padding:4px 10px; background:#1e293b; border:1px solid #334155; color:#cbd5e1; border-radius:4px; font-family:monospace; cursor:pointer;">A-</button>
+        <button onclick="cbtAdjustFont(1)" style="padding:4px 10px; background:#1e293b; border:1px solid #334155; color:#cbd5e1; border-radius:4px; font-family:monospace; cursor:pointer;">A+</button>
+        <button onclick="closeCbtReader()" style="padding:4px 12px; background:#e11d48; color:#fff; border:none; border-radius:4px; font-weight:bold; font-size:0.8rem; cursor:pointer; margin-left:0.5rem;">Tutup [ESC]</button>
+      </div>
+    </div>
+
+    <div style="display:flex; flex:1; overflow:hidden;">
+      <div style="flex:1; display:flex; flex-direction:column; background:#ffffff; border-right:1px solid #e2e8f0;">
+        <div id="cbt-scroll-zone" style="flex:1; overflow-y:auto; padding:2rem 3rem;">
+          <div style="max-width:820px; margin:0 auto;">
+            <div style="margin-bottom:1.5rem; border-bottom:1px solid #e2e8f0; padding-bottom:1rem;">
+              <span id="cbt-chapter-tag" style="font-family:monospace; color:#00b4d8; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; display:block; font-weight:bold;"></span>
+              <h1 id="cbt-chapter-title" style="font-size:1.6rem; font-weight:700; color:#0f172a; margin:0.35rem 0 0 0; line-height:1.3;"></h1>
+            </div>
+            <div id="cbt-chapter-content" class="cbt-article-body" style="font-family:'Georgia', serif; font-size:17px; color:#1e293b;"></div>
+          </div>
+        </div>
+        
+        <div style="height:56px; background:#f8fafc; border-top:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; padding:0 2rem;">
+          <button id="btn-cbt-prev" onclick="cbtNavigate(-1)" style="padding:6px 16px; background:#ffffff; border:1px solid #cbd5e1; color:#334155; border-radius:6px; font-family:monospace; font-size:0.8rem; cursor:pointer;">
+            ◀ Bab Sebelumnya
+          </button>
+          <span id="cbt-status-counter" style="font-family:monospace; font-size:0.8rem; color:#64748b; font-weight:bold;"></span>
+          <button id="btn-cbt-next" onclick="cbtNavigate(1)" style="padding:6px 16px; background:#00b4d8; border:none; color:#ffffff; font-weight:bold; border-radius:6px; font-family:monospace; font-size:0.8rem; cursor:pointer;">
+            Bab Selanjutnya ▶
+          </button>
+        </div>
+      </div>
+
+      <div style="width:280px; background:#f8fafc; display:flex; flex-direction:column; padding:1.25rem; border-left:1px solid #e2e8f0;">
+        <div style="margin-bottom:1rem;">
+          <span style="font-family:monospace; font-size:0.8rem; font-weight:700; color:#0f172a; display:block;">
+            PALET NOMOR BAGIAN
+          </span>
+          <span style="font-size:0.7rem; color:#64748b; font-family:monospace;">
+            Klik nomor untuk navigasi instan
+          </span>
+        </div>
+        <div id="cbt-number-grid" style="display:grid; grid-template-columns:repeat(5, 1fr); gap:0.5rem; overflow-y:auto; flex:1; align-content:start;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="print-manuscript-zone" class="hidden"></div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT MASTER ENGINE: 100% BEBAS REGEX ERROR & FULL FUNCTIONAL       -->
+  <!-- ========================================================================= -->
+  <script>
+    const DB_NAME = "Andalex_Maxilan_Saga_DB";
+    const DB_VERSION = 1;
+    const LOCAL_MIRROR_KEY = "ANDALEX_SHADOW_BACKUP";
+
+    let dbInstance = null;
+    let chaptersState = [];
+    let currentCascadeFilter = 'all';
+    let tempGeneratedChapter = null;
+
+    // Database Initialization
+    function openIDB() {
+      return new Promise((resolve, reject) => {
+        if (dbInstance) return resolve(dbInstance);
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains("chapters")) db.createObjectStore("chapters", { keyPath: "id" });
+          if (!db.objectStoreNames.contains("state")) db.createObjectStore("state", { keyPath: "key" });
+        };
+        req.onsuccess = function(e) {
+          dbInstance = e.target.result;
+          resolve(dbInstance);
+        };
+        req.onerror = function(e) { reject(e.target.error); };
+      });
+    }
+
+    function syncInstantMirror() {
+      try {
+        const bundle = { chapters: chaptersState };
+        localStorage.setItem(LOCAL_MIRROR_KEY, JSON.stringify(bundle));
+      } catch(e) { console.warn("Mirror error:", e); }
+    }
+
+    async function initApp() {
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readonly");
+      const store = tx.objectStore("chapters");
+      const req = store.getAll();
+
+      req.onsuccess = function() {
+        chaptersState = req.result || [];
+        if (chaptersState.length === 0) {
+          const mirror = localStorage.getItem(LOCAL_MIRROR_KEY);
+          if (mirror) {
+            try {
+              const p = JSON.parse(mirror);
+              if (p.chapters && p.chapters.length > 0) {
+                chaptersState = p.chapters;
+                const wTx = db.transaction("chapters", "readwrite");
+                p.chapters.forEach(ch => wTx.objectStore("chapters").put(ch));
+              }
+            } catch(e) {}
+          }
+        }
+        renderStories();
+        loadWorkspaceNotes();
+        loadApiSettings();
+      };
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-cyan-400/60', 'bg-navyHeader', 'text-cyan-300', 'shadow-sm');
+        btn.classList.add('border-transparent', 'text-slate-300');
+      });
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-300');
+        activeBtn.classList.add('border-cyan-400/60', 'bg-navyHeader', 'text-cyan-300', 'shadow-sm');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      text.textContent = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    function copyToClipboard(text, msg = "Tersalin ke papan klip!") {
+      navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(e => alert(e));
+    }
+
+    function countWordsAndSentences(text) {
+      if (!text || !text.trim()) return { words: 0, sentences: 0, paragraphs: 0 };
+      const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
+      const words = text.trim().split(/\s+/).length;
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+      return { words, sentences, paragraphs };
+    }
+
+    // =========================================================================
+    // MODUL NASKAH
+    // =========================================================================
+    function renderStories() {
+      const container = document.getElementById('story-chapters-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let totalWords = 0;
+      let totalParagraphs = 0;
+
+      const cascadeSelect = document.getElementById('chapter-cascade-select');
+      if (cascadeSelect) {
+        cascadeSelect.innerHTML = `<option value="all">📖 Tampilkan Seluruh Bab (Waterfall View - Total: ${chaptersState.length} Bagian)</option>` +
+          chaptersState.map((ch, idx) => `
+            <option value="${ch.id}" ${currentCascadeFilter === ch.id ? 'selected' : ''}>
+              ${idx + 1}. ${escapeHtml(ch.title)} [${escapeHtml(ch.tag || 'Bagian')}]
+            </option>
+          `).join('');
+      }
+
+      chaptersState.forEach((ch, idx) => {
+        const stats = countWordsAndSentences(ch.content);
+        totalWords += stats.words;
+        totalParagraphs += stats.paragraphs;
+
+        const isVisible = (currentCascadeFilter === 'all' || currentCascadeFilter === ch.id);
+
+        const card = document.createElement('div');
+        card.id = `card-ch-${ch.id}`;
+        card.className = "bg-paperCard rounded-2xl p-6 sm:p-7 border border-paperBorder paper-shadow space-y-4" + (isVisible ? "" : " hidden");
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+            <div>
+              <span class="text-xs font-mono text-cyan-700 font-bold tracking-wider uppercase block">${ch.tag || '10 Paragraf @ 8 Kalimat'}</span>
+              <h3 class="text-lg font-bold text-slate-900 mt-0.5">${escapeHtml(ch.title)}</h3>
+              <div class="flex items-center gap-3 text-xs font-mono text-slate-500 mt-1">
+                <span><strong class="text-slate-700">${stats.paragraphs}</strong> Paragraf</span>
+                <span>•</span>
+                <span><strong class="text-slate-700">${stats.sentences}</strong> Kalimat</span>
+                <span>•</span>
+                <span><strong class="text-slate-700">${stats.words.toLocaleString()}</strong> Kata</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 self-start sm:self-center font-mono text-xs">
+              <button onclick="copyChapterContent('${ch.id}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 flex items-center gap-1.5 transition-colors">
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-cyan-600"></i> <span>Salin</span>
+              </button>
+              <button onclick="editChapter('${ch.id}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-amber-700 border border-slate-300 flex items-center gap-1.5 transition-colors">
+                <i data-lucide="edit-2" class="w-3.5 h-3.5 text-amber-600"></i> <span>Edit</span>
+              </button>
+              <button onclick="deleteChapter('${ch.id}')" class="p-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 border border-slate-300 transition-colors" title="Hapus Bab">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-4 text-slate-800 text-sm sm:text-base leading-relaxed font-sans text-justify pt-1">
+            ${ch.content.split(/\n\s*\n/).map(p => `<p class="indent-8">${escapeHtml(p.trim())}</p>`).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('stat-total-chapters').textContent = chaptersState.length;
+      document.getElementById('stat-total-words').textContent = totalWords.toLocaleString();
+      document.getElementById('stat-total-paragraphs').textContent = totalParagraphs;
+      document.getElementById('tab-naskah-counter').textContent = chaptersState.length;
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function handleCascadeChapterChange(val) {
+      currentCascadeFilter = val;
+      chaptersState.forEach(ch => {
+        const el = document.getElementById(`card-ch-${ch.id}`);
+        if (!el) return;
+        if (val === 'all' || ch.id === val) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+      const found = chaptersState.find(c => c.id === val);
+      if (val === 'all') showToast(`Menampilkan seluruh ${chaptersState.length} bab.`);
+      else showToast(`Fokus: ${found ? found.title : val}`);
+    }
+
+    function navCascadeChapter(direction) {
+      if (chaptersState.length === 0) return;
+      let currIdx = chaptersState.findIndex(c => c.id === currentCascadeFilter);
+      let nextIdx = currIdx + direction;
+      if (currentCascadeFilter === 'all') nextIdx = (direction > 0) ? 0 : chaptersState.length - 1;
+      else {
+        if (nextIdx < 0) nextIdx = chaptersState.length - 1;
+        if (nextIdx >= chaptersState.length) nextIdx = 0;
+      }
+      const targetCh = chaptersState[nextIdx];
+      if (targetCh) {
+        document.getElementById('chapter-cascade-select').value = targetCh.id;
+        handleCascadeChapterChange(targetCh.id);
+      }
+    }
+
+    function copyChapterContent(chapterId) {
+      const ch = chaptersState.find(c => c.id === chapterId);
+      if (ch) copyToClipboard(`${ch.title}\n[${ch.tag || '10 Paragraf @ 8 Kalimat'}]\n\n${ch.content}`, `Naskah "${ch.title}" disalin!`);
+    }
+
+    function copyAllManuscript() {
+      const full = chaptersState.map(c => `=== ${c.title.toUpperCase()} ===\n[${c.tag}]\n\n${c.content}\n`).join('\n\n');
+      copyToClipboard(full, "Seluruh naskah serial disalin!");
+    }
+
+    // Modal Quick Import
+    function openQuickImportModal() {
+      document.getElementById('quick-import-textarea').value = '';
+      document.getElementById('quick-import-stats').textContent = 'Siap menerima teks naskah';
+      document.getElementById('quick-import-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeQuickImportModal() { document.getElementById('quick-import-modal').classList.add('hidden'); }
+
+    document.getElementById('quick-import-textarea')?.addEventListener('input', function() {
+      const val = this.value.trim();
+      const words = val ? val.split(/\s+/).length : 0;
+      const paragraphs = val ? val.split(/\n\s*\n/).filter(p => p.trim().length > 0).length : 0;
+      document.getElementById('quick-import-stats').textContent = `${words} Kata | ${paragraphs} Paragraf terdeteksi`;
+    });
+
+    async function executeQuickImport() {
+      const raw = document.getElementById('quick-import-textarea').value.trim();
+      if (!raw) return alert("Teks naskah masih kosong!");
+
+      const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let title = `Bagian ${chaptersState.length + 1}: Lanjutan Cerita`;
+      let contentStartIndex = 0;
+
+      const firstLine = lines[0].replace(/^[#\*\s]+/, '').replace(/[#\*]+$/, '').trim();
+      if (firstLine.toLowerCase().startsWith('bagian') || firstLine.toLowerCase().startsWith('bab') || firstLine.includes(':')) {
+        title = firstLine;
+        contentStartIndex = 1;
+      }
+
+      const contentParagraphs = [];
+      for (let i = contentStartIndex; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.startsWith('---') || line.startsWith('===') || line.toLowerCase().includes('bagaimana kelanjutan')) continue;
+        contentParagraphs.push(line);
+      }
+
+      const content = contentParagraphs.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+      const stats = countWordsAndSentences(content);
+      const tag = `${stats.paragraphs} Paragraf @ 8 Kalimat`;
+
+      const newChapter = {
+        id: 'andalex-ch-' + Date.now(),
+        title: title,
+        tag: tag,
+        content: content
+      };
+
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      tx.objectStore("chapters").put(newChapter);
+      tx.oncomplete = function() {
+        chaptersState.push(newChapter);
+        closeQuickImportModal();
+        renderStories();
+        syncInstantMirror();
+        showToast(`"${title}" disimpan ke database!`);
+      };
+    }
+
+    // Modal Manual Add/Edit
+    function openNewSectionModal() {
+      document.getElementById('modal-chapter-id').value = '';
+      document.getElementById('modal-chapter-title').value = `Bagian ${chaptersState.length + 1}: `;
+      document.getElementById('modal-chapter-tag').value = '10 Paragraf @ 8 Kalimat';
+      document.getElementById('modal-chapter-content').value = '';
+      document.getElementById('section-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+    function editChapter(id) {
+      const ch = chaptersState.find(c => c.id === id);
+      if (!ch) return;
+      document.getElementById('modal-chapter-id').value = ch.id;
+      document.getElementById('modal-chapter-title').value = ch.title;
+      document.getElementById('modal-chapter-tag').value = ch.tag || '';
+      document.getElementById('modal-chapter-content').value = ch.content;
+      document.getElementById('section-modal').classList.remove('hidden');
+      if (window.lucide) lucide.createIcons();
+    }
+    function closeSectionModal() { document.getElementById('section-modal').classList.add('hidden'); }
+
+    async function saveSectionModal() {
+      const id = document.getElementById('modal-chapter-id').value;
+      const title = document.getElementById('modal-chapter-title').value.trim() || 'Bagian Tanpa Judul';
+      const tag = document.getElementById('modal-chapter-tag').value.trim() || '10 Paragraf @ 8 Kalimat';
+      const content = document.getElementById('modal-chapter-content').value.trim();
+
+      if (!content) return alert("Isi naskah tidak boleh kosong!");
+
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      const store = tx.objectStore("chapters");
+
+      if (id) {
+        const item = { id, title, tag, content };
+        store.put(item);
+        const idx = chaptersState.findIndex(c => c.id === id);
+        if (idx !== -1) chaptersState[idx] = item;
+      } else {
+        const newId = 'andalex-ch-' + Date.now();
+        const item = { id: newId, title, tag, content };
+        store.put(item);
+        chaptersState.push(item);
+      }
+
+      tx.oncomplete = function() {
+        closeSectionModal();
+        renderStories();
+        syncInstantMirror();
+        showToast("Naskah berhasil disimpan!");
+      };
+    }
+
+    async function deleteChapter(id) {
+      if (!confirm("Hapus bab ini secara permanen dari database?")) return;
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      tx.objectStore("chapters").delete(id);
+      tx.oncomplete = function() {
+        chaptersState = chaptersState.filter(c => c.id !== id);
+        renderStories();
+        syncInstantMirror();
+        showToast("Bab dihapus.");
+      };
+    }
+
+    // JSON Export / Import
+    function exportManuscriptJSON() {
+      const blob = new Blob([JSON.stringify(chaptersState, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Andalex_Manuscript_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      showToast("Naskah diekspor ke JSON!");
+    }
+    function triggerImportManuscriptJSON() { document.getElementById("input-import-naskah").click(); }
+    async function handleImportManuscriptJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        try {
+          const list = JSON.parse(evt.target.result);
+          if (!Array.isArray(list)) throw new Error("Format harus berupa array bab.");
+          const db = await openIDB();
+          const tx = db.transaction("chapters", "readwrite");
+          const store = tx.objectStore("chapters");
+          list.forEach(ch => store.put(ch));
+          tx.oncomplete = function() {
+            chaptersState = list;
+            renderStories();
+            syncInstantMirror();
+            showToast(`Memulihkan ${list.length} bab dari JSON!`);
+          };
+        } catch(err) { alert("Gagal impor JSON: " + err.message); }
+      };
+      reader.readAsText(file);
+    }
+
+    // =========================================================================
+    // MODUL AI NOVEL STUDIO (DIRECT LLM API CALL)
+    // =========================================================================
+    function loadApiSettings() {
+      const savedKey = localStorage.getItem("ANDALEX_LLM_KEY");
+      const savedProvider = localStorage.getItem("ANDALEX_LLM_PROVIDER") || "gemini";
+      const savedModel = localStorage.getItem("ANDALEX_LLM_MODEL") || (savedProvider === "gemini" ? "gemini-1.5-pro" : "gpt-4o");
+      const savedBase = localStorage.getItem("ANDALEX_LLM_BASE") || "";
+
+      if (savedKey) {
+        document.getElementById('llm-api-key').value = savedKey;
+        const b = document.getElementById('api-status-badge');
+        b.className = "px-3 py-1 rounded-full text-xs font-mono border border-emerald-300 bg-emerald-50 text-emerald-700 font-semibold";
+        b.textContent = "Kunci API Tersimpan";
+      }
+      document.getElementById('llm-provider-select').value = savedProvider;
+      document.getElementById('llm-model-input').value = savedModel;
+      document.getElementById('llm-base-url').value = savedBase;
+      handleProviderChange();
+    }
+
+    function handleProviderChange() {
+      const p = document.getElementById('llm-provider-select').value;
+      const customRow = document.getElementById('custom-endpoint-row');
+      if (p === 'openai') {
+        customRow.classList.remove('hidden');
+      } else {
+        customRow.classList.add('hidden');
+      }
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById('llm-api-key');
+      input.type = (input.type === 'password') ? 'text' : 'password';
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('llm-api-key').value.trim();
+      const p = document.getElementById('llm-provider-select').value;
+      const m = document.getElementById('llm-model-input').value.trim();
+      const b = document.getElementById('llm-base-url').value.trim();
+
+      if (!key) return alert("Kunci API tidak boleh kosong!");
+
+      localStorage.setItem("ANDALEX_LLM_KEY", key);
+      localStorage.setItem("ANDALEX_LLM_PROVIDER", p);
+      localStorage.setItem("ANDALEX_LLM_MODEL", m);
+      localStorage.setItem("ANDALEX_LLM_BASE", b);
+
+      const badge = document.getElementById('api-status-badge');
+      badge.className = "px-3 py-1 rounded-full text-xs font-mono border border-emerald-300 bg-emerald-50 text-emerald-700 font-semibold";
+      badge.textContent = "Kunci API Tersimpan";
+      showToast("Kredensial LLM berhasil disimpan!");
+    }
+
+    // System Prompt Canon Generator
+    const ANDALEX_SYSTEM_CANON = `Anda adalah asisten novelis hard sci-fi space opera kolosal 'ANDALEX SAGA'.
+Patuhi pedoman kanon mutlak berikut tanpa kompromi:
+1. KOSMOLOGI SISTEM ANDALEX:
+   - Sistem 7 bintang hierarkis dengan total massa 10.997 M☉ dan bentang 38 tahun cahaya (2.400.000 AU).
+   - Memiliki 1.284 planet padat/gas: Zona Inner (224 planet tambang/peleburan), Zona Biosphere (376 planet dengan 321 suaka liar murni + 1 suaka berakal Valoria AND-BIO-122), Zona Jovian (301 raksasa gas/es & >10.000 bulan), Zona Outer (383 dunia beku perimeter).
+   - Valoria (AND-BIO-122): Dihuni 6,2 miliar manusia feodal Abad ke-5 Masehi. Berstatus cagar steril mutlak (Prime Directive klandestin) yang tidak boleh dikontaminasi oleh Maxilan apalagi Maxer sampai mereka siap dibimbing.
+2. BANGSA MAXILAN (PENCIPTA):
+   - Peradaban Level 4 dari 15 di Galaksi Voskara (skala 2,4 triliun tahun cahaya yang terfragmentasi).
+   - Berpopulasi 1,2 kuadriliun di 2,8 juta koloni. Berambut dominan hitam pekat, tegap, usia maksimal 380-450 tahun dengan masa prima terkunci di 28-35 tahun.
+   - Kemampuan sintesis bahan bakar dan materi biologis tak terbatas BUKAN temuan murni mereka, melainkan hasil reverse-engineering dari ARTEFAK KUNO (Tier 10+). Proyek Andalex adalah proyek rahasia (Black Project) yang harus disembunyikan dari node peradaban Level 5-15 Voskara.
+3. ENTITAS MAXER:
+   - Entitas biologis-polimer sintetis (butuh napas, nutrisi, hidrasi sintetis, dan rentan mati). Target kapasitas penampungan di Andalex adalah 3 KUINTILIUN (3x10^18).
+   - Siklus Hidup: Langsung aktif di wujud dewasa 25 tahun, usia operasional 60-150 tahun, 100% steril biologis.
+   - SIKLUS FUSI: Wajib melakukan fusi fisik intim dengan sesama Maxer lawan gender setiap 3 hari sekali (siklus 72 jam) mirip dorongan Pon Farr Vulcan. Jam 60-70 mengalami kenaikan suhu dan kabut kognitif. Jam 72 logika runtuh demi regenerasi sel polimer dan pelepasan residu racun. Fusi juga menjadi jalan pintas darurat (bio-healing) saat cedera parah.
+4. FORMAT PENULISAN:
+   - Tulis dalam Bahasa Indonesia sastrawi, presisi, mendalam, atmosferik, dan bebas klise android dangkal.
+   - Struktur naskah: Tuliskan secara runtut sesuai permintaan (standar: 10 paragraf panjang yang berbobot).`;
+
+    async function generateChapterLLM() {
+      const key = localStorage.getItem("ANDALEX_LLM_KEY");
+      if (!key) return alert("Silakan masukkan dan simpan Kunci API terlebih dahulu di panel atas!");
+
+      const provider = document.getElementById('llm-provider-select').value;
+      const model = document.getElementById('llm-model-input').value.trim() || (provider === 'gemini' ? 'gemini-1.5-pro' : 'gpt-4o');
+      const title = document.getElementById('gen-chapter-title').value.trim() || `Bagian ${chaptersState.length + 1}: Lanjutan Saga`;
+      const zone = document.getElementById('gen-chapter-zone').value;
+      const format = document.getElementById('gen-chapter-format').value.trim() || '10 Paragraf @ 8 Kalimat';
+      const instruction = document.getElementById('gen-plot-instruction').value.trim();
+      const includeCanon = document.getElementById('gen-auto-canon').checked;
+
+      const btn = document.getElementById('btn-run-generate');
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Menghubungi LLM Engine...</span>`;
+      if (window.lucide) lucide.createIcons();
+
+      const userPrompt = `TULISKAN NASKAH BAB BARU:
+Judul Bab: ${title}
+Lokasi Setting: ${zone}
+Standar Format: ${format}
+Arahan Khusus: ${instruction || 'Lanjutkan narasi operasi rahasia Maxilan di Sistem Andalex dan dinamika entitas Maxer.'}
+
+Tuliskan langsung isi narasi cerita bab tersebut tanpa basa-basi pengantar atau penutup meta. Awali baris pertama dengan:
+### ${title}`;
+
+      try {
+        let generatedText = "";
+
+        if (provider === "gemini") {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+          const payload = {
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: (includeCanon ? ANDALEX_SYSTEM_CANON + "\n\n" : "") + userPrompt }]
+              }
+            ],
+            generationConfig: {
+              temperature: 0.75,
+              maxOutputTokens: 8192
+            }
+          };
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson.error?.message || `HTTP ${res.status} ${res.statusText}`);
+          }
+
+          const resData = await res.json();
+          generatedText = resData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        } else {
+          const baseUrl = document.getElementById('llm-base-url').value.trim() || "https://api.openai.com/v1";
+          const url = `${baseUrl.replace(/\/+$/, '')}/chat/completions`;
+          
+          const payload = {
+            model: model,
+            messages: [
+              { role: "system", content: includeCanon ? ANDALEX_SYSTEM_CANON : "Anda adalah novelis fiksi ilmiah hard sci-fi." },
+              { role: "user", content: userPrompt }
+            ],
+            temperature: 0.75
+          };
+
+          const res = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${key}`
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson.error?.message || `HTTP ${res.status} ${res.statusText}`);
+          }
+
+          const resData = await res.json();
+          generatedText = resData.choices?.[0]?.message?.content || "";
+        }
+
+        if (!generatedText) throw new Error("Respon LLM kosong atau tidak terurai.");
+
+        const lines = generatedText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        let cleanTitle = title;
+        let contentStartIndex = 0;
+
+        const firstLine = lines[0].replace(/^[#\*\s]+/, '').replace(/[#\*]+$/, '').trim();
+        if (firstLine.toLowerCase().startsWith('bagian') || firstLine.toLowerCase().startsWith('bab') || firstLine.includes(':')) {
+          cleanTitle = firstLine;
+          contentStartIndex = 1;
+        }
+
+        const paras = [];
+        for (let i = contentStartIndex; i < lines.length; i++) {
+          const l = lines[i];
+          if (l.startsWith('---') || l.startsWith('===') || l.toLowerCase().includes('bagaimana kelanjutan')) continue;
+          paras.push(l);
+        }
+
+        const cleanContent = paras.join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
+        const stats = countWordsAndSentences(cleanContent);
+
+        tempGeneratedChapter = {
+          id: 'andalex-ch-' + Date.now(),
+          title: cleanTitle,
+          tag: format,
+          content: cleanContent
+        };
+
+        document.getElementById('gen-result-title').textContent = cleanTitle;
+        document.getElementById('gen-result-stats').textContent = `${stats.paragraphs} Paragraf • ${stats.sentences} Kalimat • ${stats.words.toLocaleString()} Kata Tergenerate`;
+        document.getElementById('gen-result-content').innerHTML = cleanContent.split(/\n\s*\n/).map(p => `<p class="indent-8">${escapeHtml(p.trim())}</p>`).join('');
+        document.getElementById('gen-result-card').classList.remove('hidden');
+
+        showToast("Naskah bab berhasil digenerate!");
+      } catch(err) {
+        alert("Gagal memanggil LLM: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="play" class="w-4 h-4 fill-current"></i><span>Mulai Generate Bab</span>`;
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    async function saveGeneratedToManuscript() {
+      if (!tempGeneratedChapter) return alert("Belum ada naskah hasil generate!");
+
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      tx.objectStore("chapters").put(tempGeneratedChapter);
+
+      tx.oncomplete = function() {
+        chaptersState.push(tempGeneratedChapter);
+        renderStories();
+        syncInstantMirror();
+        showToast(`"${tempGeneratedChapter.title}" berhasil dimasukkan ke Manuskrip!`);
+        switchTab('tab-naskah');
+      };
+    }
+
+    // =========================================================================
+    // MODUL CBT READER & PDF
+    // =========================================================================
+    let cbtIdx = 0;
+    let cbtFont = 17;
+    const cbtVisited = new Set([0]);
+
+    function openCbtReader(idx = 0) {
+      if (chaptersState.length === 0) return alert("Belum ada naskah bab untuk dibaca!");
+      cbtIdx = Math.max(0, Math.min(idx, chaptersState.length - 1));
+      cbtVisited.add(cbtIdx);
+
+      document.getElementById('cbt-reader-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      renderCbtGrid();
+      renderCbtContent();
+    }
+
+    function closeCbtReader() {
+      document.getElementById('cbt-reader-modal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    function cbtSelect(index) {
+      cbtIdx = index;
+      cbtVisited.add(index);
+      renderCbtGrid();
+      renderCbtContent();
+      document.getElementById('cbt-scroll-zone').scrollTop = 0;
+    }
+
+    function cbtNavigate(direction) {
+      const next = cbtIdx + direction;
+      if (next >= 0 && next < chaptersState.length) cbtSelect(next);
+    }
+
+    function cbtAdjustFont(delta) {
+      cbtFont = Math.max(13, Math.min(26, cbtFont + delta));
+      document.getElementById('cbt-chapter-content').style.fontSize = cbtFont + 'px';
+    }
+
+    function renderCbtGrid() {
+      const grid = document.getElementById('cbt-number-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      chaptersState.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'cbt-grid-btn';
+        btn.textContent = i + 1;
+        if (i === cbtIdx) btn.classList.add('cbt-active');
+        else if (cbtVisited.has(i)) btn.classList.add('cbt-visited');
+        btn.onclick = () => cbtSelect(i);
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderCbtContent() {
+      const ch = chaptersState[cbtIdx];
+      if (!ch) return;
+      document.getElementById('cbt-top-indicator').textContent = `Bagian ${cbtIdx + 1} dari ${chaptersState.length}`;
+      document.getElementById('cbt-chapter-tag').textContent = ch.tag || `Bagian ${cbtIdx + 1}`;
+      document.getElementById('cbt-chapter-title').textContent = ch.title;
+
+      const paras = ch.content.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      document.getElementById('cbt-chapter-content').innerHTML = paras.map(p => `<p>${escapeHtml(p.trim())}</p>`).join('');
+
+      document.getElementById('btn-cbt-prev').disabled = (cbtIdx === 0);
+      document.getElementById('btn-cbt-prev').style.opacity = (cbtIdx === 0) ? '0.4' : '1';
+      document.getElementById('btn-cbt-next').disabled = (cbtIdx === chaptersState.length - 1);
+      document.getElementById('btn-cbt-next').style.opacity = (cbtIdx === chaptersState.length - 1) ? '0.4' : '1';
+      document.getElementById('cbt-status-counter').textContent = `Bagian [ ${cbtIdx + 1} / ${chaptersState.length} ]`;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const m = document.getElementById('cbt-reader-modal');
+        if (m && m.style.display === 'flex') closeCbtReader();
+      }
+    });
+
+    function exportToPDF() {
+      if (chaptersState.length === 0) return alert("Belum ada naskah untuk dicetak!");
+      const printZone = document.getElementById('print-manuscript-zone');
+      let html = `
+        <div style="text-align: center; margin-bottom: 3cm;">
+          <h1 style="font-size: 26pt; font-weight: bold; margin-bottom: 0.3cm; letter-spacing: 2px;">ANDALEX SAGA: THE MAXILAN GENESIS</h1>
+          <p style="font-size: 14pt; color: #555; margin-bottom: 1cm;">Manuskrip Lengkap Serial Kedigdayaan 3 Kuintiliun Maxer</p>
+          <hr style="border: 0.5px solid #aaa; margin: 1.5cm auto; width: 60%;">
+          <p style="font-size: 11pt;">Author Suite // Sistem Andalex (1.284 Planet)</p>
+        </div>
+        <div class="page-break"></div>
+      `;
+      chaptersState.forEach((ch, idx) => {
+        html += `
+          <div class="chapter-print" style="margin-bottom: 2cm;">
+            <div style="margin-bottom: 1.2cm; text-align: center;">
+              <span style="font-size: 10pt; text-transform: uppercase; letter-spacing: 1.5px; color: #666;">${ch.tag || 'Bagian Cerita'}</span>
+              <h2 style="font-size: 18pt; font-weight: bold; margin-top: 5px;">${idx + 1}. ${escapeHtml(ch.title)}</h2>
+            </div>
+            <div>
+              ${ch.content.split(/\n\s*\n/).map(p => `<p style="text-indent: 1cm; text-align: justify; margin-bottom: 12pt;">${escapeHtml(p.trim())}</p>`).join('')}
+            </div>
+          </div>
+          <div class="page-break"></div>
+        `;
+      });
+      printZone.innerHTML = html;
+      showToast("Membuka dialog cetak PDF...");
+      setTimeout(() => window.print(), 400);
+    }
+
+    // =========================================================================
+    // WORKSPACE NOTES
+    // =========================================================================
+    function loadWorkspaceNotes() {
+      const area = document.getElementById('workspace-notes-area');
+      if (!area) return;
+      const note = localStorage.getItem("ANDALEX_WORKSPACE_NOTES");
+      if (note) area.value = note;
+      else {
+        area.value = `### STRATEGI OPERASI PEMBUKAAN ANDALEX:
+1. Pendaratan Perdana di Zona Biosfer:
+   - Amankan koridor orbit di sekitar bintang AND-C (Andalex C).
+   - Pastikan isolasi mutlak planet Valoria (AND-BIO-122) steril dari radar satelit.
+   
+2. Pendirian Reaktor Artefak Kuno Generasi Pertama:
+   - Mulai injeksi bahan bakar sintetis mandiri.
+   - Siapkan inkubator batch pertama: 50 juta Maxer tipe Bio-Agraris.
+
+3. Penanganan Siklus Fusi 72 Jam:
+   - Sediakan pod regenerasi berpasangan di setiap fasilitas inkubator.`;
+      }
+    }
+    function handleWorkspaceInput() {
+      const val = document.getElementById('workspace-notes-area').value;
+      localStorage.setItem("ANDALEX_WORKSPACE_NOTES", val);
+    }
+    function saveWorkspaceNotes() {
+      handleWorkspaceInput();
+      showToast("Catatan berhasil disimpan!");
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initApp();
+      if (window.lucide) lucide.createIcons();
+    });
+    window.addEventListener("beforeunload", () => syncInstantMirror());
+  </script>
+<!-- ========================================================================= -->
+<!-- MODUL DROP-IN: KATALOG LENGKAP 1.284 PLANET & SIMULATOR 3 KUINTILIUN       -->
+<!-- Pasang tepat sebelum penutup </body> pada berkas Andalex Suite             -->
+<!-- ========================================================================= -->
+
+<!-- Modal Edit / Update Alokasi Planet -->
+<div id="modal-edit-planet" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <h3 id="modal-planet-code" class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <i data-lucide="globe" class="w-4 h-4 text-cyan-600"></i> Update Parameter & Alokasi Planet
+      </h3>
+      <button onclick="closePlanetModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <input type="hidden" id="edit-planet-index">
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Kode Planet</label>
+        <input type="text" id="edit-planet-id" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-600 font-bold outline-none">
+      </div>
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Nama Planet / Identitas</label>
+        <input type="text" id="edit-planet-name" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+      </div>
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Zona Andalex</label>
+        <input type="text" id="edit-planet-zone" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-600 outline-none">
+      </div>
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Klasifikasi Tipe</label>
+        <input type="text" id="edit-planet-type" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-slate-600 outline-none">
+      </div>
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Diameter (km)</label>
+        <input type="number" id="edit-planet-diameter" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+      </div>
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Jumlah Satelit Utama</label>
+        <input type="number" id="edit-planet-moons" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:border-cyan-600">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-slate-700 font-semibold mb-1 flex items-center justify-between">
+          <span>Alokasi Populasi Maxer (Jiwa)</span>
+          <span class="text-[11px] text-amber-600 font-bold">Basis Target 3 Kuintiliun</span>
+        </label>
+        <input type="number" id="edit-planet-pop" step="1000000000000" placeholder="Contoh: 3500000000000000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-amber-700 font-bold focus:outline-none focus:border-cyan-600 text-sm">
+        <span id="edit-pop-verbal" class="text-[11px] text-slate-500 font-mono mt-1 block">0 Jiwa</span>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-slate-700 font-semibold mb-1">Catatan Operasional / Infrastruktur Maxilan</label>
+        <textarea id="edit-planet-notes" rows="2" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-800 focus:outline-none focus:border-cyan-600 leading-relaxed font-sans text-xs"></textarea>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 font-mono text-xs">
+      <button onclick="closePlanetModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700">Batal</button>
+      <button onclick="savePlanetChanges()" class="px-5 py-2 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold shadow-sm">Simpan Parameter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  console.log("⚡ Memuat Engine Katalog Lengkap 1.284 Planet Andalex...");
+
+  const PLANET_DB_KEY = "ANDALEX_PLANETS_1284_DATA";
+  let planetsData = [];
+  let currentPage = 1;
+  const itemsPerPage = 40;
+  let activeZoneFilter = 'all';
+  let activeSearchQuery = '';
+
+  const ZONE_CONFIG = {
+    "Zona Inner": {
+      count: 224,
+      types: [
+        { name: "Mercury-like", count: 43, dMin: 8500, dMax: 18000, popBase: 1.8e15 },
+        { name: "Metal World", count: 36, dMin: 12000, dMax: 35000, popBase: 4.2e15 },
+        { name: "Lava World", count: 31, dMin: 11000, dMax: 28000, popBase: 8.5e14 },
+        { name: "Volcanic World", count: 39, dMin: 14000, dMax: 38000, popBase: 2.1e15 },
+        { name: "Venus-like", count: 34, dMin: 10000, dMax: 26000, popBase: 1.5e15 },
+        { name: "Desert World", count: 41, dMin: 13000, dMax: 32000, popBase: 3.5e15 }
+      ]
+    },
+    "Zona Biosphere": {
+      count: 376,
+      types: [
+        { name: "Mars-like", count: 54, dMin: 9000, dMax: 22000, popBase: 1.2e15 },
+        { name: "Earthlike", count: 96, dMin: 12000, dMax: 32000, popBase: 4.5e15 },
+        { name: "Oceanic World", count: 68, dMin: 15000, dMax: 48000, popBase: 3.8e15 },
+        { name: "Super-Earth", count: 91, dMin: 22000, dMax: 65000, popBase: 5.6e15 },
+        { name: "Mega-Earth", count: 67, dMin: 55000, dMax: 95000, popBase: 7.2e15 }
+      ]
+    },
+    "Zona Jovian": {
+      count: 301,
+      types: [
+        { name: "Gas Planet", count: 73, dMin: 65000, dMax: 220000, popBase: 1.5e15 },
+        { name: "Gas Giant", count: 112, dMin: 200000, dMax: 12800000, popBase: 3.2e15 },
+        { name: "Ice Planet", count: 48, dMin: 45000, dMax: 160000, popBase: 1.1e15 },
+        { name: "Ice Giant", count: 68, dMin: 120000, dMax: 1500000, popBase: 2.8e15 }
+      ]
+    },
+    "Zona Outer": {
+      count: 383,
+      types: [
+        { name: "Distant Terrestrial", count: 142, dMin: 10000, dMax: 32000, popBase: 1.6e15 },
+        { name: "Frozen World", count: 151, dMin: 9000, dMax: 42000, popBase: 1.2e15 },
+        { name: "Dwarf Planet", count: 90, dMin: 7600, dMax: 15000, popBase: 4.0e14 }
+      ]
+    }
+  };
+
+  function formatVerbalPop(n) {
+    if (!n || n <= 0) return "0 Jiwa";
+    if (n >= 1e18) return (n / 1e18).toFixed(4) + " Kuintiliun Jiwa";
+    if (n >= 1e15) return (n / 1e15).toFixed(3) + " Kuadriliun Jiwa";
+    if (n >= 1e12) return (n / 1e12).toFixed(2) + " Triliun Jiwa";
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + " Miliar Jiwa";
+    return n.toLocaleString() + " Jiwa";
+  }
+
+  function seedPlanetsDataset() {
+    console.log("Menghasilkan basis data kanonis 1.284 planet Sistem Andalex...");
+    const dataset = [];
+
+    // 1. ZONA INNER (224)
+    let innerIndex = 1;
+    ZONE_CONFIG["Zona Inner"].types.forEach(t => {
+      for (let i = 0; i < t.count; i++) {
+        const idCode = `AND-INN-${String(innerIndex).padStart(3, '0')}`;
+        const diam = Math.floor(t.dMin + Math.random() * (t.dMax - t.dMin));
+        const moons = Math.floor(Math.random() * 12) + 2;
+        const pop = Math.round(t.popBase * (0.8 + Math.random() * 0.4));
+        dataset.push({
+          id: idCode,
+          name: `${t.name} ${innerIndex}`,
+          zone: "Zona Inner",
+          type: t.name,
+          diameter: diam,
+          moons: moons,
+          pop: pop,
+          notes: "Pusat penambangan logam berat bawah tanah & pembangkit reaktor inti."
+        });
+        innerIndex++;
+      }
+    });
+
+    // 2. ZONA BIOSPHERE (376)
+    let bioIndex = 1;
+    ZONE_CONFIG["Zona Biosphere"].types.forEach(t => {
+      for (let i = 0; i < t.count; i++) {
+        const idCode = `AND-BIO-${String(bioIndex).padStart(3, '0')}`;
+        const diam = Math.floor(t.dMin + Math.random() * (t.dMax - t.dMin));
+        const moons = Math.floor(Math.random() * 24) + 6;
+        let pop = Math.round(t.popBase * (0.85 + Math.random() * 0.45));
+        let notes = "Suaka biosfer liar bio-aktif; fasilitas inkubasi & pemeliharaan ekosistem.";
+        let planetName = `${t.name} Prime-${bioIndex}`;
+
+        if (bioIndex === 122) {
+          planetName = "Valoria (Cagar Peradaban Alami)";
+          pop = 0;
+          notes = "SUAKA TERISOLASI MUTLAK: 6,2 Miliar Manusia Feodal Abad ke-5 Masehi. Dilarang dikontaminasi!";
+        }
+
+        dataset.push({
+          id: idCode,
+          name: planetName,
+          zone: "Zona Biosphere",
+          type: t.name,
+          diameter: bioIndex === 122 ? 58300 : diam,
+          moons: bioIndex === 122 ? 2 : moons,
+          pop: pop,
+          notes: notes
+        });
+        bioIndex++;
+      }
+    });
+
+    // 3. ZONA JOVIAN (301)
+    let jovIndex = 1;
+    ZONE_CONFIG["Zona Jovian"].types.forEach(t => {
+      for (let i = 0; i < t.count; i++) {
+        const idCode = `AND-JOV-${String(jovIndex).padStart(3, '0')}`;
+        let diam = Math.floor(t.dMin + Math.random() * (t.dMax - t.dMin));
+        let moons = Math.floor(Math.random() * 45) + 15;
+        let pop = Math.round(t.popBase * (0.8 + Math.random() * 0.5));
+        let planetName = `${t.name} Cluster-${jovIndex}`;
+        let notes = "Kota anjungan gas terapung, dok perakitan armada kapal perang di cincin orbital.";
+
+        if (jovIndex === 1) {
+          planetName = "Andalex Prime (Mega Gas Giant)";
+          diam = 12800000;
+          moons = 320;
+          pop = 1.2e16;
+          notes = "Raksasa gas terbesar di sistem Andalex dengan 320 satelit utama & kilang bahan bakar purba.";
+        }
+
+        dataset.push({
+          id: idCode,
+          name: planetName,
+          zone: "Zona Jovian",
+          type: t.name,
+          diameter: diam,
+          moons: moons,
+          pop: pop,
+          notes: notes
+        });
+        jovIndex++;
+      }
+    });
+
+    // 4. ZONA OUTER (383)
+    let outIndex = 1;
+    ZONE_CONFIG["Zona Outer"].types.forEach(t => {
+      for (let i = 0; i < t.count; i++) {
+        const idCode = `AND-OUT-${String(outIndex).padStart(3, '0')}`;
+        let diam = Math.floor(t.dMin + Math.random() * (t.dMax - t.dMin));
+        let moons = Math.floor(Math.random() * 8) + 1;
+        let pop = Math.round(t.popBase * (0.7 + Math.random() * 0.4));
+        let planetName = `${t.name} Outpost-${outIndex}`;
+        let notes = "Baterai sensor perimeter 38 tahun cahaya, dok pertahanan luar & kubah kriogenik.";
+
+        if (outIndex === 381) {
+          planetName = "Nyx Minima (Batas Periferal)";
+          diam = 7600;
+          moons = 1;
+          pop = 3.5e14;
+          notes = "Dunia batuan terkecil di batas terluar orbit Asterion.";
+        }
+
+        dataset.push({
+          id: idCode,
+          name: planetName,
+          zone: "Zona Outer",
+          type: t.name,
+          diameter: diam,
+          moons: moons,
+          pop: pop,
+          notes: notes
+        });
+        outIndex++;
+      }
+    });
+
+    const currentSum = dataset.reduce((a, b) => a + (b.pop || 0), 0);
+    const targetKuintiliun = 3.0e18;
+    const factor = targetKuintiliun / (currentSum || 1);
+    dataset.forEach(p => {
+      if (p.id !== "AND-BIO-122") {
+        p.pop = Math.round(p.pop * factor);
+      }
+    });
+
+    return dataset;
+  }
+
+  async function loadPlanetsData() {
+    try {
+      const stored = localStorage.getItem(PLANET_DB_KEY);
+      if (stored) {
+        planetsData = JSON.parse(stored);
+        if (Array.isArray(planetsData) && planetsData.length === 1284) {
+          return planetsData;
+        }
+      }
+    } catch(e) {}
+
+    planetsData = seedPlanetsDataset();
+    savePlanetsToStorage();
+    return planetsData;
+  }
+
+  function savePlanetsToStorage() {
+    try {
+      localStorage.setItem(PLANET_DB_KEY, JSON.stringify(planetsData));
+    } catch(e) { console.warn("Penyimpanan localStorage penuh:", e); }
+  }
+
+  function calculateMetrics() {
+    let totalPop = 0;
+    const zonePops = { "Zona Inner": 0, "Zona Biosphere": 0, "Zona Jovian": 0, "Zona Outer": 0 };
+    const zoneCounts = { "Zona Inner": 0, "Zona Biosphere": 0, "Zona Jovian": 0, "Zona Outer": 0 };
+
+    planetsData.forEach(p => {
+      const pop = Number(p.pop) || 0;
+      totalPop += pop;
+      if (zonePops[p.zone] !== undefined) {
+        zonePops[p.zone] += pop;
+        zoneCounts[p.zone]++;
+      }
+    });
+
+    return { totalPop, zonePops, zoneCounts };
+  }
+
+  function injectFullCatalogUI() {
+    const tabAtlas = document.getElementById("tab-atlas");
+    if (!tabAtlas) return;
+
+    const metrics = calculateMetrics();
+    const progressPercent = Math.min(100, (metrics.totalPop / 3.0e18) * 100).toFixed(2);
+
+    tabAtlas.innerHTML = `
+      <div class="bg-paperCard p-6 rounded-2xl border border-paperBorder paper-shadow space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold text-cyan-700 tracking-wider uppercase block">MAXILAN STRATEGIC LOGISTICS // SISTEM ANDALEX</span>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2 mt-0.5">
+              <i data-lucide="layers" class="w-5 h-5 text-cyan-600"></i>
+              Katalog Lengkap 1.284 Planet & Alokasi 3 Kuintiliun Maxer
+            </h2>
+            <p class="text-xs text-slate-500 font-mono mt-1">Kelola dan perbarui kapasitas populasi per planet secara real-time untuk mencapai target mobilisasi penuh.</p>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <button onclick="window.exportPlanetsJSON()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-cyan-800 border border-slate-300 flex items-center gap-1.5 transition-all">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor Atlas JSON
+            </button>
+            <button onclick="window.resetAtlasToDefault()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 border border-slate-300 flex items-center gap-1.5 transition-all" title="Reset dataset planet ke standar awal">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2 font-mono">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-600 font-medium">Akumulasi Populasi Maxer Andalex:</span>
+            <span class="font-bold text-cyan-800 text-sm">
+              <span id="stat-total-pop-text">${formatVerbalPop(metrics.totalPop)}</span> / 3.0000 Kuintiliun (${progressPercent}%)
+            </span>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-100 border border-slate-200 overflow-hidden p-0.5">
+            <div id="stat-progress-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-600 via-emerald-500 to-amber-500 transition-all duration-300" style="width: ${progressPercent}%;"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-2 font-mono text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 block">1. ZONA INNER (${metrics.zoneCounts["Zona Inner"]} Dunia)</span>
+            <span class="font-bold text-amber-700 text-sm mt-0.5 block">${formatVerbalPop(metrics.zonePops["Zona Inner"])}</span>
+            <span class="text-[10px] text-slate-400">Peleburan & Industri Berat</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 block">2. ZONA BIOSPHERE (${metrics.zoneCounts["Zona Biosphere"]} Dunia)</span>
+            <span class="font-bold text-emerald-700 text-sm mt-0.5 block">${formatVerbalPop(metrics.zonePops["Zona Biosphere"])}</span>
+            <span class="text-[10px] text-slate-400">Inkubasi & Suaka Hayati</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 block">3. ZONA JOVIAN (${metrics.zoneCounts["Zona Jovian"]} Dunia)</span>
+            <span class="font-bold text-cyan-700 text-sm mt-0.5 block">${formatVerbalPop(metrics.zonePops["Zona Jovian"])}</span>
+            <span class="text-[10px] text-slate-400">Kilang Gas & Armada Cincin</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-slate-500 block">4. ZONA OUTER (${metrics.zoneCounts["Zona Outer"]} Dunia)</span>
+            <span class="font-bold text-blue-700 text-sm mt-0.5 block">${formatVerbalPop(metrics.zonePops["Zona Outer"])}</span>
+            <span class="text-[10px] text-slate-400">Pertahanan Perimeter 38 LY</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-paperCard p-4 rounded-2xl border border-paperBorder paper-shadow flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 font-mono text-xs">
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <button onclick="window.filterPlanetsByZone('all', this)" class="planet-zone-btn px-3 py-1.5 rounded-xl bg-cyan-700 text-white font-bold whitespace-nowrap shadow-sm">Semua (1.284)</button>
+          <button onclick="window.filterPlanetsByZone('Zona Inner', this)" class="planet-zone-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap">Inner (224)</button>
+          <button onclick="window.filterPlanetsByZone('Zona Biosphere', this)" class="planet-zone-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap">Biosphere (376)</button>
+          <button onclick="window.filterPlanetsByZone('Zona Jovian', this)" class="planet-zone-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap">Jovian (301)</button>
+          <button onclick="window.filterPlanetsByZone('Zona Outer', this)" class="planet-zone-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap">Outer (383)</button>
+        </div>
+
+        <div class="relative w-full sm:w-72">
+          <input type="text" id="input-planet-search" oninput="window.handlePlanetSearch(this.value)" placeholder="Cari kode (misal: AND-BIO-122)..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 pl-8 text-slate-800 outline-none focus:border-cyan-600">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-2.5 top-2"></i>
+        </div>
+      </div>
+
+      <div class="bg-paperCard rounded-2xl border border-paperBorder paper-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600">
+                <th class="p-3 w-32">Kode Planet</th>
+                <th class="p-3">Nama Identitas</th>
+                <th class="p-3">Zona & Tipe</th>
+                <th class="p-3 text-right">Diameter</th>
+                <th class="p-3 text-center">Satelit</th>
+                <th class="p-3 text-right">Alokasi Populasi Maxer</th>
+                <th class="p-3 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="planets-table-tbody" class="divide-y divide-slate-100 text-slate-800"></tbody>
+          </table>
+        </div>
+
+        <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between font-mono text-xs">
+          <span id="pagination-info" class="text-slate-500">Menampilkan 1 - 40 dari 1.284 Planet</span>
+          <div class="flex items-center gap-1.5">
+            <button onclick="window.changePlanetPage(-1)" id="btn-page-prev" class="px-3 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 disabled:opacity-40">◀ Sebelumnya</button>
+            <span id="pagination-page-disp" class="px-3 py-1 rounded-lg bg-cyan-50 border border-cyan-200 text-cyan-800 font-bold">Hal 1 / 33</span>
+            <button onclick="window.changePlanetPage(1)" id="btn-page-next" class="px-3 py-1 rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 disabled:opacity-40">Berikutnya ▶</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    if (window.lucide) lucide.createIcons();
+    renderPlanetsTable();
+  }
+
+  function getFilteredPlanets() {
+    return planetsData.filter(p => {
+      const matchZone = (activeZoneFilter === 'all' || p.zone === activeZoneFilter);
+      const q = activeSearchQuery.toLowerCase().trim();
+      const matchSearch = (!q || p.id.toLowerCase().includes(q) || p.name.toLowerCase().includes(q) || p.type.toLowerCase().includes(q));
+      return matchZone && matchSearch;
+    });
+  }
+
+  function renderPlanetsTable() {
+    const tbody = document.getElementById("planets-table-tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    const filtered = getFilteredPlanets();
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIdx = (currentPage - 1) * itemsPerPage;
+    const endIdx = Math.min(startIdx + itemsPerPage, totalItems);
+    const pageItems = filtered.slice(startIdx, endIdx);
+
+    if (pageItems.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">Tidak ada planet yang cocok dengan kriteria filter.</td></tr>`;
+    } else {
+      pageItems.forEach((p) => {
+        const isValoria = (p.id === "AND-BIO-122");
+        const tr = document.createElement("tr");
+        tr.className = isValoria ? "bg-rose-50/70 hover:bg-rose-100/60 font-semibold" : "hover:bg-slate-50/80";
+        
+        let zoneBadgeClass = "bg-slate-100 text-slate-700 border-slate-200";
+        if (p.zone === "Zona Biosphere") zoneBadgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+        if (p.zone === "Zona Inner") zoneBadgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+        if (p.zone === "Zona Jovian") zoneBadgeClass = "bg-cyan-50 text-cyan-700 border-cyan-200";
+        if (p.zone === "Zona Outer") zoneBadgeClass = "bg-blue-50 text-blue-700 border-blue-200";
+
+        tr.innerHTML = `
+          <td class="p-3 font-bold ${isValoria ? 'text-rose-700' : 'text-cyan-800'}">${escapeHtml(p.id)}</td>
+          <td class="p-3">
+            <div class="font-bold ${isValoria ? 'text-rose-900' : 'text-slate-900'}">${escapeHtml(p.name)}</div>
+            <div class="text-[10px] text-slate-500 font-sans truncate max-w-xs">${escapeHtml(p.notes)}</div>
+          </td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded-md text-[10px] border ${zoneBadgeClass}">${escapeHtml(p.type)}</span>
+            <div class="text-[10px] text-slate-400 mt-0.5">${escapeHtml(p.zone)}</div>
+          </td>
+          <td class="p-3 text-right font-medium">${(p.diameter || 0).toLocaleString()} km</td>
+          <td class="p-3 text-center">${p.moons || 0}</td>
+          <td class="p-3 text-right">
+            <span class="font-bold ${isValoria ? 'text-rose-700' : 'text-amber-600'}">${formatVerbalPop(p.pop)}</span>
+            <div class="text-[10px] text-slate-400">${(p.pop || 0).toLocaleString()} Jiwa</div>
+          </td>
+          <td class="p-3 text-center">
+            <button onclick="window.openEditPlanetModal('${escapeHtml(p.id)}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-cyan-800 text-[11px] font-bold transition-all">
+              Edit
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    const infoEl = document.getElementById("pagination-info");
+    const pageDispEl = document.getElementById("pagination-page-disp");
+    const prevBtn = document.getElementById("btn-page-prev");
+    const nextBtn = document.getElementById("btn-page-next");
+
+    if (infoEl) infoEl.textContent = `Menampilkan ${totalItems ? startIdx + 1 : 0} - ${endIdx} dari ${totalItems.toLocaleString()} Planet`;
+    if (pageDispEl) pageDispEl.textContent = `Hal ${currentPage} / ${totalPages}`;
+    if (prevBtn) prevBtn.disabled = (currentPage <= 1);
+    if (nextBtn) nextBtn.disabled = (currentPage >= totalPages);
+  }
+
+  window.filterPlanetsByZone = function(zone, btnElement) {
+    activeZoneFilter = zone;
+    currentPage = 1;
+    document.querySelectorAll(".planet-zone-btn").forEach(b => {
+      b.className = "planet-zone-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 whitespace-nowrap";
+    });
+    if (btnElement) {
+      btnElement.className = "planet-zone-btn px-3 py-1.5 rounded-xl bg-cyan-700 text-white font-bold whitespace-nowrap shadow-sm";
+    }
+    renderPlanetsTable();
+  };
+
+  window.handlePlanetSearch = function(query) {
+    activeSearchQuery = query;
+    currentPage = 1;
+    renderPlanetsTable();
+  };
+
+  window.changePlanetPage = function(delta) {
+    const totalPages = Math.ceil(getFilteredPlanets().length / itemsPerPage);
+    const target = currentPage + delta;
+    if (target >= 1 && target <= totalPages) {
+      currentPage = target;
+      renderPlanetsTable();
+    }
+  };
+
+  window.openEditPlanetModal = function(planetId) {
+    const p = planetsData.find(x => x.id === planetId);
+    if (!p) return;
+
+    document.getElementById("edit-planet-index").value = p.id;
+    document.getElementById("edit-planet-id").value = p.id;
+    document.getElementById("edit-planet-name").value = p.name;
+    document.getElementById("edit-planet-zone").value = p.zone;
+    document.getElementById("edit-planet-type").value = p.type;
+    document.getElementById("edit-planet-diameter").value = p.diameter;
+    document.getElementById("edit-planet-moons").value = p.moons;
+    document.getElementById("edit-planet-pop").value = p.pop || 0;
+    document.getElementById("edit-planet-notes").value = p.notes || "";
+    document.getElementById("edit-pop-verbal").textContent = formatVerbalPop(p.pop);
+
+    const inputPop = document.getElementById("edit-planet-pop");
+    inputPop.oninput = function() {
+      document.getElementById("edit-pop-verbal").textContent = formatVerbalPop(Number(this.value) || 0);
+    };
+
+    document.getElementById("modal-edit-planet").classList.remove("hidden");
+    if (window.lucide) lucide.createIcons();
+  };
+
+  window.closePlanetModal = function() {
+    document.getElementById("modal-edit-planet").classList.add("hidden");
+  };
+
+  window.savePlanetChanges = function() {
+    const pid = document.getElementById("edit-planet-index").value;
+    const p = planetsData.find(x => x.id === pid);
+    if (!p) return;
+
+    p.name = document.getElementById("edit-planet-name").value.trim() || p.id;
+    p.diameter = Number(document.getElementById("edit-planet-diameter").value) || p.diameter;
+    p.moons = Number(document.getElementById("edit-planet-moons").value) || 0;
+    p.pop = Number(document.getElementById("edit-planet-pop").value) || 0;
+    p.notes = document.getElementById("edit-planet-notes").value.trim();
+
+    savePlanetsToStorage();
+    closePlanetModal();
+
+    const metrics = calculateMetrics();
+    const progressPercent = Math.min(100, (metrics.totalPop / 3.0e18) * 100).toFixed(2);
+    
+    const textPop = document.getElementById("stat-total-pop-text");
+    const barEl = document.getElementById("stat-progress-bar");
+    if (textPop) textPop.textContent = formatVerbalPop(metrics.totalPop);
+    if (barEl) barEl.style.width = progressPercent + "%";
+
+    renderPlanetsTable();
+    if (window.showToast) window.showToast(`Parameter planet ${p.id} berhasil diperbarui!`);
+  };
+
+  window.exportPlanetsJSON = function() {
+    const blob = new Blob([JSON.stringify(planetsData, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Andalex_Atlas_1284_Planets_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    if (window.showToast) window.showToast("Atlas 1.284 Planet diekspor ke JSON!");
+  };
+
+  window.resetAtlasToDefault = function() {
+    if (!confirm("Reset seluruh data atlas 1.284 planet ke baseline awal 3 Kuintiliun?")) return;
+    planetsData = seedPlanetsDataset();
+    savePlanetsToStorage();
+    injectFullCatalogUI();
+    if (window.showToast) window.showToast("Dataset atlas berhasil di-reset.");
+  };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    await loadPlanetsData();
+    injectFullCatalogUI();
+  });
+})();
+</script>
+<!-- ========================================================================= -->
+<!-- MODUL DROP-IN: ENGINE EKSPEDISI DARI NOL & KALKULATOR GEOMETRI POPULASI   -->
+<!-- Gantikan modul akuisisi lama, pasang tepat sebelum tag </body>            -->
+<!-- ========================================================================= -->
+
+<!-- MODAL AKUISISI BERBASIS KALKULASI RASIO DARAT/LAUT & DENSITAS -->
+<div id="modal-akuisisi-planet" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold">
+          <i data-lucide="calculator" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Transformasi Teritorial & Injeksi Maxer</h3>
+          <p class="text-[11px] text-slate-500 font-mono">Kalkulasi Otomatis: Diameter & Rasio Daratan & Kepadatan</p>
+        </div>
+      </div>
+      <button onclick="closeModalAkuisisi()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div class="space-y-4 font-mono text-xs">
+      <!-- Pencarian Target -->
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Target Kode Planet</label>
+        <div class="flex gap-2">
+          <input type="text" id="akuisisi-search-input" placeholder="Misal: AND-BIO-098..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 outline-none focus:border-cyan-600 uppercase font-bold">
+          <button type="button" onclick="lookupTargetPlanet()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl text-slate-700 font-bold">Muat Parameter</button>
+        </div>
+      </div>
+
+      <!-- Preview Data Geometris Planet -->
+      <div id="akuisisi-target-preview" class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-slate-700">
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-cyan-800 text-sm" id="akuisisi-preview-title">Pilih Target Planet Terlebih Dahulu</span>
+          <span class="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-600 font-bold" id="akuisisi-preview-zone">-</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-[11px] pt-1 border-t border-slate-200">
+          <div>Diameter: <strong id="akuisisi-preview-diam" class="text-slate-900">0 km</strong></div>
+          <div>Luas Bola: <strong id="akuisisi-preview-surface" class="text-slate-900">0 km²</strong></div>
+          <div>Populasi Terdata: <strong id="akuisisi-preview-curpop" class="text-amber-600">0 Jiwa</strong></div>
+        </div>
+      </div>
+
+      <!-- Kalkulator Fisik Akuisisi -->
+      <div class="p-4 bg-cyan-50/60 border border-cyan-200 rounded-2xl space-y-3">
+        <span class="text-cyan-900 font-bold block text-xs flex items-center gap-1.5">
+          <i data-lucide="sliders" class="w-3.5 h-3.5 text-cyan-700"></i> Parameter Fisik Kolonisasi
+        </span>
+
+        <!-- Slider Rasio Darat vs Laut -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-slate-700 font-semibold">Rasio Daratan vs Laut/Vakum</span>
+            <span class="text-cyan-800 font-bold"><span id="lbl-land-ratio">40</span>% Daratan / <span id="lbl-water-ratio">60</span>% Non-Darat</span>
+          </div>
+          <input type="range" id="input-land-ratio" min="1" max="100" value="40" oninput="recalcPopulationFromGeometry()" class="w-full accent-cyan-600">
+          <div class="text-[10px] text-slate-500 flex justify-between mt-0.5">
+            <span>Dunia Laut / Gas Tipis (1% - 20%)</span>
+            <span>Bumi Setara (29% - 40%)</span>
+            <span>Dunia Kering/Gurun (70% - 100%)</span>
+          </div>
+        </div>
+
+        <!-- Densitas / Kepadatan Arkologi -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-slate-700 font-semibold">Tingkat Densitas Arkologi Maxilan</span>
+            <span class="text-amber-700 font-bold" id="lbl-density-verbal">5.000 jiwa / km²</span>
+          </div>
+          <select id="input-density-preset" onchange="applyDensityPreset(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 font-bold">
+            <option value="500">Pangkalan Perintis Rendah (500 jiwa / km²)</option>
+            <option value="2500">Koloni Industri Standar (2.500 jiwa / km²)</option>
+            <option value="5000" selected>Mega-Arkologi Urban (5.000 jiwa / km²)</option>
+            <option value="15000">Arkologi Bertingkat Ekstrem (15.000 jiwa / km²)</option>
+            <option value="50000">Kubah Biosfer Padat / Hive Maxer (50.000 jiwa / km²)</option>
+            <option value="custom">-- Kustomisasi Densitas Manual --</option>
+          </select>
+          <input type="number" id="input-density-custom" placeholder="Masukkan angka densitas manual (jiwa/km²)" oninput="recalcPopulationFromGeometry()" class="w-full mt-2 bg-white border border-slate-300 rounded-xl px-3 py-1.5 hidden text-slate-800 font-bold">
+        </div>
+
+        <!-- Hasil Kalkulasi Real-Time -->
+        <div class="p-3 bg-white rounded-xl border border-cyan-300 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-slate-500 block uppercase font-bold">Hasil Kalkulasi Populasi Baru</span>
+            <span id="calc-final-pop-verbal" class="text-base sm:text-lg font-bold text-cyan-800">0 Jiwa</span>
+          </div>
+          <div class="text-right text-[11px] text-slate-500">
+            <div>Luas Efektif Darat: <strong id="calc-effective-land" class="text-slate-800">0 km²</strong></div>
+            <div>Status: <span class="text-emerald-600 font-bold">Siap Injeksi</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parameter Narasi & Bab -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-slate-700 font-semibold mb-1">Model Spesialisasi Maxer</label>
+          <select id="akuisisi-specialization" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800">
+            <option value="Model 1: Bio-Agraris & Rekayasa Ekologi">Model 1: Bio-Agraris (Zona Biosphere)</option>
+            <option value="Model 2: Sinter-Metalurgi & Industri Berat">Model 2: Sinter-Metalurgi (Zona Inner)</option>
+            <option value="Model 3: Kilang Atmosfer & Pilot Armada">Model 3: Kilang Atmosfer (Zona Jovian)</option>
+            <option value="Model 4: Sensor Kriogenik & Pengawal Sistem">Model 4: Sensor Kriogenik (Zona Outer)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-700 font-semibold mb-1">Tahun/Timeline Ekspedisi</label>
+          <input type="text" id="akuisisi-timeline" value="Tahun 01 - Era Genesis Andalex" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-slate-700 font-semibold mb-1">Catatan Log Peristiwa Cerita</label>
+        <textarea id="akuisisi-log-notes" rows="2" placeholder="Tuliskan peristiwa khusus di bab ini (contoh: Pendaratan batch pertama berhasil menstabilkan badai radiasi; ruang isolasi fusi 72 jam disiapkan)..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-800 font-sans text-xs"></textarea>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input type="checkbox" id="akuisisi-auto-chapter" checked class="rounded border-slate-300 text-cyan-600 focus:ring-0">
+        <label for="akuisisi-auto-chapter" class="text-slate-700 text-[11px] cursor-pointer">
+          Otomatis masukkan narasi ekspedisi bab ini ke <strong>Tab 1 (Manuskrip)</strong>
+        </label>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between pt-3 border-t border-slate-200 font-mono text-xs">
+      <button onclick="resetAllPlanetsToZero()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">
+        Reset Total ke 0 Jiwa
+      </button>
+      <div class="flex gap-2">
+        <button onclick="closeModalAkuisisi()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700">Batal</button>
+        <button onclick="submitEksekusiAkuisisi()" class="px-5 py-2 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold shadow-sm flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i> Eksekusi & Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  console.log("⚡ Mengaktifkan Modul Ekspedisi Andalex Genesis: Start from 0.");
+
+  const PLANET_STORAGE_KEY = "ANDALEX_PLANETS_1284_DATA";
+  let activePlanet = null;
+  let calculatedNewPop = 0;
+
+  function formatVerbal(n) {
+    if (!n || n <= 0) return "0 Jiwa";
+    if (n >= 1e18) return (n / 1e18).toFixed(4) + " Kuintiliun Jiwa";
+    if (n >= 1e15) return (n / 1e15).toFixed(3) + " Kuadriliun Jiwa";
+    if (n >= 1e12) return (n / 1e12).toFixed(2) + " Triliun Jiwa";
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + " Miliar Jiwa";
+    if (n >= 1e6) return (n / 1e6).toFixed(2) + " Juta Jiwa";
+    return Number(n).toLocaleString() + " Jiwa";
+  }
+
+  // Hitung luas permukaan bola: pi * D^2
+  function calculateSurfaceArea(diameterKm) {
+    return Math.PI * Math.pow(diameterKm, 2);
+  }
+
+  // Ambil data planet dari localStorage
+  function getPlanetsList() {
+    try {
+      const raw = localStorage.getItem(PLANET_STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return [];
+  }
+
+  // Hitung metrik akumulasi riil sistem
+  function getTimelineMetrics() {
+    const list = getPlanetsList();
+    let total = 0;
+    let colonisedCount = 0;
+    list.forEach(p => {
+      const pop = Number(p.pop) || 0;
+      total += pop;
+      if (pop > 0 && p.id !== "AND-BIO-122") colonisedCount++;
+    });
+    return { total, colonisedCount, totalPlanets: list.length || 1284 };
+  }
+
+  // Pasang Banner Kemajuan Progres di bagian paling atas Tab 1 (Naskah)
+  function setupRecapHUD() {
+    const tabNaskah = document.getElementById("tab-naskah");
+    if (!tabNaskah) return;
+
+    let hubEl = document.getElementById("maxer-progress-hub");
+    if (!hubEl) {
+      hubEl = document.createElement("div");
+      hubEl.id = "maxer-progress-hub";
+      hubEl.className = "bg-gradient-to-r from-navyHeader via-[#0d233e] to-navyDark text-white p-5 rounded-2xl border border-navyBorder shadow-xl space-y-4 mb-6";
+      tabNaskah.insertBefore(hubEl, tabNaskah.firstChild);
+    }
+
+    const m = getTimelineMetrics();
+    const target = 3.0e18;
+    const pct = Math.min(100, (m.total / target) * 100).toFixed(6);
+
+    hubEl.innerHTML = `
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyan-900/60 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-300">
+            <i data-lucide="compass" class="w-6 h-6 animate-spin" style="animation-duration: 20s;"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">EXPEDITION PROGRESS TIMELINE</span>
+              <span class="text-[10px] font-mono text-amber-400 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Dynamic Genesis Scale
+              </span>
+            </div>
+            <h2 class="text-base sm:text-lg font-bold text-white mt-0.5">
+              AKUISISI BERTINGKAT MENUJU 3 KUINTILIUN MAXER
+            </h2>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="window.openModalAkuisisi('AND-BIO-001')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold flex items-center gap-2 shadow-lg shadow-cyan-900/40 border border-cyan-400/40 transition-all">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Eksekusi Akuisisi Planet</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono text-xs">
+        <div class="p-3 bg-navyDark/90 rounded-xl border border-cyan-900/40">
+          <span class="text-slate-400 text-[11px] block">POPULASI SAAT INI</span>
+          <span id="hub-total-pop-verbal" class="text-base sm:text-lg font-bold text-amber-400 mt-0.5 block">${formatVerbal(m.total)}</span>
+          <span class="text-[10px] text-slate-500">Mulai dari Baseline 0</span>
+        </div>
+
+        <div class="p-3 bg-navyDark/90 rounded-xl border border-cyan-900/40">
+          <span class="text-slate-400 text-[11px] block">PROGRES GLOBAL</span>
+          <span id="hub-progress-pct" class="text-base sm:text-lg font-bold text-cyan-400 mt-0.5 block">${pct}%</span>
+          <span class="text-[10px] text-slate-500">Target: 3.0000 Kuintiliun</span>
+        </div>
+
+        <div class="p-3 bg-navyDark/90 rounded-xl border border-cyan-900/40">
+          <span class="text-slate-400 text-[11px] block">PLANET TERMOBILISASI</span>
+          <span id="hub-colonized-count" class="text-base sm:text-lg font-bold text-emerald-400 mt-0.5 block">${m.colonisedCount} / 1.284</span>
+          <span class="text-[10px] text-slate-500">Valoria Suaka Steril (0 Pop)</span>
+        </div>
+
+        <div class="p-3 bg-navyDark/90 rounded-xl border border-cyan-900/40">
+          <span class="text-slate-400 text-[11px] block">RITME FUSI BIOLOGIS</span>
+          <span class="text-base sm:text-lg font-bold text-rose-400 mt-0.5 block">Siklus 72 Jam</span>
+          <span class="text-[10px] text-slate-500">Regenerasi Polimer Alami</span>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 font-mono text-xs">
+        <div class="flex justify-between text-[11px] text-slate-400">
+          <span>Skala Capaian Sistem:</span>
+          <span id="hub-progress-subtext" class="text-cyan-300 font-bold">${formatVerbal(m.total)} / 3.000 Kuintiliun Jiwa</span>
+        </div>
+        <div class="w-full h-3 rounded-full bg-slate-900 border border-cyan-900/60 overflow-hidden p-0.5">
+          <div id="hub-progress-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-500 via-teal-400 to-amber-400 transition-all duration-500" style="width: ${Math.max(0.2, pct)}%;"></div>
+        </div>
+      </div>
+    `;
+
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // Buka Modal Akuisisi
+  window.openModalAkuisisi = function(defaultCode = 'AND-BIO-001') {
+    document.getElementById("akuisisi-search-input").value = defaultCode;
+    document.getElementById("akuisisi-log-notes").value = "";
+    document.getElementById("modal-akuisisi-planet").classList.remove("hidden");
+    if (window.lucide) lucide.createIcons();
+    window.lookupTargetPlanet();
+  };
+
+  window.closeModalAkuisisi = function() {
+    document.getElementById("modal-akuisisi-planet").classList.add("hidden");
+  };
+
+  // Cari dan muat atribut fisik planet
+  window.lookupTargetPlanet = function() {
+    const code = document.getElementById("akuisisi-search-input").value.trim().toUpperCase();
+    const list = getPlanetsList();
+    const found = list.find(p => p.id.toUpperCase() === code);
+
+    const titleEl = document.getElementById("akuisisi-preview-title");
+    const zoneEl = document.getElementById("akuisisi-preview-zone");
+    const diamEl = document.getElementById("akuisisi-preview-diam");
+    const surfEl = document.getElementById("akuisisi-preview-surface");
+    const curPopEl = document.getElementById("akuisisi-preview-curpop");
+
+    if (found) {
+      activePlanet = found;
+      const diam = found.diameter || 12000;
+      const surface = calculateSurfaceArea(diam);
+
+      titleEl.textContent = `${found.id} — ${found.name}`;
+      zoneEl.textContent = `${found.zone} [${found.type}]`;
+      diamEl.textContent = `${diam.toLocaleString()} km`;
+      surfEl.textContent = `${Math.round(surface).toLocaleString()} km²`;
+      curPopEl.textContent = formatVerbal(found.pop || 0);
+
+      // Default rasio daratan sesuai tipe dunia
+      let defaultLand = 35;
+      if (found.type.includes("Oceanic")) defaultLand = 10;
+      else if (found.type.includes("Desert") || found.type.includes("Metal")) defaultLand = 85;
+      else if (found.type.includes("Gas") || found.type.includes("Jovian")) defaultLand = 5;
+
+      document.getElementById("input-land-ratio").value = defaultLand;
+
+      if (found.id === "AND-BIO-122") {
+        titleEl.textContent += " [TERLARANG / SUAKA VALORIA]";
+        alert("PERINGATAN: AND-BIO-122 adalah Valoria (6,2 Miliar Manusia Feodal Abad ke-5 Masehi). Terlarang diakuisisi atau diisi entitas Maxer demi menjaga kemurnian isolasi peradaban alami.");
+      }
+
+      recalcPopulationFromGeometry();
+    } else {
+      activePlanet = null;
+      titleEl.textContent = `Planet ${code} Tidak Ditemukan!`;
+      zoneEl.textContent = "Error";
+      diamEl.textContent = "0 km";
+      surfEl.textContent = "0 km²";
+      curPopEl.textContent = "0 Jiwa";
+      document.getElementById("calc-final-pop-verbal").textContent = "0 Jiwa";
+    }
+  };
+
+  window.applyDensityPreset = function(val) {
+    const customInput = document.getElementById("input-density-custom");
+    if (val === "custom") {
+      customInput.classList.remove("hidden");
+    } else {
+      customInput.classList.add("hidden");
+      document.getElementById("lbl-density-verbal").textContent = `${Number(val).toLocaleString()} jiwa / km²`;
+    }
+    recalcPopulationFromGeometry();
+  };
+
+  // Kalkulator Matematika: Luas Permukaan * Rasio Darat * Densitas
+  window.recalcPopulationFromGeometry = function() {
+    if (!activePlanet) return;
+
+    const landRatio = Number(document.getElementById("input-land-ratio").value) || 40;
+    document.getElementById("lbl-land-ratio").textContent = landRatio;
+    document.getElementById("lbl-water-ratio").textContent = 100 - landRatio;
+
+    let density = 5000;
+    const preset = document.getElementById("input-density-preset").value;
+    if (preset === "custom") {
+      density = Number(document.getElementById("input-density-custom").value) || 1000;
+      document.getElementById("lbl-density-verbal").textContent = `${density.toLocaleString()} jiwa / km² (Kustom)`;
+    } else {
+      density = Number(preset);
+      document.getElementById("lbl-density-verbal").textContent = `${density.toLocaleString()} jiwa / km²`;
+    }
+
+    const diam = activePlanet.diameter || 12000;
+    const totalSurface = calculateSurfaceArea(diam);
+    const effectiveLand = totalSurface * (landRatio / 100);
+
+    // Hitung populasi final
+    calculatedNewPop = Math.round(effectiveLand * density);
+
+    document.getElementById("calc-effective-land").textContent = `${Math.round(effectiveLand).toLocaleString()} km²`;
+    document.getElementById("calc-final-pop-verbal").textContent = formatVerbal(calculatedNewPop);
+  };
+
+  // Submit Eksekusi Akuisisi & Update Status Database
+  window.submitEksekusiAkuisisi = async function() {
+    if (!activePlanet) return alert("Pilih planet yang valid!");
+    if (activePlanet.id === "AND-BIO-122") return alert("Akses Ditolak: Suaka Valoria berada di bawah isolasi mutlak.");
+    if (calculatedNewPop <= 0) return alert("Populasi hasil kalkulasi masih 0!");
+
+    const list = getPlanetsList();
+    const idx = list.findIndex(p => p.id === activePlanet.id);
+    if (idx === -1) return alert("Gagal menemukan entri planet di database lokal.");
+
+    const oldPop = Number(list[idx].pop) || 0;
+    list[idx].pop = calculatedNewPop;
+
+    const landRatio = document.getElementById("input-land-ratio").value;
+    const spec = document.getElementById("akuisisi-specialization").value;
+    const timeline = document.getElementById("akuisisi-timeline").value.trim() || "Timeline Genesis";
+    const notes = document.getElementById("akuisisi-log-notes").value.trim();
+    const autoChapter = document.getElementById("akuisisi-auto-chapter").checked;
+
+    const logSummary = `[${timeline}] Akuisisi: ${formatVerbal(calculatedNewPop)} (Rasio Darat: ${landRatio}%, ${spec}). ${notes}`;
+    list[idx].notes = logSummary;
+
+    // Simpan ke database lokal
+    localStorage.setItem(PLANET_STORAGE_KEY, JSON.stringify(list));
+
+    // Jika membuat bab naskah otomatis
+    if (autoChapter) {
+      const chapterTitle = `Bab Transformasi: Kolonisasi ${activePlanet.id} (${activePlanet.name})`;
+      const content = `Di bawah koordinasi Armada Pelopor Maxilan, operasi transformasi skala penuh resmi dijalankan di atas orbit ${activePlanet.id} (${activePlanet.name}). Dunia di ${activePlanet.zone} ini memiliki bentang diameter ${activePlanet.diameter.toLocaleString()} km dengan proporsi daratan efektif terpetakan sebesar ${landRatio}%.
+
+Kapsul modular arkologi diturunkan secara bertahap untuk mendirikan permukiman berdensitas tinggi. Sebanyak ${formatVerbal(calculatedNewPop)} entitas Maxer dari ${spec} diaktifkan langsung dalam wujud biologis-polimer matang ekuivalen 25 tahun untuk mengisi kubah-kubah baru tersebut.
+
+Langkah ini mencatatkan lonjakan populasi dari ${formatVerbal(oldPop)} menuju ${formatVerbal(calculatedNewPop)} jiwa operasional. Setiap individu telah diinisiasi dengan sinkronisasi metabolik 72 jam fusi biologis, menjaga stabilitas integritas fisik mereka saat membangun infrastruktur di dunia baru ini.
+
+${notes ? 'Log Perwira Maxilan: "' + notes + '"' : 'Seluruh unit telah tersambung ke jaringan logistik sistem dan memulai siklus kerja perdana mereka.'}`;
+
+      const newChapter = {
+        id: 'andalex-ch-' + Date.now(),
+        title: chapterTitle,
+        tag: `Akuisisi +${formatVerbal(calculatedNewPop)}`,
+        content: content
+      };
+
+      try {
+        if (typeof openIDB === "function") {
+          const db = await openIDB();
+          const tx = db.transaction("chapters", "readwrite");
+          tx.objectStore("chapters").put(newChapter);
+          tx.oncomplete = function() {
+            if (Array.isArray(window.chaptersState)) {
+              window.chaptersState.push(newChapter);
+              if (typeof renderStories === "function") renderStories();
+              if (typeof syncInstantMirror === "function") syncInstantMirror();
+            }
+          };
+        }
+      } catch(e) { console.warn("Gagal simpan bab:", e); }
+    }
+
+    closeModalAkuisisi();
+    setupRecapHUD();
+    if (typeof renderPlanetsTable === "function") renderPlanetsTable();
+
+    if (window.showToast) {
+      window.showToast(`Sukses! ${activePlanet.id} kini terisi ${formatVerbal(calculatedNewPop)}.`);
+    } else {
+      alert(`Sukses! ${activePlanet.id} kini terisi ${formatVerbal(calculatedNewPop)}.`);
+    }
+  };
+
+  // Fitur Reset Total Seluruh Planet ke 0
+  window.resetAllPlanetsToZero = function() {
+    if (!confirm("PERINGATAN: Kosongkan seluruh populasi planet menjadi 0 jiwa untuk memulai timeline dari titik awal? (Planet Valoria tetap terlindungi).")) return;
+
+    const list = getPlanetsList();
+    list.forEach(p => {
+      p.pop = 0;
+      if (p.id === "AND-BIO-122") {
+        p.notes = "SUAKA TERISOLASI MUTLAK: 6,2 Miliar Manusia Feodal Abad ke-5 Masehi. Dilarang dikontaminasi!";
+      } else {
+        p.notes = "Status: Belum diakuisisi (Dunia Tak Berpenghuni / Perawan).";
+      }
+    });
+
+    localStorage.setItem(PLANET_STORAGE_KEY, JSON.stringify(list));
+    closeModalAkuisisi();
+    setupRecapHUD();
+    if (typeof renderPlanetsTable === "function") renderPlanetsTable();
+    if (window.showToast) window.showToast("Seluruh planet berhasil di-reset ke baseline 0 Jiwa.");
+  };
+
+  // Pastikan inisialisasi default awal bernilai 0 jika belum diset
+  function verifyInitialBaselineZero() {
+    const list = getPlanetsList();
+    if (list.length > 0) {
+      const sum = list.reduce((a, b) => a + (Number(b.pop) || 0), 0);
+      // Jika mendeteksi masih memakai data lama yang langsung terisi 3 kuintiliun secara merata
+      if (sum >= 1e18) {
+        console.log("Mendeteksi dataset awal lama. Mengubah seluruh dunia ke status perawan (0 Jiwa)...");
+        list.forEach(p => {
+          p.pop = 0;
+          if (p.id === "AND-BIO-122") p.pop = 0;
+        });
+        localStorage.setItem(PLANET_STORAGE_KEY, JSON.stringify(list));
+      }
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      verifyInitialBaselineZero();
+      setupRecapHUD();
+    }, 400);
+  });
+})();
+</script>
+<!-- ========================================================================= -->
+<!-- MODUL DROP-IN: ACTIVE PLANET PIN & HUD NAVIGASI FOKUS BAB                 -->
+<!-- Pasang tepat sebelum penutup </body>                                      -->
+<!-- ========================================================================= -->
+
+<!-- 1. Floating Banner / Strip Fokus Planet Aktif (Menempel di Bawah Header) -->
+<div id="active-focus-strip" class="bg-gradient-to-r from-navyDark via-[#0c223c] to-navyDark border-b border-cyan-500/40 text-white px-4 py-2 sticky top-16 z-30 shadow-md flex items-center justify-between text-xs font-mono hidden">
+  <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+    <span class="flex items-center gap-1 text-cyan-400 font-bold uppercase tracking-wider whitespace-nowrap">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+      Fokus Bab Aktif:
+    </span>
+    <span id="focus-planet-id" class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500 text-cyan-200 font-bold">AND-BIO-001</span>
+    <span id="focus-planet-name" class="font-bold text-slate-200 truncate max-w-xs">Nama Planet</span>
+    <span class="text-slate-500">|</span>
+    <span class="text-slate-400">Zona: <strong id="focus-planet-zone" class="text-slate-200">-</strong></span>
+    <span class="text-slate-500">|</span>
+    <span class="text-slate-400">Populasi: <strong id="focus-planet-pop" class="text-amber-400">0 Jiwa</strong></span>
+    <span class="text-slate-500">|</span>
+    <span class="text-slate-400">Status: <strong id="focus-planet-status" class="text-emerald-400">Fokus Naskah</strong></span>
+  </div>
+
+  <div class="flex items-center gap-2 pl-3 whitespace-nowrap">
+    <button onclick="quickOpenAiStudioForFocus()" class="px-2.5 py-1 rounded bg-cyan-700 hover:bg-cyan-600 text-white font-bold flex items-center gap-1 transition-all" title="Bawa data planet ini langsung ke AI Studio">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Tulis di AI
+    </button>
+    <button onclick="clearActiveFocus()" class="px-2 py-1 rounded bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-200 transition-all" title="Lepas Pin Fokus">
+      <i data-lucide="x" class="w-3.5 h-3.5"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+(function() {
+  console.log("🎯 Mengaktifkan Modul Active Planet Focus & Chapter Linking...");
+
+  const FOCUS_KEY = "ANDALEX_ACTIVE_FOCUS_PLANET";
+
+  // Simpan planet sebagai fokus bab aktif
+  window.setActiveFocusPlanet = function(planetId) {
+    let list = [];
+    try {
+      const raw = localStorage.getItem("ANDALEX_PLANETS_1284_DATA");
+      if (raw) list = JSON.parse(raw);
+    } catch(e) {}
+
+    const p = list.find(x => x.id === planetId);
+    if (!p) return;
+
+    localStorage.setItem(FOCUS_KEY, JSON.stringify(p));
+    renderFocusStrip();
+
+    // Beri umpan balik toast
+    if (window.showToast) {
+      window.showToast(`🎯 Fokus bab dikunci pada ${p.id} (${p.name})!`);
+    }
+
+    // Sorot baris di tabel jika tabel sedang terbuka
+    highlightTableRow(p.id);
+  };
+
+  // Hapus fokus aktif
+  window.clearActiveFocus = function() {
+    localStorage.removeItem(FOCUS_KEY);
+    renderFocusStrip();
+    if (window.showToast) window.showToast("Fokus planet dilepas.");
+  };
+
+  // Render strip di layar
+  function renderFocusStrip() {
+    const strip = document.getElementById("active-focus-strip");
+    if (!strip) return;
+
+    let p = null;
+    try {
+      const raw = localStorage.getItem(FOCUS_KEY);
+      if (raw) p = JSON.parse(raw);
+    } catch(e) {}
+
+    if (!p) {
+      strip.classList.add("hidden");
+      return;
+    }
+
+    strip.classList.remove("hidden");
+    document.getElementById("focus-planet-id").textContent = p.id;
+    document.getElementById("focus-planet-name").textContent = p.name || p.id;
+    document.getElementById("focus-planet-zone").textContent = `${p.zone} (${p.type})`;
+    
+    // Format verbal populasi
+    let popText = "0 Jiwa";
+    const n = Number(p.pop) || 0;
+    if (n >= 1e18) popText = (n / 1e18).toFixed(4) + " Kuintiliun";
+    else if (n >= 1e15) popText = (n / 1e15).toFixed(3) + " Kuadriliun";
+    else if (n >= 1e12) popText = (n / 1e12).toFixed(2) + " Triliun";
+    else if (n >= 1e9) popText = (n / 1e9).toFixed(2) + " Miliar";
+    else if (n > 0) popText = n.toLocaleString() + " Jiwa";
+
+    document.getElementById("focus-planet-pop").textContent = popText;
+
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // Tombol instan: Bawa data planet fokus langsung ke formulir generator AI (Tab 2)
+  window.quickOpenAiStudioForFocus = function() {
+    let p = null;
+    try {
+      const raw = localStorage.getItem(FOCUS_KEY);
+      if (raw) p = JSON.parse(raw);
+    } catch(e) {}
+
+    if (!p) return;
+
+    if (typeof switchTab === "function") switchTab('tab-generator');
+
+    const inputTitle = document.getElementById("gen-chapter-title");
+    const selectZone = document.getElementById("gen-chapter-zone");
+    const inputPlot = document.getElementById("gen-plot-instruction");
+
+    if (inputTitle) inputTitle.value = `Bagian: Kolonisasi dan Rekayasa Teritorial ${p.id} (${p.name})`;
+    if (selectZone) selectZone.value = p.zone;
+    if (inputPlot) {
+      inputPlot.value = `Fokuskan bab ini secara eksklusif pada eksplorasi dan transformasi ${p.id} (${p.name}). 
+Karakteristik Fisik: Tipe ${p.type}, diameter ${(p.diameter || 0).toLocaleString()} km, berada di ${p.zone}.
+Target Operasi: Injeksi gelombang Maxer dan pendirian arkologi pendukung fusi 72 jam di daratan planet ini. 
+Deskripsikan rintangan lingkungan alam saat pendaratan dan adaptasi entitas Maxer di permukaan.`;
+    }
+
+    if (window.showToast) window.showToast(`Data ${p.id} disuntikkan ke AI Novel Studio!`);
+  };
+
+  // Tambahkan tombol "Jadikan Fokus Bab" di dalam Tabel Atlas secara otomatis
+  function enhanceAtlasTable() {
+    const observer = new MutationObserver(() => {
+      const tbody = document.getElementById("planets-table-tbody");
+      if (!tbody) return;
+
+      let focusedId = null;
+      try {
+        const raw = localStorage.getItem(FOCUS_KEY);
+        if (raw) focusedId = JSON.parse(raw).id;
+      } catch(e) {}
+
+      tbody.querySelectorAll("tr").forEach(tr => {
+        const idCell = tr.querySelector("td");
+        if (!idCell) return;
+        const planetCode = idCell.textContent.trim();
+
+        // Cek jika baris ini adalah planet fokus
+        if (focusedId && planetCode === focusedId) {
+          tr.classList.add("ring-2", "ring-cyan-500", "bg-cyan-50/80");
+        } else {
+          tr.classList.remove("ring-2", "ring-cyan-500", "bg-cyan-50/80");
+        }
+
+        // Tambah tombol Pin jika belum ada di kolom aksi
+        const actionCell = tr.querySelector("td:last-child");
+        if (actionCell && !actionCell.querySelector(".btn-pin-focus")) {
+          const pinBtn = document.createElement("button");
+          pinBtn.className = "btn-pin-focus ml-1 px-2 py-1 rounded-lg bg-cyan-100 hover:bg-cyan-200 border border-cyan-300 text-cyan-800 text-[11px] font-bold transition-all";
+          pinBtn.title = "Kunci sebagai Fokus Bab Ini";
+          pinBtn.innerHTML = `📌 Fokus`;
+          pinBtn.onclick = (e) => {
+            e.stopPropagation();
+            window.setActiveFocusPlanet(planetCode);
+          };
+          actionCell.appendChild(pinBtn);
+        }
+      });
+    });
+
+    const targetNode = document.getElementById("planets-table-tbody");
+    if (targetNode) observer.observe(targetNode, { childList: true });
+  }
+
+  function highlightTableRow(id) {
+    const tbody = document.getElementById("planets-table-tbody");
+    if (!tbody) return;
+    tbody.querySelectorAll("tr").forEach(tr => {
+      const idCell = tr.querySelector("td");
+      if (idCell && idCell.textContent.trim() === id) {
+        tr.classList.add("ring-2", "ring-cyan-500", "bg-cyan-50/80");
+        tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        tr.classList.remove("ring-2", "ring-cyan-500", "bg-cyan-50/80");
+      }
+    });
+  }
+
+  // Pasang strip fokus saat aplikasi siap
+  window.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+      renderFocusStrip();
+      enhanceAtlasTable();
+    }, 500);
+  });
+})();
+</script>
+</body>
+</html>
