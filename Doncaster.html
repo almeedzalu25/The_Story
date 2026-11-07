@@ -132,6 +132,7 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> IndexedDB
           </span>
         </div>
+        <button onclick="openStory()" class="p-2 sm:px-3 sm:py-1.5 rounded-lg bg-hud hover:bg-cyan-950 border border-hudborder hover:border-cyan-500 text-amber-300 text-xs font-mono flex items-center gap-1.5 transition-all"><span>🎭</span><span class="hidden sm:inline">Interactive Story</span></button>
         <button onclick="openCbtReader(0)" class="p-2 sm:px-3 sm:py-1.5 rounded-lg bg-hud hover:bg-cyan-950 border border-hudborder hover:border-cyan-500 text-cyan-300 text-xs font-mono flex items-center gap-1.5 transition-all">
           <i data-lucide="book-open-check" class="w-4 h-4"></i>
           <span class="hidden sm:inline">Ebook Reader</span>
@@ -499,6 +500,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
             <input type="number" id="modal-char-height" placeholder="Tinggi" class="w-1/2 bg-void border border-hudborder rounded px-2 py-2 text-white">
           </div>
         </div>
+        <div><label class="block text-slate-300 mb-1">Gender</label><select id="modal-char-gender" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white"><option value="Pria">♂ Pria</option><option value="Wanita">♀ Wanita</option></select></div>
         <div>
           <label class="block text-slate-300 mb-1">Kluster Profesi</label>
           <input type="text" id="modal-char-cluster" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
@@ -552,7 +554,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
   <!-- JAVASCRIPT MASTER ENGINE -->
   <script>
     const DB_NAME = "Doncaster_Story_Engine_DB";
-    const DB_VERSION = 1;
+    const DB_VERSION = 2;
     const LOCAL_MIRROR_KEY = "DONCASTER_STORY_MIRROR";
 
     // 50 KARAKTER BASELINE
@@ -618,6 +620,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
     let chaptersState = [];
     let charactersState = [];
     let currentCascadeFilter = 'all';
+    window.getChapters = () => chaptersState; window.getChars = () => charactersState;
 
     function openIDB() {
       return new Promise((resolve, reject) => {
@@ -626,7 +629,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
         req.onupgradeneeded = function(e) {
           const db = e.target.result;
           if (!db.objectStoreNames.contains("chapters")) db.createObjectStore("chapters", { keyPath: "id" });
-          if (!db.objectStoreNames.contains("state")) db.createObjectStore("state", { keyPath: "key" });
+          if (!db.objectStoreNames.contains("state")) db.createObjectStore("state", { keyPath: "key" });if (!db.objectStoreNames.contains("assets")) db.createObjectStore("assets", { keyPath: "id" });
         };
         req.onsuccess = function(e) {
           dbInstance = e.target.result;
@@ -797,6 +800,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
       document.getElementById('stat-total-words').textContent = totalWords.toLocaleString();
       document.getElementById('stat-total-paragraphs').textContent = totalParagraphs;
       document.getElementById('tab-naskah-counter').textContent = chaptersState.length;
+      window.dispatchEvent(new CustomEvent('manuscript:changed'));
 
       lucide.createIcons();
     }
@@ -991,7 +995,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
           <div class="space-y-2">
             <div class="flex items-start justify-between gap-1">
               <div>
-                <h3 class="text-sm font-bold text-white">${escapeHtml(c.name)}</h3>
+                <h3 class="text-sm font-bold text-white flex items-center gap-1.5"><img data-a="c${c.id}" class="w-10 h-10 rounded-lg object-cover hidden">${gIcon(c.gender)}${escapeHtml(c.name)}</h3>
                 <span class="text-[11px] font-mono text-slate-400 block">${c.age} thn • ${c.height} cm • ${escapeHtml(c.cluster)}</span>
               </div>
               <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${badgeColor}">${badgeText}</span>
@@ -1000,7 +1004,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
             <p class="text-xs text-slate-300 leading-relaxed font-sans">${escapeHtml(c.bio)}</p>
           </div>
           <div class="pt-2 border-t border-hudborder/60 flex items-center justify-between text-[11px] font-mono text-slate-400">
-            <button onclick="editCharacterModal(${c.id})" class="px-2 py-1 rounded bg-hud hover:bg-hudborder text-amber-300 border border-hudborder flex items-center gap-1">
+            <button onclick="charPhoto(${c.id})" class="px-2 py-1 rounded bg-hud hover:bg-hudborder text-emerald-300 border border-hudborder" title="Sisipkan gambar">🖼</button><button onclick="charPrompt(${c.id})" class="px-2 py-1 rounded bg-hud hover:bg-hudborder text-cyan-300 border border-hudborder" title="Salin prompt gambar">Prompt</button><button onclick="editCharacterModal(${c.id})" class="px-2 py-1 rounded bg-hud hover:bg-hudborder text-amber-300 border border-hudborder flex items-center gap-1">
               <i data-lucide="edit-2" class="w-3 h-3"></i> Sunting Profil
             </button>
             <button onclick="deleteCharacterModal(${c.id})" class="p-1 rounded bg-hud hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-hudborder">
@@ -1011,7 +1015,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
         container.appendChild(card);
       });
 
-      document.getElementById("tab-char-counter").innerText = charactersState.length;
+      document.getElementById("tab-char-counter").innerText = charactersState.length; window.hydrateImgs && hydrateImgs();
       lucide.createIcons();
     }
 
@@ -1027,7 +1031,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
       document.getElementById('modal-char-height').value = '190';
       document.getElementById('modal-char-cluster').value = 'Navigasi';
       document.getElementById('modal-char-role').value = '';
-      document.getElementById('modal-char-bio').value = '';
+      document.getElementById('modal-char-bio').value = '';document.getElementById('modal-char-gender').value='Pria';
       document.getElementById('char-modal').classList.remove('hidden');
       lucide.createIcons();
     }
@@ -1042,7 +1046,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
       document.getElementById('modal-char-height').value = c.height;
       document.getElementById('modal-char-cluster').value = c.cluster;
       document.getElementById('modal-char-role').value = c.role;
-      document.getElementById('modal-char-bio').value = c.bio;
+      document.getElementById('modal-char-bio').value = c.bio;document.getElementById('modal-char-gender').value=c.gender||'Pria';
       document.getElementById('char-modal').classList.remove('hidden');
       lucide.createIcons();
     }
@@ -1054,7 +1058,7 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
       if (!name) return alert("Nama karakter harus diisi!");
 
       const charObj = {
-        id: id ? Number(id) : Date.now(),
+        id: id ? Number(id) : Date.now(), gender: document.getElementById('modal-char-gender').value,
         name: name,
         group: document.getElementById('modal-char-group').value,
         age: Number(document.getElementById('modal-char-age').value) || 25,
@@ -1251,7 +1255,104 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
 <!-- ========================================================================= -->
 <!-- MODUL DROP-IN: BASELINE LORE EDITOR, TAB STATISTIK LENGKAP & GENERATOR    -->
 <!-- DETERMINISTIK PERADABAN SEVEROZ                                           -->
-<!-- Pasang tepat sebelum penutup </body> pada berkas Doncaster Story Engine   -->
+<!-- Pasang tepat sebelum penutup <script>
+(function(){
+const $=id=>document.getElementById(id),E=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const IO=f=>openIDB().then(db=>new Promise((ok,no)=>{const t=db.transaction('assets','readwrite'),r=f(t.objectStore('assets'));t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>no(t.error)}));
+const AC={},aget=async id=>{if(id in AC)return AC[id];const v=await IO(s=>s.get(id));return AC[id]=v?v.url:null},aset=async(id,u)=>{AC[id]=u;await IO(s=>s.put({id,url:u}))};
+const pick=(max,cb)=>{const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.85))};im.src=r.result};r.readAsDataURL(f)};i.click()};
+window.hydrateImgs=()=>document.querySelectorAll('img[data-a]').forEach(async el=>{const u=await aget(el.dataset.a);if(u){el.src=u;el.classList.remove('hidden')}});
+window.gIcon=g=>g==='Wanita'?'<span class="inline-flex w-5 h-5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-400/50 items-center justify-center text-xs" title="Wanita">♀</span>':'<span class="inline-flex w-5 h-5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/50 items-center justify-center text-xs" title="Pria">♂</span>';
+window.charPhoto=id=>pick(720,async u=>{await aset('c'+id,u);hydrateImgs();showToast('Gambar karakter disisipkan!')});
+/* ---- prompt gambar karakter ---- */
+const CL={Navigasi:'navigator uniform with holographic star-chart gauntlet',Sains:'engineer coveralls with instrument harness',Birokrasi:'crisp grey administrative uniform, data-slate in hand',Militer:'armored tactical fleet uniform with rank insignia',Logistik:'rugged cargo-deck vest with utility straps',Sipil:'worn civilian spacer jacket'};
+const MOOD=[['panik','anxious'],['dingin','cold stern'],['teliti','meticulous'],['karismatik','charismatic'],['sinis','cynical smirk'],['tenang','calm composed'],['gigih','determined'],['rahasia','guarded'],['hemat bicara','quiet reserved'],['diplomatik','poised'],['risiko','reckless grin']];
+window.charPromptText=c=>{const m=(MOOD.find(x=>(c.bio||'').toLowerCase().includes(x[0]))||[0,'determined'])[1];return `Cinematic hard sci-fi character portrait, ${c.age<30?'young adult':c.age<45?'adult':'middle-aged with subtle gray hair'} ${c.gender==='Wanita'?'woman':'man'}, age ${c.age}, tall lean frame (${c.height} cm), ${CL[c.cluster]||CL.Sipil}, role: ${c.role}, ${m} expression, Tier-6 interstellar Dancoster civilization, space-station interior with soft rim light, realistic skin texture, 85mm lens, shallow depth of field, highly detailed, no text, no watermark`};
+window.charPrompt=id=>{const c=getChars().find(x=>x.id===id);copyToClipboard(charPromptText(c),'Prompt gambar '+c.name+' disalin!')};
+/* ---- parser dialog ---- */
+const VERB='kata|ujar|tanya|bertanya|jawab|menjawab|bisik|berbisik|seru|berseru|teriak|berteriak|sahut|menyahut|gumam|bergumam|ucap|tegas|timpal|menimpali|balas|membalas|desis|mendesis|sela|menyela|protes|lanjut|melanjutkan|perintah|memerintahkan|keluh|mengeluh|berkata|menggerutu|geram';
+const SC={anjungan:['anjungan|observasi|balkon|stasiun','#0b1e3a,#1b3a66'],reaktor:['reaktor|mesin|fusi|kalibrasi','#2a0d0d,#7a2a10'],dok:['dok|kargo|hangar|dermaga|konvoi','#10171f,#3a4a5a'],void:['void|hampa|koridor|sub-ruang|lompatan|pelipatan','#05030f,#251a4a'],bunker:['bunker|sidang|senat|komando|gubernur|dekrit|negosiasi','#071a1a,#14413f'],kedai:["kedai|void's edge",'#201006,#5a3410'],planet:['planet|dataran|litium|atmosfer|tambang','#2a160a,#8a5a2a'],lab:['laboratorium|riset|kuantum|komputasi','#06222a,#1c5a66'],tempur:['tembak|ledak|meriam|torpedo|serang|baku','#1a0508,#6a0f1f'],default:['','#06080d,#0f1a30']};
+const STAR='radial-gradient(1.5px 1.5px at 12% 22%,#fff9,transparent),radial-gradient(1px 1px at 63% 41%,#fff8,transparent),radial-gradient(1.5px 1.5px at 85% 12%,#fff9,transparent),radial-gradient(1px 1px at 33% 78%,#fff7,transparent),radial-gradient(1px 1px at 90% 70%,#fff7,transparent)';
+const pickScene=p=>{let b=null,n=0;for(const k in SC){if(!SC[k][0])continue;const c=(p.match(new RegExp(SC[k][0],'gi'))||[]).length;if(c>n){n=c;b=k}}return b};
+const nameIdx=()=>{const map={};getChars().forEach(c=>{const full=c.name.replace(/'/g,''),p=full.split(/\s+/),nick=(c.name.match(/'(\w+)'/)||[])[1];[full,p[0],p[p.length-1],nick].forEach(k=>{if(k&&k.length>2){map[k]=map[k]||[];if(!map[k].includes(c.id))map[k].push(c.id)}})});return map};
+const mentions=(t,map,W)=>{const ks=Object.keys(map).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));if(!ks.length)return[];const re=new RegExp('(^|[^\\p{L}])('+ks.join('|')+')(?![\\p{L}])','gu'),o=[];let m;while(m=re.exec(t)){const ids=map[m[2]];o.push(ids.length==1?ids[0]:ids.slice().sort((a,b)=>(W[b]||0)-(W[a]||0))[0])}return o};
+function beats(ch){
+ const txt=ch.content||'',map=nameIdx(),W={};getChars().forEach(c=>W[c.id]=txt.split(c.name).length-1);
+ const ov=JSON.parse(localStorage.getItem('DAN_SPK')||'{}'),VR=new RegExp('\\b('+VERB+')\\b','i'),out=[],who=t=>mentions(t,map,W)[0]||null;let hist=[],scene='default',prevD=false;
+ txt.split(/\n\s*\n/).forEach((p,pi)=>{
+  p=p.replace(/\s*\n\s*/g,' ').trim();if(!p)return;
+  const sg=[],re=/[“"]([^”"]+)[”"]/g;let l=0,m;
+  while(m=re.exec(p)){if(m.index>l)sg.push({q:0,t:p.slice(l,m.index).trim()});sg.push({q:1,t:m[1].trim()});l=re.lastIndex}
+  if(l<p.length)sg.push({q:0,t:p.slice(l).trim()});
+  const sc=pickScene(p);if(sc)scene=sc;
+  sg.forEach((s,i)=>{if(!s.q)return;const b=sg[i-1]&&!sg[i-1].q?sg[i-1].t:'',a=sg[i+1]&&!sg[i+1].q?sg[i+1].t:'',ac=a.split(/[.!?]/)[0],bl=(b.match(/[^.!?]+[.!?]?\s*$/)||[''])[0];
+   s.w=(VR.test(ac)&&who(ac))||(VR.test(bl)&&who(bl))||(!sg.slice(0,i).some(x=>x.q)&&who(bl))||null;
+   s.att=VR.test(ac)&&a.split(/\s+/).length<=10?'a':VR.test(bl)&&b.split(/\s+/).length<=10?'b':''});
+  let ls=null;sg.forEach(s=>{if(!s.q)return;if(s.w)ls=s.w;else if(ls)s.w=ls});
+  sg.forEach(s=>{if(s.q&&!s.w&&hist.length>1&&prevD)s.w=hist[hist.length-2]});
+  sg.forEach((s,i)=>{
+   if(s.q){const k=pi+':'+i,w=ov[ch.id+'|'+k]||s.w||null,tag=s.att==='a'?sg[i+1].t:s.att==='b'?sg[i-1].t:'';out.push({d:1,t:s.t,w,tag,k,sc:scene});if(w){hist=hist.filter(x=>x!==w);hist.push(w)}prevD=true}
+   else if(s.t&&!((sg[i-1]&&sg[i-1].q&&sg[i-1].att==='a')||(sg[i+1]&&sg[i+1].q&&sg[i+1].att==='b'))){out.push({d:0,t:s.t,sc:scene});prevD=false}});
+ });
+ return out}
+window.DanStory={beats};
+/* ---- UI interactive story ---- */
+let B=[],ix=0,cur=null,tm=null,auto=false,T={};
+const wc=t=>(t||'').trim().split(/\s+/).filter(Boolean).length;
+function build(){if($('is'))return;const d=document.createElement('div');d.id='is';d.style.cssText='position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;background:#000;color:#e2e8f0;font-family:Inter,sans-serif';
+ d.innerHTML=`<div id="is-bg" style="position:absolute;inset:0;transition:background 1s"></div><div style="position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(0,0,0,.85))"></div>
+ <div class="relative flex flex-wrap items-center gap-2 p-3 bg-black/50 text-xs font-mono"><b class="text-cyan-300">INTERACTIVE STORY</b><select id="is-ch" class="bg-void border border-hudborder rounded px-2 py-1" onchange="isLoad(+this.value)"></select>
+ <select id="is-bgs" class="bg-void border border-hudborder rounded px-2 py-1">${Object.keys(SC).map(k=>`<option>${k}</option>`).join('')}</select><button onclick="isBg()" class="px-2 py-1 rounded bg-hud border border-hudborder">🖼 Unggah Latar</button>
+ <label>Ketik <input id="is-spd" type="range" min="0" max="60" value="20" class="align-middle w-20"></label><label><input id="is-tts" type="checkbox"> 🔊 Suara</label><button id="is-auto" onclick="isAuto()" class="px-2 py-1 rounded bg-hud border border-hudborder">▶ Auto</button>
+ <button onclick="isClose()" class="ml-auto px-3 py-1 rounded bg-rose-600 text-white">Tutup [ESC]</button></div>
+ <div id="is-stage" class="relative flex-1 flex items-end justify-center gap-6 pb-4 transition-opacity duration-500"></div>
+ <div class="relative mx-auto w-full max-w-4xl p-4 pb-6"><div class="bg-black/65 backdrop-blur border border-hudborder rounded-2xl p-5 cursor-pointer" onclick="isNx()">
+ <div id="is-name" class="items-center gap-2 mb-2 text-cyan-300 font-bold" style="display:none"></div><p id="is-text" class="text-lg leading-relaxed font-serif min-h-[5rem]"></p><p id="is-tag" class="text-xs italic text-slate-400 mt-2"></p></div>
+ <div class="flex items-center justify-between text-xs font-mono mt-2"><button onclick="isGo(ix-1)" class="px-3 py-1 rounded bg-hud border border-hudborder">◀</button><select id="is-spk" onchange="isSpk(this.value)" class="bg-void border border-hudborder rounded px-2 py-1"></select><span id="is-cnt"></span><button onclick="isNx()" class="px-3 py-1 rounded bg-cyan-500 text-black font-bold">▶</button></div></div>`;
+ document.body.appendChild(d)}
+async function setBg(k){const u=await aget('b'+k);$('is-bg').style.background=u?`center/cover url("${u}")`:`${STAR},linear-gradient(135deg,${(SC[k]||SC.default)[1]})`}
+function fin(){clearInterval(tm);tm=null;T.ty=false;$('is-text').textContent=T.full;const b=T.b;
+ if($('is-tts').checked&&window.speechSynthesis){const u=new SpeechSynthesisUtterance(T.full),c=getChars().find(x=>x.id===b.w);u.lang='id-ID';u.pitch=b.d?(c&&c.gender==='Wanita'?1.3:.8):1;u.onend=()=>{if(auto)isNx()};speechSynthesis.speak(u)}
+ else if(auto)tm=setTimeout(isNx,900+T.full.length*45)}
+function show(i){clearInterval(tm);if(window.speechSynthesis)speechSynthesis.cancel();ix=Math.max(0,Math.min(B.length-1,i));const b=B[ix],cs=getChars(),w=b.w&&cs.find(c=>c.id===b.w);localStorage.setItem('DAN_POS_'+cur.id,ix);setBg(b.sc);$('is-bgs').value=b.sc;
+ $('is-name').style.display=b.d?'flex':'none';$('is-name').innerHTML=w?gIcon(w.gender)+E(w.name)+' <span class="text-slate-400 text-xs font-normal">'+E(w.role)+'</span>':'???';
+ $('is-spk').style.display=b.d?'':'none';$('is-spk').innerHTML='<option value="">— pembicara? —</option>'+cs.map(c=>`<option value="${c.id}" ${c.id===b.w?'selected':''}>${E(c.name)}</option>`).join('');
+ $('is-tag').textContent=b.tag||'';$('is-cnt').textContent=(ix+1)+' / '+B.length;
+ const cast=[];for(let j=Math.max(0,ix-12);j<=ix;j++)if(B[j].d&&B[j].w&&!cast.includes(B[j].w))cast.push(B[j].w);
+ $('is-stage').style.opacity=b.d?1:0;$('is-stage').innerHTML=b.d?cast.slice(-3).map(id=>{const c=cs.find(x=>x.id===id)||{},on=id===b.w;return `<div class="relative rounded-xl overflow-hidden border ${on?'border-cyan-300':'border-hudborder'} bg-hudcard flex items-center justify-center" style="width:150px;height:220px;transition:all .35s;transform:${on?'scale(1.1) translateY(-10px)':'scale(.92)'};filter:${on?'none':'brightness(.35) saturate(.4)'};box-shadow:${on?'0 0 28px #00e5ffaa':'none'}"><span class="text-6xl text-slate-500">${c.gender==='Wanita'?'♀':'♂'}</span><img data-a="c${id}" class="hidden absolute inset-0 w-full h-full object-cover"><div class="absolute bottom-0 inset-x-0 bg-black/60 text-center text-xs py-1">${E((c.name||'').split(' ')[0])}</div></div>`}).join(''):'';hydrateImgs();
+ T={b,full:b.d?'“'+b.t+'”':b.t,ty:true};const sp=+$('is-spd').value,el=$('is-text');if(!sp){fin();return}let n=0;el.textContent='';tm=setInterval(()=>{n++;el.textContent=T.full.slice(0,n);if(n>=T.full.length)fin()},sp)}
+window.isGo=show;window.isNx=()=>{if(T.ty){fin();return}if(ix+1<B.length)show(ix+1);else{auto=false;$('is-auto').textContent='▶ Auto';showToast('Akhir bab.')}};
+window.isAuto=()=>{auto=!auto;$('is-auto').textContent=auto?'⏸ Auto':'▶ Auto';if(auto&&!T.ty)isNx()};
+window.isBg=()=>pick(1400,async u=>{await aset('b'+$('is-bgs').value,u);setBg($('is-bgs').value)});
+window.isSpk=v=>{const b=B[ix],o=JSON.parse(localStorage.getItem('DAN_SPK')||'{}');b.w=+v||null;o[cur.id+'|'+b.k]=b.w;localStorage.setItem('DAN_SPK',JSON.stringify(o));show(ix)};
+window.isLoad=i=>{cur=getChapters()[i];B=beats(cur);if(!B.length){alert('Bab ini kosong.');return}const p=+localStorage.getItem('DAN_POS_'+cur.id)||0;show(p<B.length?p:0)};
+window.isClose=()=>{$('is').style.display='none';auto=false;clearInterval(tm);if(window.speechSynthesis)speechSynthesis.cancel()};
+window.openStory=()=>{const C=getChapters();if(!C.length)return alert('Belum ada naskah bab yang tersimpan!');build();$('is').style.display='flex';$('is-ch').innerHTML=C.map((c,i)=>`<option value="${i}">${i+1}. ${E(c.title)}</option>`).join('');isLoad(0)};
+document.addEventListener('keydown',e=>{if(!$('is')||$('is').style.display!=='flex'||/SELECT|INPUT/.test(e.target.tagName))return;if(e.key==='Escape')isClose();else if(/^( |Enter|ArrowRight)$/.test(e.key)){e.preventDefault();isNx()}else if(e.key==='ArrowLeft')show(ix-1)});
+/* ---- modul penunjang ---- */
+const dl=(n,t,m)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:m||'text/plain'}));a.download=n;a.click()};
+const saveCh=async c=>{const db=await openIDB(),t=db.transaction('chapters','readwrite');t.objectStore('chapters').put(c);return new Promise(r=>t.oncomplete=r)};
+const refresh=()=>{renderStories();scanCharacterAppearances();syncInstantMirror()};
+const btn='px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs font-mono';
+const FIX=[['Dancoster',/Doncaster|Dancaster|Doncoster/g],['Massa-Planck',/Massa Planck/g],['Sterile Sparks',/sterile sparks/g],['Hellimar',/Helimar|Hellimer/g]];
+const MODS={
+'📊 Analitik Naskah':m=>{const C=getChapters(),mx=Math.max(1,...C.map(c=>wc(c.content)));m.innerHTML=C.map((c,i)=>`<div class="flex items-center gap-2 text-xs font-mono"><span class="w-48 truncate">${E(c.title)}</span><div class="h-2 rounded bg-cyan-400" style="width:${wc(c.content)/mx*50}%"></div><span>${wc(c.content)} kata • ±${Math.ceil(wc(c.content)/200)} mnt baca</span></div>`).join('')||'Belum ada bab.'},
+'🔎 Cari & Ganti Global':m=>{m.innerHTML=`<div class="flex flex-wrap gap-2 text-xs font-mono"><input id="fr-a" placeholder="Cari" class="bg-void border border-hudborder rounded px-2 py-1"><input id="fr-b" placeholder="Ganti dengan" class="bg-void border border-hudborder rounded px-2 py-1"><button id="fr-go" class="${btn}">Ganti Semua</button><span id="fr-r"></span></div>`;$('fr-a').oninput=()=>{const a=$('fr-a').value;$('fr-r').textContent=a?getChapters().reduce((s,c)=>s+c.content.split(a).length-1,0)+' kecocokan':''};$('fr-go').onclick=async()=>{const a=$('fr-a').value,b=$('fr-b').value;if(!a||!confirm('Ganti di seluruh bab?'))return;for(const c of getChapters())if(c.content.includes(a)){c.content=c.content.split(a).join(b);await saveCh(c)}refresh();showToast('Selesai diganti.')}},
+'💬 Statistik Dialog':m=>{const cs=getChars(),n={};let d=0,t=0;getChapters().forEach(c=>DanStory.beats(c).forEach(b=>{t++;if(b.d){d++;if(b.w)n[b.w]=(n[b.w]||0)+1}}));m.innerHTML=`<p class="text-xs font-mono mb-2">Dialog ${d} dari ${t} segmen (${t?Math.round(d/t*100):0}%)</p>`+Object.entries(n).sort((a,b)=>b[1]-a[1]).map(([id,v])=>{const c=cs.find(x=>x.id==id);return `<div class="text-xs font-mono">${gIcon(c.gender)} ${E(c.name)} — ${v} baris</div>`}).join('')},
+'🧪 Konsistensi Istilah':m=>{const rep=()=>FIX.map(([k,re])=>`${k}: ${getChapters().reduce((s,c)=>s+(c.content.match(re)||[]).length,0)} varian salah`).join('<br>');m.innerHTML=`<div class="text-xs font-mono mb-2">${rep()}</div><button id="cs-go" class="${btn}">Perbaiki Semua</button>`;$('cs-go').onclick=async()=>{for(const c of getChapters()){let t=c.content;FIX.forEach(([k,re])=>t=t.replace(re,k));if(t!==c.content){c.content=t;await saveCh(c)}}refresh();MODS['🧪 Konsistensi Istilah'](m)}},
+'📤 Ekspor Ebook':m=>{m.innerHTML=['TXT','MD','HTML'].map(f=>`<button data-f="${f}" class="${btn} mr-2">Unduh .${f.toLowerCase()}</button>`).join('');m.querySelectorAll('button').forEach(b=>b.onclick=()=>{const C=getChapters(),f=b.dataset.f;if(f==='TXT')dl('Naskah.txt',C.map(c=>c.title+'\n\n'+c.content).join('\n\n\n'));else if(f==='MD')dl('Naskah.md',C.map(c=>'# '+c.title+'\n\n'+c.content).join('\n\n'));else dl('Naskah.html','<meta charset=utf-8><body style="max-width:700px;margin:auto;font:18px/1.8 Georgia">'+C.map(c=>`<h1>${E(c.title)}</h1>`+c.content.split(/\n\s*\n/).map(p=>`<p style="text-indent:1.25cm;text-align:justify">${E(p)}</p>`).join('')).join(''),'text/html')})},
+'💾 Backup Penuh':m=>{m.innerHTML=`<button id="bk-a" class="${btn} mr-2">Unduh Backup (+gambar)</button><button id="bk-b" class="${btn}">Pulihkan</button>`;$('bk-a').onclick=async()=>dl('Doncaster_Backup_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({chapters:getChapters(),characters:getChars(),drafts:window.draftsState,assets:await IO(s=>s.getAll())}),'application/json');$('bk-b').onclick=()=>{const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{const r=new FileReader();r.onload=async()=>{const d=JSON.parse(r.result),db=await openIDB(),t=db.transaction(['chapters','state','assets'],'readwrite');d.chapters.forEach(c=>t.objectStore('chapters').put(c));t.objectStore('state').put({key:'characters',data:d.characters});if(d.drafts)t.objectStore('state').put({key:'manuscript_drafts',data:d.drafts});(d.assets||[]).forEach(a=>t.objectStore('assets').put(a));t.oncomplete=()=>location.reload()};r.readAsText(i.files[0])};i.click()}},
+'🧬 Generator Nama':m=>{const S=['Ka','vo','ri','sen','tha','lu','mar','zen','dro','el','ny','vas'],R=()=>S[Math.random()*S.length|0],L=['Valkorin','Tessaro','Dremane','Ostrava','Kellune','Varsick'];m.innerHTML=`<button id="gn" class="${btn}">Acak 10 Nama</button><div id="gn-o" class="text-xs font-mono mt-2 space-y-1"></div>`;$('gn').onclick=()=>{$('gn-o').innerHTML=Array.from({length:10},()=>{const n=(R()+R()+R()).replace(/^./,x=>x.toUpperCase())+' '+L[Math.random()*L.length|0];return `<div class="cursor-pointer hover:text-cyan-300" onclick="copyToClipboard('${n}')">${n}</div>`}).join('')}},
+'🎯 Target Harian':m=>{const k='DAN_GOAL',g=JSON.parse(localStorage.getItem(k)||'{}'),tot=getChapters().reduce((s,c)=>s+wc(c.content),0),td=new Date().toDateString();if(g.day!==td){g.day=td;g.base=tot;g.goal=g.goal||1500;localStorage.setItem(k,JSON.stringify(g))}const w=Math.max(0,tot-g.base);m.innerHTML=`<div class="text-xs font-mono">Hari ini: <b class="text-emerald-400">${w}</b> / <input id="tg" type="number" value="${g.goal}" class="w-20 bg-void border border-hudborder rounded px-1"> kata</div><div class="w-full bg-void rounded h-2 mt-2"><div class="bg-emerald-400 h-2 rounded" style="width:${Math.min(100,w/g.goal*100)}%"></div></div>`;$('tg').onchange=()=>{g.goal=+$('tg').value||1500;localStorage.setItem(k,JSON.stringify(g));MODS['🎯 Target Harian'](m)}}
+};
+function initMods(){if($('tab-mods'))return;const nav=$('main-nav-bar'),b=document.createElement('button');b.id='btn-tab-mods';b.className='tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap';b.onclick=()=>switchTab('tab-mods');b.textContent='8. Modul Penunjang';nav.appendChild(b);
+ const s=document.createElement('div');s.id='tab-mods';s.className='tab-content hidden space-y-4';s.innerHTML=`<div class="glass-card p-4 rounded-xl border border-hudborder flex flex-wrap gap-2" id="mods-bar"></div><div id="mods-body" class="glass-card p-4 rounded-xl border border-hudborder text-slate-200"></div>`;$('main-content-area').appendChild(s);
+ $('mods-bar').innerHTML=Object.keys(MODS).map(k=>`<button class="px-3 py-1.5 rounded bg-hud hover:bg-cyan-950 border border-hudborder text-xs font-mono">${k}</button>`).join('');
+ $('mods-bar').querySelectorAll('button').forEach(x=>x.onclick=()=>{$('mods-body').innerHTML='';MODS[x.textContent]($('mods-body'))})}
+setTimeout(initMods,500);
+})();
+</script>
+</body> pada berkas Doncaster Story Engine   -->
 <!-- ========================================================================= -->
 
 <!-- Modal: Sunting Baseline Kosmologi & Filosofi Hard Sci-Fi -->
@@ -1968,25 +2069,24 @@ Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Ves
 
   // ALGORITMA PENGECEKAN STATUS BAB: MEMERIKSA APAKAH DRAFT SUDAH ADA DI MANUSKRIP
   window.checkDraftStatus = function(draft) {
-    const chapters = window.chaptersState || [];
+    const chapters = (window.getChapters && getChapters()) || [];
     if (!chapters.length) return false;
 
     const targetNorm = normalizeTitle(draft.title);
     const targetNum = Number(draft.num);
 
     for (let i = 0; i < chapters.length; i++) {
+      if (!(chapters[i].content || '').trim()) continue;
       const chTitle = normalizeTitle(chapters[i].title);
       
       // Cocok 1: Kesamaan teks judul
-      if (chTitle.includes(targetNorm) || targetNorm.includes(chTitle)) return true;
+      if (chTitle && (chTitle.includes(targetNorm) || targetNorm.includes(chTitle))) return true;
 
       // Cocok 2: Nomor urut bab terdeteksi di awal judul (contoh: "Bab 1:" atau "Bagian 1:")
       const numMatch = chTitle.match(/(?:bab|bagian)\s*(\d+)/i);
       if (numMatch && Number(numMatch[1]) === targetNum) return true;
 
-      // Cocok 3: Index bab sama jika judulnya mengandung kata kunci signifikan
-      const significantWords = targetNorm.split(' ').filter(w => w.length > 4 && !['anomali', 'koridor', 'babak'].includes(w));
-      if (significantWords.some(w => chTitle.includes(w))) return true;
+      
     }
 
     return false;
@@ -2376,11 +2476,13 @@ Pastikan detail teknis hard sci-fi peradaban Dancoster Tier 6 dan Hellimar Tier 
     return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
 
+  window.addEventListener('manuscript:changed', () => renderDraftsList());
   // INISIALISASI MODUL KETIKA HALAMAN SELESAI DIMUAT
   function initDraftsModule() {
     injectDraftTabButton();
     injectDraftTabContent();
     loadPersistedDrafts();
+    setTimeout(renderDraftsList, 300);
   }
 
   if (document.readyState === 'loading') {
