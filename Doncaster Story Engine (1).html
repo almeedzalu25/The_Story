@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE STORY OF CIVILIZATION // Doncaster Story Engine (Tier 6)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            void: '#06080d',
+            stellar: '#0a0f19',
+            hud: '#101726',
+            hudcard: '#131c30',
+            hudborder: '#1e2c47',
+            cyanGlow: '#00e5ff',
+            amberGlow: '#ffb300',
+            crimsonGlow: '#ff3366',
+            goldGlow: '#fbbf24',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+            serif: ['Georgia', 'Cambria', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #06080d; }
+    ::-webkit-scrollbar-thumb { background: #1e2c47; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+    
+    .glass-card {
+      background: rgba(16, 23, 38, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(30, 44, 71, 0.85);
+    }
+
+    .cascade-chapter-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      background: rgba(16, 23, 38, 0.85);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.08);
+    }
+    .cascade-select-input {
+      background: #06080d;
+      border: 1px solid #1e2c47;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.5rem 0.85rem;
+      border-radius: 0.5rem;
+      outline: none;
+      flex: 1;
+    }
+
+    #cbt-reader-modal {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #06080d; color: #e2e8f0;
+      display: none; flex-direction: column;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .cbt-header {
+      height: 56px; background: #0d131f; border-bottom: 1px solid #1e2c47;
+      padding: 0 1.25rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .cbt-grid-btn {
+      width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; transition: all 0.15s ease;
+      border: 1px solid #1e2c47; background: #101726; color: #94a3b8;
+    }
+    .cbt-grid-btn:hover { border-color: #00e5ff; color: #00e5ff; }
+    .cbt-grid-btn.cbt-active {
+      background: #00e5ff !important; color: #06080d !important;
+      border-color: #00e5ff !important;
+    }
+    .cbt-article-body p {
+      text-indent: 1.25cm; text-align: justify; margin-bottom: 1.15rem; line-height: 1.8;
+    }
+  </style>
+</head>
+<body class="bg-void text-slate-200 min-h-screen font-sans selection:bg-cyan-500 selection:text-black flex flex-col">
+
+  <!-- HUD Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-5 py-3 rounded-lg bg-cyan-950/90 border border-cyan-400 text-cyan-200 text-xs sm:text-sm font-mono shadow-2xl backdrop-blur-md">
+    <i data-lucide="check-circle-2" class="w-5 h-5 text-cyan-400"></i>
+    <span id="toast-text">Tersimpan</span>
+  </div>
+
+  <!-- Global Header Navigation -->
+  <header class="border-b border-hudborder bg-stellar/95 sticky top-0 z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-cyan-950 border border-cyan-500/50 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(0,229,255,0.25)]">
+          <i data-lucide="compass" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-mono text-[10px] font-semibold tracking-widest text-cyan-400 uppercase">SEVEROZ GALAXY // ARCHIVE ENGINE</span>
+          <h1 class="text-sm sm:text-base font-bold tracking-tight text-white flex items-center gap-2">
+            PERADABAN DANCOSTER <span class="hidden md:inline text-[10px] px-2 py-0.5 rounded bg-hudborder/60 text-slate-400 font-mono font-normal">TIER 6 INTERSTELLAR</span>
+          </h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-lg bg-hud/80 border border-hudborder text-xs font-mono">
+          <span class="text-slate-400">Alokasi Energi:</span>
+          <span id="header-credits-disp" class="text-amber-400 font-bold">1.250.000 UMER</span>
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-400">Storage:</span>
+          <span class="text-emerald-400 font-bold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> IndexedDB
+          </span>
+        </div>
+        <button onclick="openCbtReader(0)" class="p-2 sm:px-3 sm:py-1.5 rounded-lg bg-hud hover:bg-cyan-950 border border-hudborder hover:border-cyan-500 text-cyan-300 text-xs font-mono flex items-center gap-1.5 transition-all">
+          <i data-lucide="book-open-check" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Ebook Reader</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Nav Tabs Ribbon -->
+    <div class="border-t border-hudborder/60 bg-hud/80">
+      <div id="main-nav-bar" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center overflow-x-auto no-scrollbar py-1 gap-1">
+        <button onclick="switchTab('tab-naskah')" id="btn-tab-naskah" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-cyan-500/50 bg-cyan-950/40 text-cyan-300 whitespace-nowrap">
+          <i data-lucide="feather" class="w-3.5 h-3.5"></i>
+          <span>1. Editor Naskah (<span id="tab-naskah-counter">0</span>)</span>
+        </button>
+        <button onclick="switchTab('tab-karakter')" id="btn-tab-karakter" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>2. 50 Karakter Dancoster (<span id="tab-char-counter">50</span>)</span>
+        </button>
+        <button onclick="switchTab('tab-radar')" id="btn-tab-radar" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap">
+          <i data-lucide="scan" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <span>3. Pelacak Kemunculan Tokoh</span>
+        </button>
+        <button onclick="switchTab('tab-baseline')" id="btn-tab-baseline" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap">
+          <i data-lucide="database" class="w-3.5 h-3.5"></i>
+          <span>4. Baseline Kosmologi & Tier</span>
+        </button>
+        <button onclick="switchTab('tab-simulator')" id="btn-tab-simulator" class="tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap">
+          <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>5. Mesin FTL & UMER</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main id="main-content-area" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: ARSIP & EDITOR NASKAH CERITA (DENGAN TEMPEL OTOMATIS 1-KLIK)       -->
+    <!-- ========================================================================= -->
+    <div id="tab-naskah" class="tab-content space-y-6">
+      
+      <!-- Toolbar Header Naskah -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 glass-card p-4 rounded-xl border border-hudborder">
+        <div class="flex items-center gap-3">
+          <div class="p-2 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-800">
+            <i data-lucide="feather" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white">Manuskrip Serial: The Story of Civilization</h2>
+            <p class="text-xs text-slate-400 font-mono">Penyimpanan Terpadu Pure-IndexedDB + Dual Mirroring</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- TOMBOL HIJAU TEMPEL BAB OTOMATIS (1-KLIK) -->
+          <button onclick="openQuickImportModal()" class="px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs font-mono flex items-center gap-1.5 transition-all shadow-[0_0_12px_rgba(16,185,129,0.3)]">
+            <i data-lucide="clipboard-paste" class="w-4 h-4"></i>
+            <span>Tempel Bab Otomatis (1-Klik)</span>
+          </button>
+          
+          <button onclick="openNewSectionModal()" class="px-3 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs font-mono flex items-center gap-1.5 transition-all">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i><span>Tambah Bab Manual</span>
+          </button>
+          <button onclick="copyAllManuscript()" class="px-3 py-2 rounded-lg bg-hud hover:bg-hudborder text-slate-200 text-xs font-mono border border-hudborder flex items-center gap-1.5 transition-all">
+            <i data-lucide="copy" class="w-4 h-4"></i><span>Salin Semua</span>
+          </button>
+          <button onclick="exportManuscriptJSON()" class="px-3 py-2 rounded-lg bg-hud hover:bg-cyan-950 text-cyan-300 text-xs font-mono border border-hudborder flex items-center gap-1.5 transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i><span>Cadang JSON</span>
+          </button>
+          <button onclick="triggerImportManuscriptJSON()" class="px-3 py-2 rounded-lg bg-hud hover:bg-amber-950 text-amber-300 text-xs font-mono border border-hudborder flex items-center gap-1.5 transition-all">
+            <i data-lucide="upload" class="w-4 h-4"></i><span>Pulih JSON</span>
+          </button>
+          <input type="file" id="input-import-naskah" style="display:none;" onchange="handleImportManuscriptJSON(event)" accept=".json">
+        </div>
+      </div>
+
+      <!-- Stat Bar Naskah -->
+      <div class="grid grid-cols-3 gap-4 font-mono text-xs">
+        <div class="p-3 rounded-lg bg-hud/40 border border-hudborder flex items-center justify-between">
+          <span class="text-slate-400">Total Bab:</span>
+          <span id="stat-total-chapters" class="font-bold text-cyan-400 text-sm">0</span>
+        </div>
+        <div class="p-3 rounded-lg bg-hud/40 border border-hudborder flex items-center justify-between">
+          <span class="text-slate-400">Total Kata:</span>
+          <span id="stat-total-words" class="font-bold text-amber-400 text-sm">0</span>
+        </div>
+        <div class="p-3 rounded-lg bg-hud/40 border border-hudborder flex items-center justify-between">
+          <span class="text-slate-400">Total Paragraf:</span>
+          <span id="stat-total-paragraphs" class="font-bold text-emerald-400 text-sm">0</span>
+        </div>
+      </div>
+
+      <!-- CASCADE CHAPTER SELECTOR -->
+      <div id="cascade-chapter-container" class="cascade-chapter-bar">
+        <div style="display:flex; align-items:center; gap:0.5rem; white-space:nowrap;">
+          <span style="color:#00e5ff; font-family:'JetBrains Mono', monospace; font-size:0.75rem; font-weight:700; display:flex; align-items:center; gap:0.35rem;">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            Pilih Bagian:
+          </span>
+        </div>
+        <select id="chapter-cascade-select" onchange="handleCascadeChapterChange(this.value)" class="cascade-select-input">
+          <option value="all">📖 Tampilkan Seluruh Bab (Waterfall View)</option>
+        </select>
+      </div>
+
+      <!-- Wadah Kartu Naskah -->
+      <div id="story-chapters-container" class="space-y-6"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: 50 KARAKTER DANCOSTER (LENGKAP DENGAN EDIT / CRUD)                -->
+    <!-- ========================================================================= -->
+    <div id="tab-karakter" class="tab-content hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card p-4 rounded-xl border border-hudborder">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="users" class="w-5 h-5 text-amber-400"></i> REPOSITORI 50 KARAKTER DANCOSTER
+          </h2>
+          <p class="text-xs text-slate-400 font-mono">7 Protagonis Muda, 18 Pendukung Muda, & 25 Birokrat / Mentor Senior</p>
+        </div>
+        <div class="flex items-center gap-2 font-mono text-xs">
+          <button onclick="openAddCharModal()" class="px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-semibold flex items-center gap-1.5">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i><span>Tambah Karakter</span>
+          </button>
+          <button onclick="exportCharactersJSON()" class="px-3 py-1.5 rounded bg-hud hover:bg-cyan-950 text-cyan-300 border border-hudborder flex items-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i><span>Ekspor JSON</span>
+          </button>
+          <button onclick="document.getElementById('input-import-chars').click()" class="px-3 py-1.5 rounded bg-hud hover:bg-amber-950 text-amber-300 border border-hudborder flex items-center gap-1.5">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i><span>Impor JSON</span>
+          </button>
+          <input type="file" id="input-import-chars" style="display:none;" onchange="handleImportCharactersJSON(event)" accept=".json">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="filterCharacterCards('all')" class="char-filter-btn px-3 py-1 rounded-lg text-xs font-mono bg-cyan-950 border border-cyan-500 text-cyan-300">Semua (50)</button>
+        <button onclick="filterCharacterCards('PRIMARY')" class="char-filter-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">7 Utama Muda</button>
+        <button onclick="filterCharacterCards('YOUTH_SUPPORT')" class="char-filter-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">18 Pendukung Muda</button>
+        <button onclick="filterCharacterCards('SENIOR')" class="char-filter-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">25 Senior & Mentor</button>
+      </div>
+
+      <div id="characters-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: PELACAK KEMUNCULAN TOKOH BERBASIS NARASI (ALGORITMA RADAR)         -->
+    <!-- ========================================================================= -->
+    <div id="tab-radar" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6 rounded-xl border border-hudborder space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hudborder pb-3">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="scan" class="w-5 h-5 text-cyan-400"></i> Pindai Jejak & Kemunculan Tokoh dalam Naskah
+            </h2>
+            <p class="text-xs text-slate-400 font-mono">Algoritma mendeteksi kemunculan nama tokoh di seluruh bab yang tersimpan secara otomatis.</p>
+          </div>
+          <button onclick="scanCharacterAppearances()" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs font-mono flex items-center gap-1.5 shadow-[0_0_12px_rgba(0,229,255,0.25)]">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Pindai Ulang Naskah
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono border-collapse">
+            <thead>
+              <tr class="border-b border-hudborder bg-hud/60 text-slate-300">
+                <th class="p-2.5">Nama Karakter</th>
+                <th class="p-2.5">Kelompok</th>
+                <th class="p-2.5">Profesi / Jabatan</th>
+                <th class="p-2.5 text-center">Total Disebut</th>
+                <th class="p-2.5">Muncul di Bab</th>
+              </tr>
+            </thead>
+            <tbody id="radar-table-tbody" class="divide-y divide-hudborder/40 text-slate-300">
+              <tr>
+                <td colspan="5" class="p-4 text-center text-slate-500">Tekan "Pindai Ulang Naskah" untuk memproses data.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: BASELINE KOSMOLOGI & TIER                                          -->
+    <!-- ========================================================================= -->
+    <div id="tab-baseline" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-xs font-mono text-slate-400 block">GEOMETRI</span>
+          <div class="text-lg font-bold font-mono text-cyan-300 mt-1">Bola 3D</div>
+          <span class="text-[11px] text-slate-500 font-mono">Diameter 200 Miliar ly</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-xs font-mono text-slate-400 block">TOTAL BINTANG</span>
+          <div class="text-lg font-bold font-mono text-amber-300 mt-1">~2,42 × 10³⁰</div>
+          <span class="text-[11px] text-slate-500 font-mono">Skala Noniliun</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-xs font-mono text-slate-400 block">EARTH-ANALOG</span>
+          <div class="text-lg font-bold font-mono text-emerald-300 mt-1">~2,42 × 10²⁵</div>
+          <span class="text-[11px] text-slate-500 font-mono">Rasio 1 : 1.000.000</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-xs font-mono text-slate-400 block">LEVEL DANCOSTER</span>
+          <div class="text-lg font-bold font-mono text-purple-300 mt-1">Tier 6 Interstellar</div>
+          <span class="text-[11px] text-slate-500 font-mono">Radius ~50.000 ly</span>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-6 border border-hudborder space-y-4">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="shield" class="w-5 h-5 text-cyan-400"></i>
+          Filosofi & Aturan Hard Sci-Fi Galaksi Severoz
+        </h2>
+        <div class="text-xs font-mono text-slate-300 leading-relaxed space-y-2">
+          <p>• <strong>Prinsip Fragmentasi:</strong> Severoz secara mutlak menolak adanya kekaisaran galaktik tunggal monolitik. Galaksi ini adalah samudra penguasa lokal yang terfragmentasi oleh jarak ribuan hingga jutaan tahun cahaya.</p>
+          <p>• <strong>Materialisme Biologis Murni:</strong> Tidak ada digitalisasi kesadaran (*mind uploading*), ascension, atau ras purba supranatural ajaib. Fisiologis Dancoster sepenuhnya biologis humanoid dengan tinggi 183–210 cm hasil seleksi kalsium seluler dan gravitasi ekstrem.</p>
+          <p>• <strong>Spatial Folding Berbiaya Planck:</strong> Mesin FTL melipat ruang-waktu dengan reaktor peluruhan massa-Planck riil. Setiap lompatan mengonsumsi Unit Massa-Energi Relatif (UMER) yang sangat mahal.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: SIMULATOR ENERGI FTL & UMER                                        -->
+    <!-- ========================================================================= -->
+    <div id="tab-simulator" class="tab-content hidden space-y-6">
+      <div class="glass-card p-6 rounded-xl border border-hudborder">
+        <h2 class="text-lg font-bold text-cyan-400 font-mono mb-4 flex items-center gap-2">
+          <i data-lucide="zap" class="w-5 h-5"></i> Kalkulator Logistik Pelipatan Ruang (Spatial Folding Engine)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4 font-mono text-xs">
+            <div>
+              <label class="block text-slate-400 mb-1">Jarak Lintasan (Tahun Cahaya / ly):</label>
+              <input type="number" id="calc-distance" value="120" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Massa Total Armada (Ton Metrik):</label>
+              <input type="number" id="calc-mass" value="45000" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Kondisi Koridor Navigasi:</label>
+              <select id="calc-corridor" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+                <option value="1.0">Standar Void (Distorsi Normal)</option>
+                <option value="0.45">Jalur Sterile Sparks (Bintang Mandul - Efisiensi Tinggi)</option>
+                <option value="2.2">Fluktuasi Gravitasi Turbulen (Batas Sektor)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-void/80 border border-hudborder rounded-xl p-4 font-mono text-xs space-y-3">
+            <div class="text-slate-400 border-b border-hudborder pb-2 font-bold">TELEMETRI KONSUMSI MERIDIAN</div>
+            <div class="flex justify-between">
+              <span>Konsumsi Energi:</span>
+              <span id="res-umer" class="text-amber-400 font-bold">--</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Massa-Planck Terurai:</span>
+              <span id="res-planck" class="text-cyan-400 font-bold">--</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Waktu Tempuh Relatif:</span>
+              <span id="res-time" class="text-emerald-400 font-bold">--</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Stabilitas Gravitasi:</span>
+              <span id="res-stability" class="text-slate-200">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: TEMPEL CEPAT BAB OTOMATIS (1-KLIK COPAS DARI CHAT)                 -->
+  <!-- ========================================================================= -->
+  <div id="quick-import-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-hud border border-cyan-500/60 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-[0_0_35px_rgba(0,229,255,0.25)]">
+      <div class="flex items-center justify-between border-b border-hudborder pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="clipboard-paste" class="w-4 h-4 text-emerald-400"></i> Tempel Cepat Naskah dari Chat (Auto-Detect)
+        </h3>
+        <button onclick="closeQuickImportModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-400 font-mono">
+        Salin naskah cerita dari chat Gemini lalu tempel ke kotak di bawah ini. Sistem secara otomatis mendeteksi baris pertama sebagai <strong>Judul Bab</strong>, menghitung kata dan paragraf, serta langsung menyimpannya ke IndexedDB.
+      </p>
+      <div>
+        <textarea id="quick-import-textarea" rows="12" placeholder="Tempelkan naskah novel di sini (Contoh:
+Dengung resonansi reaktor massa-Planck di anjungan observasi Stasiun Transit Vesper-9 terasa lebih berat dari biasanya...)" class="w-full bg-void border border-hudborder focus:border-emerald-400 rounded-lg p-3 text-slate-200 text-xs font-mono leading-relaxed outline-none"></textarea>
+      </div>
+      <div class="flex items-center justify-between pt-2 border-t border-hudborder font-mono text-xs">
+        <span id="quick-import-stats" class="text-slate-500">0 Kata | 0 Paragraf terdeteksi</span>
+        <div class="flex items-center gap-2">
+          <button onclick="closeQuickImportModal()" class="px-4 py-2 rounded-lg bg-hudborder/60 hover:bg-hudborder text-slate-300">Batal</button>
+          <button onclick="executeQuickImport()" class="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-semibold shadow-[0_0_12px_rgba(16,185,129,0.3)]">Simpan ke Manuskrip</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TAMBAH / SUNTING BAB MANUAL -->
+  <div id="section-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-hud border border-hudborder rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-hudborder pb-3">
+        <h3 id="modal-title" class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-4 h-4 text-cyan-400"></i> Tambah / Sunting Bab Naskah
+        </h3>
+        <button onclick="closeSectionModal()" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <input type="hidden" id="modal-chapter-id">
+      <div class="space-y-3 font-mono text-xs">
+        <div>
+          <label class="block text-slate-300 mb-1">Judul Bab / Bagian</label>
+          <input type="text" id="modal-chapter-title" placeholder="Bab 1: Anomali di Koridor Void" class="w-full bg-void border border-hudborder rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-400">
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Tag / Keterangan</label>
+          <input type="text" id="modal-chapter-tag" value="Hard Sci-Fi Dancoster" class="w-full bg-void border border-hudborder rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-400">
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Isi Narasi Cerita</label>
+          <textarea id="modal-chapter-content" rows="12" placeholder="Tuliskan naskah cerita di sini..." class="w-full bg-void border border-hudborder rounded-lg p-3 text-white focus:outline-none focus:border-cyan-400 leading-relaxed font-sans text-sm"></textarea>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeSectionModal()" class="px-4 py-2 rounded-lg bg-hudborder/60 hover:bg-hudborder text-slate-300 text-xs font-mono">Batal</button>
+        <button onclick="saveSectionModal()" class="px-5 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs font-mono">Simpan Bagian</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUNTING KARAKTER -->
+  <div id="char-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-hud border border-cyan-500/50 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-hudborder pb-3">
+        <h3 id="modal-char-title" class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="user" class="w-4 h-4 text-cyan-400"></i> Sunting Profil Karakter
+        </h3>
+        <button onclick="closeCharModal()" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <input type="hidden" id="modal-char-id">
+      <div class="grid grid-cols-2 gap-3 font-mono text-xs">
+        <div>
+          <label class="block text-slate-300 mb-1">Nama Karakter</label>
+          <input type="text" id="modal-char-name" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Kelompok</label>
+          <select id="modal-char-group" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+            <option value="PRIMARY">PRIMARY (7 Utama Muda)</option>
+            <option value="YOUTH_SUPPORT">YOUTH_SUPPORT (18 Pendukung Muda)</option>
+            <option value="SENIOR">SENIOR (25 Mentor & Birokrat)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Usia & Tinggi (cm)</label>
+          <div class="flex gap-2">
+            <input type="number" id="modal-char-age" placeholder="Usia" class="w-1/2 bg-void border border-hudborder rounded px-2 py-2 text-white">
+            <input type="number" id="modal-char-height" placeholder="Tinggi" class="w-1/2 bg-void border border-hudborder rounded px-2 py-2 text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-300 mb-1">Kluster Profesi</label>
+          <input type="text" id="modal-char-cluster" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+        </div>
+        <div class="col-span-2">
+          <label class="block text-slate-300 mb-1">Profesi & Jabatan</label>
+          <input type="text" id="modal-char-role" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-cyan-300">
+        </div>
+        <div class="col-span-2">
+          <label class="block text-slate-300 mb-1">Profil & Karakteristik</label>
+          <textarea id="modal-char-bio" rows="3" class="w-full bg-void border border-hudborder rounded p-2 text-slate-200"></textarea>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeCharModal()" class="px-4 py-2 rounded bg-hudborder/60 text-slate-300 text-xs font-mono">Batal</button>
+        <button onclick="saveCharModal()" class="px-5 py-2 rounded bg-cyan-500 text-black font-semibold text-xs font-mono">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CBT READER MODAL -->
+  <div id="cbt-reader-modal">
+    <div class="cbt-header">
+      <div class="flex items-center gap-3">
+        <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500 text-xs px-2 py-0.5 rounded font-mono font-bold">CBT MODE</span>
+        <span id="cbt-top-indicator" class="text-xs text-slate-400 font-mono">Memuat...</span>
+      </div>
+      <button onclick="closeCbtReader()" class="px-3 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded text-xs font-bold font-mono">Tutup [ESC]</button>
+    </div>
+    <div class="flex flex-1 overflow-hidden">
+      <div class="flex-1 flex flex-col bg-[#070a10] border-r border-hudborder">
+        <div id="cbt-scroll-zone" class="flex-1 overflow-y-auto p-8 sm:p-12">
+          <div class="max-w-3xl mx-auto">
+            <h1 id="cbt-chapter-title" class="text-2xl font-bold text-white mb-6 border-b border-hudborder pb-3"></h1>
+            <div id="cbt-chapter-content" class="cbt-article-body text-slate-300 font-serif text-lg leading-relaxed"></div>
+          </div>
+        </div>
+        <div class="h-14 bg-hud border-t border-hudborder flex items-center justify-between px-8">
+          <button id="btn-cbt-prev" onclick="cbtNavigate(-1)" class="px-4 py-1.5 rounded bg-stellar border border-hudborder text-xs font-mono">◀ Bab Sebelumnya</button>
+          <span id="cbt-status-counter" class="text-xs text-slate-400 font-mono"></span>
+          <button id="btn-cbt-next" onclick="cbtNavigate(1)" class="px-4 py-1.5 rounded bg-cyan-500 text-black font-bold text-xs font-mono">Bab Selanjutnya ▶</button>
+        </div>
+      </div>
+      <div class="w-72 bg-stellar p-4 flex flex-col">
+        <span class="text-xs font-mono text-white font-bold block mb-3">PALET DAFTAR BAB</span>
+        <div id="cbt-number-grid" class="grid grid-cols-4 gap-2 overflow-y-auto flex-1 content-start"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT MASTER ENGINE -->
+  <script>
+    const DB_NAME = "Doncaster_Story_Engine_DB";
+    const DB_VERSION = 1;
+    const LOCAL_MIRROR_KEY = "DONCASTER_STORY_MIRROR";
+
+    // 50 KARAKTER BASELINE
+    const BASELINE_CHARACTERS = [
+      // 7 Karakter Utama
+      { id: 1, group: "PRIMARY", cluster: "Navigasi", name: "Logan Valori", gender: "Pria", age: 24, height: 188, role: "Analis Data Navigasi Junior, Sektor Vesper", bio: "Cepat tanggap, mengandalkan kalkulasi cepat lintasan gravitasi; mudah panik saat menghadapi anomali medan tak terduga." },
+      { id: 2, group: "PRIMARY", cluster: "Sains", name: "Chloe Sareno", gender: "Wanita", age: 22, height: 184, role: "Taruna Rekayasa FTL, Akademi Ruang Angkasa", bio: "Penuh rasa ingin tahu; kerap melanggar prosedur demi menguji efisiensi konsumsi massa-Planck pada mesin lipat." },
+      { id: 3, group: "PRIMARY", cluster: "Sains", name: "Mason Morune", gender: "Pria", age: 26, height: 201, role: "Teknisi Kalibrasi Reaktor Massa-Planck", bio: "Pekerja keras hemat bicara; memiliki pemahaman intuitif terhadap getaran inti mesin pelipatan ruang." },
+      { id: 4, group: "PRIMARY", cluster: "Birokrasi", name: "Zoe Calise", gender: "Wanita", age: 23, height: 186, role: "Staf Administrasi Birokrasi Logistik Pusat", bio: "Sangat teliti pada audit data; kaku terhadap regulasi namun menyimpan kejengkelan pada kelambanan birokrat tua." },
+      { id: 5, group: "PRIMARY", cluster: "Navigasi", name: "Caleb Tavaro", gender: "Pria", age: 25, height: 195, role: "Pengawas Jalur Transit Sterile Sparks", bio: "Pecandu risiko dan kecepatan; menguasai manuver berbahaya di sekitar bintang mandul tanpa bergantung autopilot." },
+      { id: 6, group: "PRIMARY", cluster: "Sains", name: "Harper Solune", gender: "Wanita", age: 21, height: 183, role: "Asisten Peneliti Biologi Seluler Kolonial", bio: "Mendedikasikan risetnya untuk memulihkan kerusakan jaringan seluler pekerja koloni akibat radiasi hampa udara." },
+      { id: 7, group: "PRIMARY", cluster: "Navigasi", name: "Mia Danori", gender: "Wanita", age: 20, height: 185, role: "Kurir Enkripsi Kuantum Antar-Stasiun (Ensign)", bio: "Berjiwa mandiri; menolak meja kantor dan selalu memilih misi pengantaran data di lintasan berbahaya batas sektor." },
+
+      // 18 Pendukung Muda
+      { id: 8, group: "YOUTH_SUPPORT", cluster: "Militer", name: "Liam Belano", gender: "Pria", age: 27, height: 199, role: "Perwira Keamanan Lapangan Menengah", bio: "Komandan regu taktis yang mengawal operasional tim di zona rawan konflik." },
+      { id: 9, group: "YOUTH_SUPPORT", cluster: "Navigasi", name: "Lily Caseri", gender: "Wanita", age: 24, height: 187, role: "Operator Komunikasi Sinyal Jarak Jauh", bio: "Penyaring transmisi darurat yang menjaga jalur komunikasi sub-ruang tetap stabil." },
+      { id: 10, group: "YOUTH_SUPPORT", cluster: "Sains", name: "Noah Maruso", gender: "Pria", age: 25, height: 204, role: "Mekanik Lambung Kapal Penjelajah", bio: "Tukang las plasma ruang hampa yang mampu memperbaiki kebocoran lambung saat manuver kritis." },
+      { id: 11, group: "YOUTH_SUPPORT", cluster: "Birokrasi", name: "Aria Venare", gender: "Wanita", age: 22, height: 184, role: "Asisten Kurator Arsip Meridian", bio: "Penggali dokumen sejarah peradaban yang kerap menemukan anomali kebijakan masa lalu." },
+      { id: 12, group: "YOUTH_SUPPORT", cluster: "Militer", name: "Lucas Tavori", gender: "Pria", age: 29, height: 197, role: "Komandan Skuadron Interceptor", bio: "Pilot tempur kawakan tingkat muda yang menjadi perisai pertahanan udara kelompok utama." },
+      { id: 13, group: "YOUTH_SUPPORT", cluster: "Birokrasi", name: "Stella Ronise", gender: "Wanita", age: 26, height: 189, role: "Spesialis Enkripsi & Proteksi Data", bio: "Peretas sistem defensif yang menjaga rahasia operasional tim dari intipan badan sensor pusat." },
+      { id: 14, group: "YOUTH_SUPPORT", cluster: "Navigasi", name: "Owen Selumo", gender: "Pria", age: 21, height: 191, role: "Taruna Navigasi Ruang Angkasa", bio: "Navigator muda yang belajar langsung kalkulasi medan gravitasi di bawah panduan Logan." },
+      { id: 15, group: "YOUTH_SUPPORT", cluster: "Logistik", name: "Nora Felise", gender: "Wanita", age: 27, height: 186, role: "Pengelola Distribusi Pasokan Pangan", bio: "Penata logistik yang lihai mengatur ransum sintetis saat jalur kargo perbatasan terputus." },
+      { id: 16, group: "YOUTH_SUPPORT", cluster: "Sains", name: "Julian Romani", gender: "Pria", age: 23, height: 194, role: "Teknisi Array Sensor Gravitasi", bio: "Pembaca fluktuasi sub-ruang yang memberikan peringatan dini gelombang distorsi." },
+      { id: 17, group: "YOUTH_SUPPORT", cluster: "Sipil", name: "Ruby Talari", gender: "Wanita", age: 20, height: 183, role: "Koresponden Media Independen", bio: "Jurnalis lapangan gigih yang memburu fakta riil di balik dinding sensor informasi birokrasi." },
+      { id: 18, group: "YOUTH_SUPPORT", cluster: "Logistik", name: "Evan Gorane", gender: "Pria", age: 28, height: 202, role: "Pengawas Dermaga Kargo Stasiun Transit", bio: "Penguasa dok transit yang berwenang meloloskan kapal kargo non-standar." },
+      { id: 19, group: "YOUTH_SUPPORT", cluster: "Sains", name: "Maya Renuro", gender: "Wanita", age: 25, height: 188, role: "Paramedis Trauma Ruang Hampa (Ensign)", bio: "Tenaga medis garis depan spesialis penyelamatan dekompresi darurat kabin." },
+      { id: 20, group: "YOUTH_SUPPORT", cluster: "Logistik", name: "Jonah Melate", gender: "Pria", age: 24, height: 196, role: "Pilot Transporter Sabuk Asteroid", bio: "Pengemudi kapal angkut lincah yang mahir menghindari pecahan batuan kecepatan tinggi." },
+      { id: 21, group: "YOUTH_SUPPORT", cluster: "Sains", name: "Clara Vosari", gender: "Wanita", age: 21, height: 184, role: "Asisten Riset Fisika Gelombang Lipat", bio: "Kolega riset Chloe yang menghitung toleransi termal pada pelindung konverter massa." },
+      { id: 22, group: "YOUTH_SUPPORT", cluster: "Militer", name: "Felix Karone", gender: "Pria", age: 29, height: 205, role: "Pengawal Fasilitas Riset Kuantum", bio: "Penjaga berotot padat penegak keamanan laboratorium beresiko tinggi." },
+      { id: 23, group: "YOUTH_SUPPORT", cluster: "Birokrasi", name: "Iris Delumo", gender: "Wanita", age: 22, height: 187, role: "Petugas Protokoler Perbatasan", bio: "Penghubung komunikasi diplomatik resmi antar-sektor perbatasan." },
+      { id: 24, group: "YOUTH_SUPPORT", cluster: "Sains", name: "Axel Panori", gender: "Pria", age: 26, height: 198, role: "Modifikator Perangkat Keras Sub-Ruang", bio: "Perakit pemancar darurat ilegal yang beroperasi di luar pengawasan Konsorsium." },
+      { id: 25, group: "YOUTH_SUPPORT", cluster: "Birokrasi", name: "Sara Tulise", gender: "Wanita", age: 23, height: 185, role: "Penyelidik Divisi Kepatuhan Sektor", bio: "Inspektur muda yang kerap memberi kelonggaran regulasi demi keselamatan tim lapangan." },
+
+      // 25 Senior
+      { id: 26, group: "SENIOR", cluster: "Birokrasi", name: "Marcus Vhane", gender: "Pria", age: 54, height: 204, role: "Direktur Utama Logistik Koridor Void", bio: "Dingin, pragmatis, memandang pergerakan seluruh galaksi murni sebagai neraca matematika UMER." },
+      { id: 27, group: "SENIOR", cluster: "Militer", name: "Caleb Draven", gender: "Pria", age: 49, height: 198, role: "Laksamana Armada Pertama, Sector-5", bio: "Loyal pada Dancoster Prime namun mulai mempertanyakan rantai komando pusat yang lamban." },
+      { id: 28, group: "SENIOR", cluster: "Sains", name: "Nathanial Kael", gender: "Pria", age: 41, height: 189, role: "Kepala Peneliti Teori Dimensi Planck", bio: "Eksentrik, sinis pada politik birokrasi, terobsesi membongkar struktur pelipatan ruang terdalam." },
+      { id: 29, group: "SENIOR", cluster: "Birokrasi", name: "Lucas Vance", gender: "Pria", age: 45, height: 192, role: "Inspektur Keamanan Internal Korporasi", bio: "Skeptis dan teliti; mengalami dilema moral saat menyaksikan eksploitasi energi koloni pinggiran." },
+      { id: 30, group: "SENIOR", cluster: "Birokrasi", name: "Eleanor Sterling", gender: "Wanita", age: 51, height: 186, role: "Gubernur Jenderal Sektor Vesper", bio: "Diplomatik dan manipulatif; penyeimbang antara tuntutan kuota pusat dan ancaman revolusi koloni." },
+      { id: 31, group: "SENIOR", cluster: "Sains", name: "Sarah Tress", gender: "Wanita", age: 38, height: 183, role: "Pakar Rekayasa Genetika Adaptif", bio: "Pelindung garis keras hak-hak medis para pekerja tambang dari penyakit regenerasi sel." },
+      { id: 32, group: "SENIOR", cluster: "Navigasi", name: "Valerie Kryn", gender: "Wanita", age: 36, height: 195, role: "Kapten Kapal Kurir Cepat Aegis-Null", bio: "Spesialis rute bintang mandul; tidak menyukai birokrat dan memercayai insting navigasinya." },
+      { id: 33, group: "SENIOR", cluster: "Militer", name: "Arthur Galt", gender: "Pria", age: 46, height: 210, role: "Komandan Pengamanan Armada", bio: "Penegak disiplin tempur tanpa ampun berpostur raksasa; dinding pelindung hierarki militer." },
+      { id: 34, group: "SENIOR", cluster: "Militer", name: "Victoria Hesper", gender: "Wanita", age: 34, height: 190, role: "Perwira Taktis Meriam Anti-Materi", bio: "Tenang di bawah tekanan ekstrem; penentu kalkulasi tembakan artileri plasma kapal induk." },
+      { id: 35, group: "SENIOR", cluster: "Militer", name: "Harrison Corvo", gender: "Pria", age: 39, height: 196, role: "Komandan Veteran Skuadron Interceptor", bio: "Mentor tempur kawakan; mengajarkan taktik bertahan hidup di tengah baku tembak ruang hampa." },
+      { id: 36, group: "SENIOR", cluster: "Birokrasi", name: "Beatrice Nolan", gender: "Wanita", age: 40, height: 188, role: "Agen Intelijen Rahasia Lapangan", bio: "Penuh rahasia; menanam mata-mata di setiap pelabuhan dan mencurigai setiap laporan resmi." },
+      { id: 37, group: "SENIOR", cluster: "Militer", name: "Garrett Rix", gender: "Pria", age: 43, height: 202, role: "Kepala Pengawal Pribadi Gubernur", bio: "Pengawal berdaya tahan fisik ekstrem dengan modifikasi jaringan kulit pelindung kinetik." },
+      { id: 38, group: "SENIOR", cluster: "Sains", name: "Evelyn Thrace", gender: "Wanita", age: 39, height: 185, role: "Peneliti Senior Fisika Partikel", bio: "Perfeksionis yang menolak otorisasi teknis jika kalkulasi massa meleset sekecil apa pun." },
+      { id: 39, group: "SENIOR", cluster: "Sains", name: "Julian Vane", gender: "Pria", age: 42, height: 191, role: "Kepala Teknisi Lapangan Reaktor Planck", bio: "Mampu mengidentifikasi kerusakan inti reaktor hanya dari frekuensi resonansi getaran kapal." },
+      { id: 40, group: "SENIOR", cluster: "Birokrasi", name: "Samantha Voss", gender: "Wanita", age: 35, height: 187, role: "Kepala Kriptografi Sinyal Antarbintang", bio: "Pakar pembongkar enkripsi transmisi jarak jauh yang dicegat dari luar batas wilayah kekuasaan." },
+      { id: 41, group: "SENIOR", cluster: "Logistik", name: "Damian Kross", gender: "Pria", age: 52, height: 199, role: "Arsitek Megastruktur Stasiun Luar Angkasa", bio: "Perancang dok orbital raksasa yang menentang kompromi efisiensi demi keselamatan struktur." },
+      { id: 42, group: "SENIOR", cluster: "Birokrasi", name: "Rachel Vryce", gender: "Wanita", age: 37, height: 184, role: "Auditor Eksekutif Unit Energi UMER", bio: "Birokrat kaku yang berwenang membekukan operasional stasiun yang mengalami defisit bahan bakar." },
+      { id: 43, group: "SENIOR", cluster: "Logistik", name: "Marcus 'Mark' Lorn", gender: "Pria", age: 48, height: 205, role: "Pengawas Koridor Tambang Sabuk Asteroid", bio: "Bicara apa adanya; gigih menuntut alokasi suplai yang adil untuk buruh penambang mineral." },
+      { id: 44, group: "SENIOR", cluster: "Logistik", name: "Clara Thorne", gender: "Wanita", age: 35, height: 186, role: "Pialang Kontrak Antimateri Antar-Sektor", bio: "Oportunis lihai yang mengendalikan pasokan bahan bakar melalui celah kontrak birokrasi." },
+      { id: 45, group: "SENIOR", cluster: "Logistik", name: "Zane Oric", gender: "Pria", age: 44, height: 197, role: "Kapten Konvoi Kargo Berat Sektor Luar", bio: "Penyelundup berpengalaman yang kerap menembus zona embargo demi menyuplai koloni terisolasi." },
+      { id: 46, group: "SENIOR", cluster: "Sipil", name: "Nora Sylvane", gender: "Wanita", age: 41, height: 189, role: "Pemimpin Serikat Pekerja Tambang", bio: "Figur karismatik yang mengorganisasi aksi mogok penambang untuk melawan monopoli kuota energi." },
+      { id: 47, group: "SENIOR", cluster: "Sipil", name: "Ethan Crix", gender: "Pria", age: 50, height: 201, role: "Mantan Insinyur Armada Pembelot", bio: "Pakar strategi gerilya yang memahami titik lemah arsitektur armada penjelajah Dancoster." },
+      { id: 48, group: "SENIOR", cluster: "Sipil", name: "Iris Mander", gender: "Wanita", age: 33, height: 183, role: "Redaktur Transmisi Berita Independen", bio: "Wartawan investigasi yang mempertaruhkan keselamatannya demi membongkar data korupsi sektor." },
+      { id: 49, group: "SENIOR", cluster: "Sipil", name: "Tobias Vance", gender: "Pria", age: 47, height: 193, role: "Ketua Advokasi Kemanusiaan Biologis", bio: "Tokoh etika penentang rekayasa fisik paksa pekerja; pembela hak martabat biologis alami." },
+      { id: 50, group: "SENIOR", cluster: "Sipil", name: "Lyra Zeth", gender: "Wanita", age: 37, height: 190, role: "Pemilik Kedai Transit The Void's Edge", bio: "Pialang informasi bawah tanah tempat bertukarnya rahasia antara perwira, penyelundup, dan pemberontak." }
+    ];
+
+    let dbInstance = null;
+    let chaptersState = [];
+    let charactersState = [];
+    let currentCascadeFilter = 'all';
+
+    function openIDB() {
+      return new Promise((resolve, reject) => {
+        if (dbInstance) return resolve(dbInstance);
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains("chapters")) db.createObjectStore("chapters", { keyPath: "id" });
+          if (!db.objectStoreNames.contains("state")) db.createObjectStore("state", { keyPath: "key" });
+        };
+        req.onsuccess = function(e) {
+          dbInstance = e.target.result;
+          resolve(dbInstance);
+        };
+        req.onerror = function(e) { reject(e.target.error); };
+      });
+    }
+
+    function syncInstantMirror() {
+      try {
+        const bundle = { chapters: chaptersState, characters: charactersState };
+        localStorage.setItem(LOCAL_MIRROR_KEY, JSON.stringify(bundle));
+      } catch(e) {}
+    }
+
+    async function initApp() {
+      const db = await openIDB();
+
+      const chTx = db.transaction("chapters", "readonly");
+      const chStore = chTx.objectStore("chapters");
+      const allChaptersReq = chStore.getAll();
+      
+      allChaptersReq.onsuccess = async function() {
+        chaptersState = allChaptersReq.result || [];
+
+        // Cek LocalStorage Mirror jika kosong
+        if (chaptersState.length === 0) {
+          const mirror = localStorage.getItem(LOCAL_MIRROR_KEY);
+          if (mirror) {
+            try {
+              const p = JSON.parse(mirror);
+              if (p.chapters && p.chapters.length > 0) {
+                chaptersState = p.chapters;
+                const wTx = db.transaction("chapters", "readwrite");
+                p.chapters.forEach(ch => wTx.objectStore("chapters").put(ch));
+              }
+            } catch(e) {}
+          }
+        }
+
+        const stTx = db.transaction("state", "readwrite");
+        const stStore = stTx.objectStore("state");
+
+        stStore.get("characters").onsuccess = function(ev) {
+          if (!ev.target.result) {
+            charactersState = [...BASELINE_CHARACTERS];
+            stStore.put({ key: "characters", data: charactersState });
+          } else {
+            charactersState = ev.target.result.data || BASELINE_CHARACTERS;
+          }
+          renderCharacters();
+          scanCharacterAppearances();
+        };
+
+        stTx.oncomplete = function() {
+          renderStories();
+          updateSimulation();
+          syncInstantMirror();
+        };
+      };
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-cyan-500/50', 'bg-cyan-950/40', 'text-cyan-300');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.remove('hidden');
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-400');
+        activeBtn.classList.add('border-cyan-500/50', 'bg-cyan-950/40', 'text-cyan-300');
+      }
+      lucide.createIcons();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      text.textContent = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    function copyToClipboard(text, msg = "Tersalin ke papan klip!") {
+      navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(e => alert(e));
+    }
+
+    function countWordsAndSentences(text) {
+      if (!text || !text.trim()) return { words: 0, sentences: 0, paragraphs: 0 };
+      const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
+      const words = text.trim().split(/\s+/).length;
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+      return { words, sentences, paragraphs };
+    }
+
+    // NASKAH & STORY
+    function renderStories() {
+      const container = document.getElementById('story-chapters-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      let totalWords = 0;
+      let totalParagraphs = 0;
+
+      const cascadeSelect = document.getElementById('chapter-cascade-select');
+      if (cascadeSelect) {
+        cascadeSelect.innerHTML = `<option value="all">📖 Tampilkan Seluruh Bab (Waterfall View - Total: ${chaptersState.length} Bagian)</option>` +
+          chaptersState.map((ch, idx) => `
+            <option value="${ch.id}" ${currentCascadeFilter === ch.id ? 'selected' : ''}>
+              ${idx + 1}. ${escapeHtml(ch.title)} [${escapeHtml(ch.tag || 'Dancoster')}]
+            </option>
+          `).join('');
+      }
+
+      chaptersState.forEach((ch, idx) => {
+        const stats = countWordsAndSentences(ch.content);
+        totalWords += stats.words;
+        totalParagraphs += stats.paragraphs;
+
+        const isVisible = (currentCascadeFilter === 'all' || currentCascadeFilter === ch.id);
+
+        const card = document.createElement('div');
+        card.id = `card-ch-${ch.id}`;
+        card.className = "glass-card rounded-xl p-6 border border-hudborder space-y-4" + (isVisible ? "" : " hidden");
+        card.innerHTML = `
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-hudborder/80 pb-3">
+            <div>
+              <span class="text-xs font-mono text-cyan-400 uppercase tracking-wider block">${escapeHtml(ch.tag || 'Hard Sci-Fi Dancoster')}</span>
+              <h3 class="text-lg font-bold text-white mt-0.5">${escapeHtml(ch.title)}</h3>
+              <div class="flex items-center gap-3 text-xs font-mono text-slate-400 mt-1">
+                <span><strong class="text-slate-200">${stats.paragraphs}</strong> Paragraf</span>
+                <span>•</span>
+                <span><strong class="text-slate-200">${stats.sentences}</strong> Kalimat</span>
+                <span>•</span>
+                <span><strong class="text-slate-200">${stats.words}</strong> Kata</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 self-start sm:self-center font-mono text-xs">
+              <button onclick="copyChapterContent('${ch.id}')" class="px-3 py-1.5 rounded bg-hud hover:bg-hudborder text-cyan-300 border border-hudborder flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span>Salin</span>
+              </button>
+              <button onclick="editChapter('${ch.id}')" class="px-3 py-1.5 rounded bg-hud hover:bg-hudborder text-amber-300 border border-hudborder flex items-center gap-1.5">
+                <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> <span>Edit</span>
+              </button>
+              <button onclick="deleteChapter('${ch.id}')" class="p-1.5 rounded bg-hud hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-hudborder">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-4 text-slate-200 text-sm sm:text-base leading-relaxed font-sans text-justify pt-1">
+            ${ch.content.split(/\n\s*\n/).map(p => `<p class="indent-8">${escapeHtml(p.trim())}</p>`).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('stat-total-chapters').textContent = chaptersState.length;
+      document.getElementById('stat-total-words').textContent = totalWords.toLocaleString();
+      document.getElementById('stat-total-paragraphs').textContent = totalParagraphs;
+      document.getElementById('tab-naskah-counter').textContent = chaptersState.length;
+
+      lucide.createIcons();
+    }
+
+    function handleCascadeChapterChange(val) {
+      currentCascadeFilter = val;
+      chaptersState.forEach(ch => {
+        const el = document.getElementById(`card-ch-${ch.id}`);
+        if (!el) return;
+        if (val === 'all' || ch.id === val) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+    }
+
+    function copyChapterContent(chapterId) {
+      const ch = chaptersState.find(c => c.id === chapterId);
+      if (ch) copyToClipboard(`${ch.title}\n[${ch.tag || 'Dancoster'}]\n\n${ch.content}`, `Naskah "${ch.title}" disalin!`);
+    }
+
+    function copyAllManuscript() {
+      const full = chaptersState.map(c => `=== ${c.title.toUpperCase()} ===\n[${c.tag}]\n\n${c.content}\n`).join('\n\n');
+      copyToClipboard(full, "Seluruh naskah berhasil disalin!");
+    }
+
+    // QUICK IMPORT 1-KLIK
+    function openQuickImportModal() {
+      document.getElementById('quick-import-textarea').value = '';
+      document.getElementById('quick-import-stats').textContent = 'Siap menerima teks';
+      document.getElementById('quick-import-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeQuickImportModal() { document.getElementById('quick-import-modal').classList.add('hidden'); }
+
+    document.getElementById('quick-import-textarea')?.addEventListener('input', function() {
+      const val = this.value.trim();
+      const words = val ? val.split(/\s+/).length : 0;
+      const paragraphs = val ? val.split(/\n\s*\n/).filter(p => p.trim().length > 0).length : 0;
+      document.getElementById('quick-import-stats').textContent = `${words} Kata | ${paragraphs} Paragraf terdeteksi`;
+    });
+
+    async function executeQuickImport() {
+      const raw = document.getElementById('quick-import-textarea').value.trim();
+      if (!raw) return alert("Naskah masih kosong!");
+
+      const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let title = `Bab ${chaptersState.length + 1}: Perjalanan Sektor Vesper`;
+      let contentStartIndex = 0;
+
+      const firstLine = lines[0].replace(/^[#\*\s]+/, '').replace(/[#\*]+$/, '').trim();
+      if (firstLine.toLowerCase().startsWith('bab') || firstLine.toLowerCase().startsWith('bagian') || firstLine.includes(':')) {
+        title = firstLine;
+        contentStartIndex = 1;
+      }
+
+      const content = lines.slice(contentStartIndex).join('\n\n').trim();
+      const newChapter = {
+        id: 'dan-ch-' + Date.now(),
+        title: title,
+        tag: 'Dancoster Tier 6',
+        content: content
+      };
+
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      tx.objectStore("chapters").put(newChapter);
+      tx.oncomplete = function() {
+        chaptersState.push(newChapter);
+        closeQuickImportModal();
+        renderStories();
+        scanCharacterAppearances();
+        syncInstantMirror();
+        showToast(`"${title}" berhasil disimpan!`);
+      };
+    }
+
+    // MANUAL MODAL
+    function openNewSectionModal() {
+      document.getElementById('modal-chapter-id').value = '';
+      document.getElementById('modal-chapter-title').value = `Bab ${chaptersState.length + 1}: `;
+      document.getElementById('modal-chapter-tag').value = 'Dancoster Tier 6';
+      document.getElementById('modal-chapter-content').value = '';
+      document.getElementById('section-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function editChapter(id) {
+      const ch = chaptersState.find(c => c.id === id);
+      if (!ch) return;
+      document.getElementById('modal-chapter-id').value = ch.id;
+      document.getElementById('modal-chapter-title').value = ch.title;
+      document.getElementById('modal-chapter-tag').value = ch.tag || '';
+      document.getElementById('modal-chapter-content').value = ch.content;
+      document.getElementById('section-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeSectionModal() { document.getElementById('section-modal').classList.add('hidden'); }
+
+    async function saveSectionModal() {
+      const id = document.getElementById('modal-chapter-id').value;
+      const title = document.getElementById('modal-chapter-title').value.trim() || 'Bab Tanpa Judul';
+      const tag = document.getElementById('modal-chapter-tag').value.trim() || 'Dancoster Tier 6';
+      const content = document.getElementById('modal-chapter-content').value.trim();
+
+      if (!content) return alert("Isi naskah tidak boleh kosong!");
+
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      const store = tx.objectStore("chapters");
+
+      const item = { id: id || ('dan-ch-' + Date.now()), title, tag, content };
+      store.put(item);
+
+      if (id) {
+        const idx = chaptersState.findIndex(c => c.id === id);
+        if (idx !== -1) chaptersState[idx] = item;
+      } else {
+        chaptersState.push(item);
+      }
+
+      tx.oncomplete = function() {
+        closeSectionModal();
+        renderStories();
+        scanCharacterAppearances();
+        syncInstantMirror();
+        showToast("Naskah disimpan!");
+      };
+    }
+
+    async function deleteChapter(id) {
+      if (!confirm("Hapus bab ini secara permanen?")) return;
+      const db = await openIDB();
+      const tx = db.transaction("chapters", "readwrite");
+      tx.objectStore("chapters").delete(id);
+      tx.oncomplete = function() {
+        chaptersState = chaptersState.filter(c => c.id !== id);
+        renderStories();
+        scanCharacterAppearances();
+        syncInstantMirror();
+        showToast("Bab dihapus.");
+      };
+    }
+
+    function exportManuscriptJSON() {
+      const blob = new Blob([JSON.stringify(chaptersState, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Doncaster_Naskah_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+    }
+    function triggerImportManuscriptJSON() { document.getElementById("input-import-naskah").click(); }
+    async function handleImportManuscriptJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        try {
+          const list = JSON.parse(evt.target.result);
+          if (!Array.isArray(list)) throw new Error("Format JSON harus berupa array.");
+          const db = await openIDB();
+          const tx = db.transaction("chapters", "readwrite");
+          const store = tx.objectStore("chapters");
+          list.forEach(ch => store.put(ch));
+          tx.oncomplete = function() {
+            chaptersState = list;
+            renderStories();
+            scanCharacterAppearances();
+            syncInstantMirror();
+            showToast("Naskah dipulihkan dari JSON!");
+          };
+        } catch(err) { alert("Gagal impor JSON: " + err.message); }
+      };
+      reader.readAsText(file);
+    }
+
+    // MODUL KARAKTER CRUD
+    function renderCharacters(filterGroup = 'all') {
+      const container = document.getElementById("characters-grid-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const filtered = charactersState.filter(c => filterGroup === 'all' || c.group === filterGroup);
+
+      filtered.forEach(c => {
+        let badgeColor = "border-cyan-500/40 text-cyan-300 bg-cyan-950/40";
+        let badgeText = "Protagonis Muda";
+        if (c.group === "YOUTH_SUPPORT") { badgeColor = "border-emerald-500/40 text-emerald-300 bg-emerald-950/40"; badgeText = "Pendukung Muda"; }
+        if (c.group === "SENIOR") { badgeColor = "border-amber-500/40 text-amber-300 bg-amber-950/40"; badgeText = "Senior / Birokrat"; }
+
+        const card = document.createElement("div");
+        card.className = "glass-card rounded-xl p-4 border border-hudborder flex flex-col justify-between space-y-3";
+        card.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-start justify-between gap-1">
+              <div>
+                <h3 class="text-sm font-bold text-white">${escapeHtml(c.name)}</h3>
+                <span class="text-[11px] font-mono text-slate-400 block">${c.age} thn • ${c.height} cm • ${escapeHtml(c.cluster)}</span>
+              </div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${badgeColor}">${badgeText}</span>
+            </div>
+            <div class="text-xs text-cyan-300 font-semibold">${escapeHtml(c.role)}</div>
+            <p class="text-xs text-slate-300 leading-relaxed font-sans">${escapeHtml(c.bio)}</p>
+          </div>
+          <div class="pt-2 border-t border-hudborder/60 flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <button onclick="editCharacterModal(${c.id})" class="px-2 py-1 rounded bg-hud hover:bg-hudborder text-amber-300 border border-hudborder flex items-center gap-1">
+              <i data-lucide="edit-2" class="w-3 h-3"></i> Sunting Profil
+            </button>
+            <button onclick="deleteCharacterModal(${c.id})" class="p-1 rounded bg-hud hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-hudborder">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById("tab-char-counter").innerText = charactersState.length;
+      lucide.createIcons();
+    }
+
+    function filterCharacterCards(grp) {
+      renderCharacters(grp);
+    }
+
+    function openAddCharModal() {
+      document.getElementById('modal-char-id').value = '';
+      document.getElementById('modal-char-name').value = '';
+      document.getElementById('modal-char-group').value = 'PRIMARY';
+      document.getElementById('modal-char-age').value = '24';
+      document.getElementById('modal-char-height').value = '190';
+      document.getElementById('modal-char-cluster').value = 'Navigasi';
+      document.getElementById('modal-char-role').value = '';
+      document.getElementById('modal-char-bio').value = '';
+      document.getElementById('char-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function editCharacterModal(id) {
+      const c = charactersState.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('modal-char-id').value = c.id;
+      document.getElementById('modal-char-name').value = c.name;
+      document.getElementById('modal-char-group').value = c.group;
+      document.getElementById('modal-char-age').value = c.age;
+      document.getElementById('modal-char-height').value = c.height;
+      document.getElementById('modal-char-cluster').value = c.cluster;
+      document.getElementById('modal-char-role').value = c.role;
+      document.getElementById('modal-char-bio').value = c.bio;
+      document.getElementById('char-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeCharModal() { document.getElementById('char-modal').classList.add('hidden'); }
+
+    async function saveCharModal() {
+      const id = document.getElementById('modal-char-id').value;
+      const name = document.getElementById('modal-char-name').value.trim();
+      if (!name) return alert("Nama karakter harus diisi!");
+
+      const charObj = {
+        id: id ? Number(id) : Date.now(),
+        name: name,
+        group: document.getElementById('modal-char-group').value,
+        age: Number(document.getElementById('modal-char-age').value) || 25,
+        height: Number(document.getElementById('modal-char-height').value) || 190,
+        cluster: document.getElementById('modal-char-cluster').value.trim(),
+        role: document.getElementById('modal-char-role').value.trim(),
+        bio: document.getElementById('modal-char-bio').value.trim()
+      };
+
+      if (id) {
+        const idx = charactersState.findIndex(x => x.id === Number(id));
+        if (idx !== -1) charactersState[idx] = charObj;
+      } else {
+        charactersState.push(charObj);
+      }
+
+      const db = await openIDB();
+      const tx = db.transaction("state", "readwrite");
+      tx.objectStore("state").put({ key: "characters", data: charactersState });
+      tx.oncomplete = function() {
+        closeCharModal();
+        renderCharacters();
+        scanCharacterAppearances();
+        syncInstantMirror();
+        showToast(`Karakter ${name} disimpan!`);
+      };
+    }
+
+    async function deleteCharacterModal(id) {
+      const c = charactersState.find(x => x.id === id);
+      if (!c || !confirm(`Hapus ${c.name}?`)) return;
+      charactersState = charactersState.filter(x => x.id !== id);
+      const db = await openIDB();
+      const tx = db.transaction("state", "readwrite");
+      tx.objectStore("state").put({ key: "characters", data: charactersState });
+      tx.oncomplete = function() {
+        renderCharacters();
+        scanCharacterAppearances();
+        syncInstantMirror();
+        showToast(`Karakter dihapus.`);
+      };
+    }
+
+    function exportCharactersJSON() {
+      const blob = new Blob([JSON.stringify(charactersState, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Doncaster_Characters_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+    }
+
+    async function handleImportCharactersJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        try {
+          const list = JSON.parse(evt.target.result);
+          if (!Array.isArray(list)) throw new Error("Format JSON harus array.");
+          charactersState = list;
+          const db = await openIDB();
+          const tx = db.transaction("state", "readwrite");
+          tx.objectStore("state").put({ key: "characters", data: charactersState });
+          tx.oncomplete = function() {
+            renderCharacters();
+            scanCharacterAppearances();
+            syncInstantMirror();
+            showToast("Database Karakter diperbarui!");
+          };
+        } catch(err) { alert("Gagal impor JSON: " + err.message); }
+      };
+      reader.readAsText(file);
+    }
+
+    // ALGORITMA PELACAK KEMUNCULAN TOKOH DI NASKAH
+    function scanCharacterAppearances() {
+      const tbody = document.getElementById("radar-table-tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      if (charactersState.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-slate-500">Tidak ada karakter.</td></tr>';
+        return;
+      }
+
+      charactersState.forEach(char => {
+        const firstName = char.name.split(' ')[0].toLowerCase();
+        const lastName = char.name.split(' ').slice(1).join(' ').toLowerCase();
+        const fullName = char.name.toLowerCase();
+
+        let totalHits = 0;
+        let chapterHits = [];
+
+        chaptersState.forEach((ch, idx) => {
+          const contentLower = (ch.content || '').toLowerCase();
+          
+          // Regex exact word boundary
+          const regexFull = new RegExp(`\\b${fullName}\\b`, 'gi');
+          const regexFirst = new RegExp(`\\b${firstName}\\b`, 'gi');
+          
+          const fullMatches = (contentLower.match(regexFull) || []).length;
+          const firstMatches = (contentLower.match(regexFirst) || []).length;
+          
+          const hits = Math.max(fullMatches, firstMatches);
+          if (hits > 0) {
+            totalHits += hits;
+            chapterHits.push(`Bab ${idx + 1} (${hits}×)`);
+          }
+        });
+
+        const tr = document.createElement("tr");
+        tr.className = totalHits > 0 ? "bg-cyan-950/20 hover:bg-cyan-950/40" : "hover:bg-hud/40 opacity-60";
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold ${totalHits > 0 ? 'text-white' : 'text-slate-400'}">${escapeHtml(char.name)}</td>
+          <td class="p-2.5 text-[10px]">${char.group}</td>
+          <td class="p-2.5 text-cyan-300">${escapeHtml(char.role)}</td>
+          <td class="p-2.5 text-center font-bold ${totalHits > 0 ? 'text-emerald-400' : 'text-slate-500'}">${totalHits}</td>
+          <td class="p-2.5 text-[11px] text-amber-300">${chapterHits.length > 0 ? chapterHits.join(', ') : '<span class="text-slate-600">Belum muncul</span>'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // CBT READER
+    let cbtIdx = 0;
+    function openCbtReader(idx = 0) {
+      if (chaptersState.length === 0) return alert("Belum ada naskah bab yang tersimpan!");
+      cbtIdx = Math.max(0, Math.min(idx, chaptersState.length - 1));
+      document.getElementById('cbt-reader-modal').style.display = 'flex';
+      renderCbtGrid();
+      renderCbtContent();
+    }
+    function closeCbtReader() { document.getElementById('cbt-reader-modal').style.display = 'none'; }
+    function cbtSelect(index) { cbtIdx = index; renderCbtGrid(); renderCbtContent(); }
+    function cbtNavigate(dir) { const next = cbtIdx + dir; if (next >= 0 && next < chaptersState.length) cbtSelect(next); }
+
+    function renderCbtGrid() {
+      const grid = document.getElementById('cbt-number-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      chaptersState.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'cbt-grid-btn' + (i === cbtIdx ? ' cbt-active' : '');
+        btn.textContent = i + 1;
+        btn.onclick = () => cbtSelect(i);
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderCbtContent() {
+      const ch = chaptersState[cbtIdx];
+      if (!ch) return;
+      document.getElementById('cbt-top-indicator').textContent = `Bab ${cbtIdx + 1} dari ${chaptersState.length}`;
+      document.getElementById('cbt-chapter-title').textContent = ch.title;
+      const paras = ch.content.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      document.getElementById('cbt-chapter-content').innerHTML = paras.map(p => `<p>${escapeHtml(p.trim())}</p>`).join('');
+      document.getElementById('cbt-status-counter').textContent = `Bab [ ${cbtIdx + 1} / ${chaptersState.length} ]`;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeCbtReader();
+    });
+
+    // SIMULATOR
+    function updateSimulation() {
+      const dist = parseFloat(document.getElementById('calc-distance').value) || 1;
+      const mass = parseFloat(document.getElementById('calc-mass').value) || 1000;
+      const corr = parseFloat(document.getElementById('calc-corridor').value) || 1;
+
+      const baseEnergy = (mass * dist * 0.084) * corr;
+      const planck = baseEnergy * 0.0000312;
+      const time = (dist * 0.12 * corr).toFixed(2);
+
+      document.getElementById('res-umer').textContent = Math.round(baseEnergy).toLocaleString('id-ID') + " UMER";
+      document.getElementById('res-planck').textContent = planck.toFixed(4) + " Mp";
+      document.getElementById('res-time').textContent = time + " Jam Relatif";
+      document.getElementById('res-stability').textContent = corr > 1.5 ? "74% (Kritis)" : "99.98% (Stabil)";
+    }
+
+    ['calc-distance', 'calc-mass', 'calc-corridor'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updateSimulation);
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initApp();
+      lucide.createIcons();
+    });
+  </script>
+<!-- ========================================================================= -->
+<!-- MODUL DROP-IN: BASELINE LORE EDITOR, TAB STATISTIK LENGKAP & GENERATOR    -->
+<!-- DETERMINISTIK PERADABAN SEVEROZ                                           -->
+<!-- Pasang tepat sebelum penutup </body> pada berkas Doncaster Story Engine   -->
+<!-- ========================================================================= -->
+
+<!-- Modal: Sunting Baseline Kosmologi & Filosofi Hard Sci-Fi -->
+<div id="modal-edit-baseline-dan" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-hud border border-cyan-500/50 rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+    <div class="flex items-center justify-between border-b border-hudborder pb-3">
+      <h3 class="text-base font-bold text-white flex items-center gap-2">
+        <i data-lucide="edit-3" class="w-4 h-4 text-cyan-400"></i> Sunting Parameter Baseline Galaksi Severoz
+      </h3>
+      <button onclick="closeBaselineModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+      <div>
+        <label class="block text-slate-300 mb-1">Nama Galaksi</label>
+        <input type="text" id="base-edit-name" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Geometri Spasial</label>
+        <input type="text" id="base-edit-geom" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Diameter Galaksi</label>
+        <input type="text" id="base-edit-diam" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Volume Spasial</label>
+        <input type="text" id="base-edit-vol" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Jarak Rata-Rata Antar Bintang</label>
+        <input type="text" id="base-edit-dist" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Total Populasi Bintang</label>
+        <input type="text" id="base-edit-stars" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-amber-300">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Total Keseluruhan Planet</label>
+        <input type="text" id="base-edit-planets" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Total Earth-Analog</label>
+        <input type="text" id="base-edit-earth" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-emerald-300">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-slate-300 mb-1">Anomali Bintang Mandul (Sterile Sparks)</label>
+        <input type="text" id="base-edit-sparks" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-cyan-300">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-slate-300 mb-1">Doktrin Hard Sci-Fi & Filosofi (Tersimpan dinamis)</label>
+        <textarea id="base-edit-philosophy" rows="5" class="w-full bg-void border border-hudborder rounded p-3 text-slate-200 leading-relaxed"></textarea>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-3 border-t border-hudborder">
+      <button onclick="closeBaselineModal()" class="px-4 py-2 rounded bg-hudborder/60 hover:bg-hudborder text-slate-300 text-xs font-mono">Batal</button>
+      <button onclick="saveBaselineModal()" class="px-5 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs font-mono shadow-[0_0_12px_rgba(0,229,255,0.3)]">Simpan Parameter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  console.log("⚡ Mengaktifkan Modul Baseline Editor, Tab Statistik Lengkap, & Generator Deterministik Severoz...");
+
+  // 1. DATA MASTER BASELINE (EDITABLE & PERSISTENT DI INDEXEDDB / LOCALSTORAGE)
+  const DEFAULT_BASELINE = {
+    name: "Galaksi Severoz",
+    geom: "Bola Tiga Dimensi (3D Sphere)",
+    diam: "200 Miliar Tahun Cahaya",
+    vol: "~ 4,18 × 10³³ tahun cahaya kubik (Skala Desiliun)",
+    dist: "12 tahun cahaya",
+    stars: "~ 2,42 × 10³⁰ bintang (Skala Noniliun)",
+    sparks: "0,00000015% (~ 3,63 × 10²² bintang mandul tanpa planet / mercusuar gravitasi)",
+    planets: "~ 2,42 × 10³¹ planet",
+    earth: "~ 2,42 × 10²⁵ planet (Rasio 1 : 1.000.000)",
+    philosophy: "• Prinsip Fragmentasi: Menolak kekaisaran monolitik galaksi tunggal; galaksi adalah samudra penguasa lokal berjarak ribuan tahun cahaya.\n• Materialisme & Biologis: 100% biologis & material, menolak transendensi digital (*mind uploading*), ascension mistis, atau alien purba supranatural.\n• Spatial Folding: Pelipatan ruang-waktu reaktor massa-Planck riil, konsumsi bahan bakar diukur dalam Unit Massa-Energi Relatif (UMER)."
+  };
+
+  const TIERS_PRA_30 = [
+    { t: 1, d: "Primitif Dini (Pemburu-pengumpul)", p: "1,355 × 10²³" },
+    { t: 2, d: "Agraris Kuno", p: "1,186 × 10²³" },
+    { t: 3, d: "Peradaban Perunggu", p: "1,016 × 10²³" },
+    { t: 4, d: "Besi Klasik", p: "8,470 × 10²²" },
+    { t: 5, d: "Abad Pertengahan", p: "6,776 × 10²²" },
+    { t: 6, d: "Pra-Industri / Renaisans", p: "5,929 × 10²²" },
+    { t: 7, d: "Revolusi Industri I", p: "5,082 × 10²²" },
+    { t: 8, d: "Revolusi Industri II", p: "4,743 × 10²²" },
+    { t: 9, d: "Era Modern Awal", p: "4,404 × 10²²" },
+    { t: 10, d: "Era Informasi Dini", p: "4,066 × 10²²" },
+    { t: 11, d: "Era Digital Global", p: "3,896 × 10²²" },
+    { t: 12, d: "Era Pasca-Industri", p: "3,727 × 10²²" },
+    { t: 13, d: "Automasi Penuh", p: "3,557 × 10²²" },
+    { t: 14, d: "Era Ruang Angkasa Dini", p: "3,473 × 10²²" },
+    { t: 15, d: "Penambangan Ekstra-Terestrial", p: "3,388 × 10²²" },
+    { t: 16, d: "Industrialisasi Tata Surya", p: "3,557 × 10²²" },
+    { t: 17, d: "Ekonomi Multi-Planet", p: "3,727 × 10²²" },
+    { t: 18, d: "Era Megastruktur Dini", p: "3,896 × 10²²" },
+    { t: 19, d: "Biosfer Buatan Total (Terraforming)", p: "4,066 × 10²²" },
+    { t: 20, d: "Fisika Energi Tinggi Dini", p: "4,235 × 10²²" },
+    { t: 21, d: "Rekayasa Gravitasi Mikro", p: "4,574 × 10²²" },
+    { t: 22, d: "Komputasi Kuantum Mutlak", p: "4,913 × 10²²" },
+    { t: 23, d: "Jaringan Surya Terpadu", p: "5,251 × 10²²" },
+    { t: 24, d: "Krisis Ambang Batas (Great Filter)", p: "5,590 × 10²²" },
+    { t: 25, d: "Stabilitas Tata Surya (Kardashev I)", p: "5,929 × 10²²" },
+    { t: 26, d: "Fisika Ruang-Waktu Dini", p: "6,437 × 10²²" },
+    { t: 27, d: "Purwarupa Mesin Dimensi", p: "6,945 × 10²²" },
+    { t: 28, d: "Penggerak Sub-Dimensi", p: "7,623 × 10²²" },
+    { t: 29, d: "Ambang Batas Antarbintang", p: "8,470 × 10²²" },
+    { t: 30, d: "Ambang FTL / Siap Lulus", p: "1,000 × 10²³" }
+  ];
+
+  const TIERS_INTER_10 = [
+    { t: 1, d: "Interstellar Dini (Perintis ~20 ly)", r: "~20 ly", pct: "25%", p: "6,05 × 10²²" },
+    { t: 2, d: "Jaringan Kolonial Lokal (~100 ly)", r: "~100 ly", pct: "22%", p: "5,32 × 10²²" },
+    { t: 3, d: "Konfederasi Sistem Bintang (~500 ly)", r: "~500 ly", pct: "18%", p: "4,36 × 10²²" },
+    { t: 4, d: "Kekaisaran Sektoral Awal (~2.000 ly)", r: "~2.000 ly", pct: "14%", p: "3,39 × 10²²" },
+    { t: 5, d: "Aliansi Multi-Sektoral (~10.000 ly)", r: "~10.000 ly", pct: "10%", p: "2,42 × 10²²" },
+    { t: 6, d: "Imperium Regional Dini (~50.000 ly) - Level Dancoster", r: "~50.000 ly", pct: "7%", p: "1,69 × 10²²" },
+    { t: 7, d: "Hegemoni Bintang Raya (~150.000 ly)", r: "~150.000 ly", pct: "5%", p: "1,21 × 10²²" },
+    { t: 8, d: "Federasi Megakosmik (~400.000 ly)", r: "~400.000 ly", pct: "4%", p: "9,68 × 10²¹" },
+    { t: 9, d: "Super-Imperium Galaktik (~800.000 ly)", r: "~800.000 ly", pct: "3%", p: "7,26 × 10²¹" },
+    { t: 10, d: "Puncak Absolut Interstellar (~1.000.000 ly)", r: "~1.000.000 ly", pct: "2%", p: "4,84 × 10²¹" }
+  ];
+
+  window.severozBaselineState = { ...DEFAULT_BASELINE };
+
+  // 2. INJEKSI PITA TOMBOL NAVIGASI TAB BARU
+  function injectNavigationTabs() {
+    const navBar = document.getElementById("main-nav-bar");
+    if (!navBar) return;
+
+    if (!document.getElementById("btn-tab-stats")) {
+      const btnStats = document.createElement("button");
+      btnStats.id = "btn-tab-stats";
+      btnStats.className = "tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap";
+      btnStats.onclick = () => window.switchTab("tab-stats");
+      btnStats.innerHTML = '<i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-cyan-400"></i><span>6. Statistik Lengkap Severoz</span>';
+      navBar.appendChild(btnStats);
+    }
+
+    if (!document.getElementById("btn-tab-generator")) {
+      const btnGen = document.createElement("button");
+      btnGen.id = "btn-tab-generator";
+      btnGen.className = "tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap";
+      btnGen.onclick = () => window.switchTab("tab-generator");
+      btnGen.innerHTML = '<i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-400"></i><span>7. Generator Peradaban</span>';
+      navBar.appendChild(btnGen);
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // 3. INJEKSI KONTEN KONTAN DUA TAB BARU KE MAIN AREA
+  function injectTabContentSections() {
+    const mainArea = document.getElementById("main-content-area");
+    if (!mainArea) return;
+
+    // A. Konten Tab Statistik
+    if (!document.getElementById("tab-stats")) {
+      const secStats = document.createElement("div");
+      secStats.id = "tab-stats";
+      secStats.className = "tab-content hidden space-y-6";
+      secStats.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card p-4 rounded-xl border border-hudborder">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-cyan-400"></i> ENSIKLOPEDIA STATISTIK LENGKAP KOSMIK SEVEROZ
+            </h2>
+            <p class="text-xs text-slate-400 font-mono">Tabel Demografi Makro, Distribusi 30 Tier Pra-Interstellar, dan 10 Tier Interstellar</p>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <button onclick="exportBaselineJSON()" class="px-3 py-1.5 rounded bg-hud hover:bg-cyan-950 text-cyan-300 border border-hudborder flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Ekspor Baseline JSON
+            </button>
+            <button onclick="openBaselineModal()" class="px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-semibold flex items-center gap-1.5">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit Parameter Baseline
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+          <div class="glass-card p-4 rounded-xl border border-hudborder space-y-1">
+            <span class="text-slate-400">KATEGORI I</span>
+            <div class="text-base font-bold text-emerald-300">Wild Worlds (Flora & Fauna)</div>
+            <div class="text-xl font-bold text-white mt-1">92%</div>
+            <div class="text-slate-400">~ 2,226 × 10²⁵ Planet</div>
+            <p class="text-[11px] text-slate-400 font-sans pt-1">Biosfer kaya tanpa spesies berakal peradaban.</p>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-hudborder space-y-1">
+            <span class="text-slate-400">KATEGORI II</span>
+            <div class="text-base font-bold text-amber-300">Developing Cradles</div>
+            <div class="text-xl font-bold text-white mt-1">7%</div>
+            <div class="text-slate-400">~ 1,694 × 10²⁴ Planet</div>
+            <p class="text-[11px] text-slate-400 font-sans pt-1">Pra-Interstellar (Terbagi ke dalam 30 Tier Teknologi).</p>
+          </div>
+          <div class="glass-card p-4 rounded-xl border border-hudborder space-y-1">
+            <span class="text-slate-400">KATEGORI III</span>
+            <div class="text-base font-bold text-cyan-300">Primeval Homeworlds</div>
+            <div class="text-xl font-bold text-white mt-1">1%</div>
+            <div class="text-slate-400">~ 2,42 × 10²³ Planet</div>
+            <p class="text-[11px] text-slate-400 font-sans pt-1">Penjelajah Antarbintang (Terbagi ke dalam 10 Tier Wilayah).</p>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border border-hudborder space-y-3">
+          <h3 class="text-sm font-bold text-cyan-400 font-mono flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4"></i> TABEL KLASIFIKASI 10 TIER PERADABAN INTERSTELLAR (Total: ~2,42 × 10²³ Planet)
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono border-collapse">
+              <thead>
+                <tr class="border-b border-hudborder bg-hud/60 text-slate-300">
+                  <th class="p-2 w-12 text-center">Tier</th>
+                  <th class="p-2">Klasifikasi & Jangkauan Administrasi</th>
+                  <th class="p-2">Radius Kontrol</th>
+                  <th class="p-2">Persentase</th>
+                  <th class="p-2">Jumlah Planet Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-hudborder/40 text-slate-300" id="table-interstellar-tbody">
+                ${TIERS_INTER_10.map(item => `
+                  <tr class="${item.t === 6 ? 'bg-cyan-950/30 text-white font-bold' : 'hover:bg-hud/40'}">
+                    <td class="p-2 text-center text-cyan-400">T-${item.t}</td>
+                    <td class="p-2">${item.d}</td>
+                    <td class="p-2 text-slate-300">${item.r}</td>
+                    <td class="p-2 text-amber-300">${item.pct}</td>
+                    <td class="p-2 text-emerald-400">${item.p}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-xl p-5 border border-hudborder space-y-3">
+          <h3 class="text-sm font-bold text-amber-400 font-mono flex items-center gap-2">
+            <i data-lucide="list-ordered" class="w-4 h-4"></i> TABEL 30 TIER PRA-INTERSTELLAR (DEVELOPING CRADLES: ~1,694 × 10²⁴ Planet)
+          </h3>
+          <div class="overflow-x-auto max-h-96">
+            <table class="w-full text-left text-xs font-mono border-collapse">
+              <thead>
+                <tr class="border-b border-hudborder bg-hud/60 text-slate-300 sticky top-0">
+                  <th class="p-2 w-16 text-center">Tier</th>
+                  <th class="p-2">Tingkat Perkembangan Teknologi</th>
+                  <th class="p-2">Estimasi Populasi Planet (~iksa)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-hudborder/40 text-slate-300">
+                ${TIERS_PRA_30.map(item => `
+                  <tr class="${item.t === 24 ? 'bg-rose-950/20 text-rose-300 font-bold' : 'hover:bg-hud/40'}">
+                    <td class="p-2 text-center text-amber-400">T-${item.t}</td>
+                    <td class="p-2">${item.d} ${item.t === 24 ? '⚠️ (Great Filter Bottleneck)' : ''}</td>
+                    <td class="p-2 text-slate-300">${item.p} planet</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      mainArea.appendChild(secStats);
+    }
+
+    // B. Konten Tab Generator Profil Deterministik
+    if (!document.getElementById("tab-generator")) {
+      const secGen = document.createElement("div");
+      secGen.id = "tab-generator";
+      secGen.className = "tab-content hidden space-y-6";
+      secGen.innerHTML = `
+        <div class="glass-card p-6 rounded-xl border border-hudborder space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-hudborder pb-3">
+            <div>
+              <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <i data-lucide="cpu" class="w-5 h-5 text-amber-400"></i> GENERATOR PROFIL PERADABAN DETERMINISTIK
+              </h2>
+              <p class="text-xs text-slate-400 font-mono">Menghitung profil faksi kosmik otomatis berdasarkan Seed & Logika Baseline Fisika Severoz</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="randomizeGenSeed()" class="px-3 py-1.5 rounded bg-hud hover:bg-hudborder text-cyan-300 text-xs font-mono border border-hudborder">
+                🎲 Acak Seed
+              </button>
+              <button onclick="generateDeterministicCivilization()" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs font-mono shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                ⚙️ Hasilkan Profil Peradaban
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+            <div>
+              <label class="block text-slate-300 mb-1">Seed Kuantum (Kata Kunci / Angka)</label>
+              <input type="text" id="gen-seed" value="DANCOSTER-PRIME-77" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-cyan-300 font-bold">
+            </div>
+            <div>
+              <label class="block text-slate-300 mb-1">Kategori Peradaban</label>
+              <select id="gen-category" onchange="updateTierSelectOptions()" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white">
+                <option value="INTERSTELLAR">Primeval Homeworlds (Interstellar 1-10)</option>
+                <option value="PRA">Developing Cradles (Pra-Interstellar 1-30)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-300 mb-1">Pilih Tingkat (Tier)</label>
+              <select id="gen-tier-select" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-amber-300 font-bold"></select>
+            </div>
+          </div>
+
+          <div id="gen-result-card" class="bg-void/90 border border-hudborder rounded-xl p-5 space-y-4 font-mono text-xs">
+            <div class="flex items-center justify-between border-b border-hudborder/60 pb-3">
+              <div>
+                <span id="gen-out-tier-badge" class="px-2 py-0.5 rounded text-[10px] bg-cyan-950 border border-cyan-500 text-cyan-300 uppercase font-bold">Tier 6 Interstellar</span>
+                <h3 id="gen-out-name" class="text-xl font-bold text-white mt-1">Peradaban Terpilih</h3>
+              </div>
+              <button onclick="copyGeneratedProfile()" class="px-3 py-1.5 rounded bg-hud hover:bg-hudborder text-cyan-300 border border-hudborder flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin Profil
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <div><span class="text-slate-400">Radius Spasial:</span> <strong id="gen-out-radius" class="text-white">~50.000 Tahun Cahaya</strong></div>
+                <div><span class="text-slate-400">Estimasi Planet Terintegrasi:</span> <strong id="gen-out-planets" class="text-amber-300">~1,69 × 10²² Planet</strong></div>
+                <div><span class="text-slate-400">Tipe Pemerintahan:</span> <strong id="gen-out-gov" class="text-emerald-400">Federasi Korporatis-Birokrasi</strong></div>
+                <div><span class="text-slate-400">Doktrin FTL / Navigasi:</span> <strong id="gen-out-ftl" class="text-cyan-300">Spatial Folding (Medan Planck)</strong></div>
+              </div>
+              <div class="space-y-2">
+                <div><span class="text-slate-400">Standar Fisiologis:</span> <strong id="gen-out-physio" class="text-white">Humanoid Kerangka Berat (183-210 cm)</strong></div>
+                <div><span class="text-slate-400">Mata Uang & Energi:</span> <strong id="gen-out-curr" class="text-amber-300">Unit Massa-Energi Relatif (UMER)</strong></div>
+                <div><span class="text-slate-400">Kelemahan Geopolitik:</span> <strong id="gen-out-vuln" class="text-rose-400">Latensi Informasi & Krisis Sektor Luar</strong></div>
+              </div>
+            </div>
+
+            <div class="border-t border-hudborder/60 pt-3">
+              <span class="text-slate-400 block mb-1 font-bold">Ringkasan Sosiologis & Narasi Faksi:</span>
+              <p id="gen-out-narrative" class="text-slate-200 font-sans leading-relaxed text-sm">
+                Tekan tombol "Hasilkan Profil Peradaban" untuk mensintesis data faksi baru berdasarkan formula matematis galaksi.
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+      mainArea.appendChild(secGen);
+    }
+
+    // Tombol Edit Baseline di Tab 4
+    const baselineHeader = document.querySelector("#tab-baseline .glass-card");
+    if (baselineHeader && !document.getElementById("btn-edit-baseline-trigger")) {
+      const btnEdit = document.createElement("button");
+      btnEdit.id = "btn-edit-baseline-trigger";
+      btnEdit.className = "mt-3 px-3 py-1.5 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-xs font-mono flex items-center gap-1.5 transition-all shadow-[0_0_10px_rgba(0,229,255,0.25)]";
+      btnEdit.innerHTML = '<i data-lucide="edit-3" class="w-3.5 h-3.5"></i><span>Sunting Parameter Baseline</span>';
+      btnEdit.onclick = window.openBaselineModal;
+      baselineHeader.appendChild(btnEdit);
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // 4. LOGIKA MODAL BASELINE EDITOR (CRUD & DUAL MIRROR)
+  async function loadPersistedBaseline() {
+    if (window.openIDB) {
+      try {
+        const db = await window.openIDB();
+        const tx = db.transaction("state", "readonly");
+        const req = tx.objectStore("state").get("severoz_baseline");
+        req.onsuccess = function(e) {
+          if (e.target.result && e.target.result.data) {
+            window.severozBaselineState = { ...DEFAULT_BASELINE, ...e.target.result.data };
+            updateBaselineUI();
+          }
+        };
+      } catch(err) {
+        const saved = localStorage.getItem("SEVEROZ_BASELINE_SAVED");
+        if (saved) {
+          window.severozBaselineState = { ...DEFAULT_BASELINE, ...JSON.parse(saved) };
+          updateBaselineUI();
+        }
+      }
+    }
+  }
+
+  function updateBaselineUI() {
+    const b = window.severozBaselineState;
+    const cards = document.querySelectorAll("#tab-baseline .grid-cols-2 .glass-card");
+    if (cards.length >= 4) {
+      cards[0].querySelector(".text-lg").innerText = b.geom.split(' ')[0] || "Bola 3D";
+      cards[0].querySelector("span.text-\\[11px\\]").innerText = "Diameter " + b.diam;
+      cards[1].querySelector(".text-lg").innerText = b.stars.split(' ')[0] || "~2,42 × 10³⁰";
+      cards[2].querySelector(".text-lg").innerText = b.earth.split(' ')[0] || "~2,42 × 10²⁵";
+    }
+
+    const philCard = document.querySelector("#tab-baseline .glass-card .text-xs.font-mono");
+    if (philCard) {
+      philCard.innerHTML = b.philosophy.split('\\n').map(p => `<p>${p.trim()}</p>`).join('');
+    }
+  }
+
+  window.openBaselineModal = function() {
+    const b = window.severozBaselineState;
+    document.getElementById("base-edit-name").value = b.name;
+    document.getElementById("base-edit-geom").value = b.geom;
+    document.getElementById("base-edit-diam").value = b.diam;
+    document.getElementById("base-edit-vol").value = b.vol;
+    document.getElementById("base-edit-dist").value = b.dist;
+    document.getElementById("base-edit-stars").value = b.stars;
+    document.getElementById("base-edit-sparks").value = b.sparks;
+    document.getElementById("base-edit-planets").value = b.planets;
+    document.getElementById("base-edit-earth").value = b.earth;
+    document.getElementById("base-edit-philosophy").value = b.philosophy.replace(/\\n/g, '\n');
+    document.getElementById("modal-edit-baseline-dan").classList.remove("hidden");
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.closeBaselineModal = function() {
+    document.getElementById("modal-edit-baseline-dan").classList.add("hidden");
+  };
+
+  window.saveBaselineModal = async function() {
+    const updated = {
+      name: document.getElementById("base-edit-name").value.trim(),
+      geom: document.getElementById("base-edit-geom").value.trim(),
+      diam: document.getElementById("base-edit-diam").value.trim(),
+      vol: document.getElementById("base-edit-vol").value.trim(),
+      dist: document.getElementById("base-edit-dist").value.trim(),
+      stars: document.getElementById("base-edit-stars").value.trim(),
+      sparks: document.getElementById("base-edit-sparks").value.trim(),
+      planets: document.getElementById("base-edit-planets").value.trim(),
+      earth: document.getElementById("base-edit-earth").value.trim(),
+      philosophy: document.getElementById("base-edit-philosophy").value.trim().replace(/\n/g, '\\n')
+    };
+
+    window.severozBaselineState = updated;
+
+    if (window.openIDB) {
+      const db = await window.openIDB();
+      const tx = db.transaction("state", "readwrite");
+      tx.objectStore("state").put({ key: "severoz_baseline", data: updated });
+    }
+    localStorage.setItem("SEVEROZ_BASELINE_SAVED", JSON.stringify(updated));
+
+    updateBaselineUI();
+    closeBaselineModal();
+    if (window.showToast) window.showToast("Baseline Galaksi Severoz berhasil diperbarui!");
+  };
+
+  window.exportBaselineJSON = function() {
+    const data = {
+      baseline: window.severozBaselineState,
+      tiersPraInterstellar: TIERS_PRA_30,
+      tiersInterstellar: TIERS_INTER_10
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Severoz_Baseline_Stats_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+  };
+
+  // 5. LOGIKA GENERATOR PROFIL PERADABAN DETERMINISTIK
+  const PREFIX_NAMES = ["Dancoster", "Voskara", "Aethelgard", "Vesperon", "Kaeloria", "Meridiana", "Solarion", "Caelum", "Oryx", "Valerius"];
+  const SUFFIX_REGIONS = ["Prime", "Hegemony", "Consortium", "Ascendancy", "Dominion", "Directorate", "Union", "Sectorate"];
+
+  function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  window.updateTierSelectOptions = function() {
+    const cat = document.getElementById("gen-category").value;
+    const select = document.getElementById("gen-tier-select");
+    select.innerHTML = "";
+
+    if (cat === "INTERSTELLAR") {
+      TIERS_INTER_10.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.t;
+        opt.innerText = `Tier ${t.t} - ${t.d.split('(')[0]}`;
+        if (t.t === 6) opt.selected = true;
+        select.appendChild(opt);
+      });
+    } else {
+      TIERS_PRA_30.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.t;
+        opt.innerText = `Tier ${t.t} - ${t.d}`;
+        if (t.t === 24) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+  };
+
+  window.randomizeGenSeed = function() {
+    const rand = "SEV-" + Math.floor(1000 + Math.random() * 9000) + "-VEX";
+    document.getElementById("gen-seed").value = rand;
+    generateDeterministicCivilization();
+  };
+
+  window.generateDeterministicCivilization = function() {
+    const seed = document.getElementById("gen-seed").value.trim() || "DEFAULT-SEED";
+    const cat = document.getElementById("gen-category").value;
+    const tierNum = parseInt(document.getElementById("gen-tier-select").value) || 6;
+    const h = hashString(seed + "_" + cat + "_" + tierNum);
+
+    const nameIdx = h % PREFIX_NAMES.length;
+    const suffIdx = (h >> 3) % SUFFIX_REGIONS.length;
+    const civName = (tierNum === 6 && cat === "INTERSTELLAR" && seed.includes("DANCOSTER")) ? "Peradaban Dancoster" : `${PREFIX_NAMES[nameIdx]} ${SUFFIX_REGIONS[suffIdx]}`;
+
+    let radiusText = "Dalam batas tata surya asal (0 ly)";
+    let planetsCount = "1 - 10 Planet";
+    let ftlDoctrine = "Belum Menguasai FTL (Kecepatan Sub-Cahaya Kinetik / Fusi Kimia)";
+    let govType = "Pemerintahan Planet Tunggal / Serikat Bangsa";
+    let vulnText = "Kepunahan Sumber Daya & Risiko Filter Kehancuran Sendiri";
+    let heightRange = "Humanoid Alami (160 - 180 cm)";
+    let currencyText = "Mata Uang Komoditas / Kredit Elektronik Lokal";
+
+    if (cat === "INTERSTELLAR") {
+      const tierObj = TIERS_INTER_10.find(x => x.t === tierNum) || TIERS_INTER_10[5];
+      radiusText = tierObj.r;
+      planetsCount = tierObj.p + " Planet";
+      ftlDoctrine = "Spatial Folding (Reaktor Peluruhan Massa-Planck)";
+      govType = tierNum >= 8 ? "Dewan Konfederasi Terdesentralisasi Mutlak" : (tierNum >= 5 ? "Federasi Korporatis-Birokrasi Meridian" : "Komando Ekspedisi Militer Antarbintang");
+      vulnText = "Batas Horizon Epistemologis & Latensi Transmisi Logistik " + tierObj.r;
+      heightRange = "Humanoid Terseleksi Gravitasi Berat (183 - 210 cm)";
+      currencyText = "Unit Massa-Energi Relatif (UMER / Antimateri)";
+    } else {
+      const tierObj = TIERS_PRA_30.find(x => x.t === tierNum) || TIERS_PRA_30[0];
+      planetsCount = tierObj.p + " Planet sejenis di Galaksi";
+      if (tierNum >= 26) {
+        ftlDoctrine = "Eksperimen Relativitas Ruang-Waktu & Distorsi Sub-Dimensi Dini";
+      } else if (tierNum >= 14) {
+        ftlDoctrine = "Roket Fusi & Penggerak Ion Elektrostatis (Non-FTL)";
+      }
+      if (tierNum === 24) {
+        vulnText = "Krisis Great Filter: Ambang kepunahan perang termonuklir, keruntuhan biosfer, atau destabilisasi reaktor kuantum.";
+      }
+    }
+
+    document.getElementById("gen-out-tier-badge").innerText = `${cat === 'INTERSTELLAR' ? 'Interstellar' : 'Pra-Interstellar'} // Tier ${tierNum}`;
+    document.getElementById("gen-out-name").innerText = civName;
+    document.getElementById("gen-out-radius").innerText = radiusText;
+    document.getElementById("gen-out-planets").innerText = planetsCount;
+    document.getElementById("gen-out-gov").innerText = govType;
+    document.getElementById("gen-out-ftl").innerText = ftlDoctrine;
+    document.getElementById("gen-out-physio").innerText = heightRange;
+    document.getElementById("gen-out-curr").innerText = currencyText;
+    document.getElementById("gen-out-vuln").innerText = vulnText;
+
+    const narrative = `${civName} adalah entitas berdaulat dalam matriks Galaksi Severoz yang menduduki tingkat ${cat === 'INTERSTELLAR' ? 'Interstellar Tier ' + tierNum : 'Pra-Interstellar Tier ' + tierNum}. Peradaban ini tunduk pada hukum materialisme fisik mutlak dengan radius logistik ${radiusText}. Keseimbangan ekonominya bergantung pada ${currencyText}, sementara kelangsungan organisasinya terus diuji oleh ${vulnText}.`;
+    document.getElementById("gen-out-narrative").innerText = narrative;
+
+    if (window.showToast) window.showToast(`Profil ${civName} berhasil dihasilkan deterministik!`);
+  };
+
+  window.copyGeneratedProfile = function() {
+    const name = document.getElementById("gen-out-name").innerText;
+    const tier = document.getElementById("gen-out-tier-badge").innerText;
+    const text = `=== PROFIL PERADABAN SEVEROZ ===\nNama: ${name} [${tier}]\nRadius: ${document.getElementById("gen-out-radius").innerText}\nWilayah: ${document.getElementById("gen-out-planets").innerText}\nPemerintahan: ${document.getElementById("gen-out-gov").innerText}\nFTL: ${document.getElementById("gen-out-ftl").innerText}\nFisik: ${document.getElementById("gen-out-physio").innerText}\nEnergi: ${document.getElementById("gen-out-curr").innerText}\nTitik Lemah: ${document.getElementById("gen-out-vuln").innerText}\n\n${document.getElementById("gen-out-narrative").innerText}`;
+    navigator.clipboard.writeText(text).then(() => {
+      if (window.showToast) window.showToast("Profil peradaban disalin ke clipboard!");
+      else alert("Profil disalin!");
+    });
+  };
+
+  // 6. INITIALIZATION HOOK
+  function initModule() {
+    injectNavigationTabs();
+    injectTabContentSections();
+    loadPersistedBaseline();
+    window.updateTierSelectOptions();
+    window.generateDeterministicCivilization();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initModule, 400));
+  } else {
+    setTimeout(initModule, 400);
+  }
+})();
+</script>
+<!-- ========================================================================= -->
+<!-- MODUL DROP-IN: OUTLINE & DRAFT NASKAH BERJALAN DENGAN AUTO-CHECKLIST      -->
+<!-- Membaca kesamaan Judul / Nomor Bab di Manuskrip secara otomatis           -->
+<!-- Pasang tepat sebelum penutup </body> pada berkas Doncaster Story Engine   -->
+<!-- ========================================================================= -->
+
+<!-- Modal: Tambah / Sunting Draft Bab Berjalan -->
+<div id="modal-edit-draft-dan" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden flex items-center justify-center p-4">
+  <div class="bg-hud border border-amber-500/50 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+    <div class="flex items-center justify-between border-b border-hudborder pb-3">
+      <h3 id="modal-draft-title-head" class="text-base font-bold text-white flex items-center gap-2">
+        <i data-lucide="list-todo" class="w-4 h-4 text-amber-400"></i> Sunting Draft Bab Berjalan
+      </h3>
+      <button onclick="closeDraftModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <input type="hidden" id="draft-id-input">
+    
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+      <div>
+        <label class="block text-slate-300 mb-1">Nomor / Urutan Bab</label>
+        <input type="number" id="draft-num-input" placeholder="Contoh: 1" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-amber-300 font-bold focus:outline-none focus:border-amber-400">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-slate-300 mb-1">Judul Rencana Bab</label>
+        <input type="text" id="draft-title-input" placeholder="Contoh: Bab 1: Anomali di Koridor Void" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-white focus:outline-none focus:border-amber-400">
+      </div>
+      <div>
+        <label class="block text-slate-300 mb-1">Fase / Babak Cerita</label>
+        <input type="text" id="draft-act-input" placeholder="Babak I / Fase 1" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-cyan-300 focus:outline-none focus:border-amber-400">
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-slate-300 mb-1">Tokoh Kunci Terlibat</label>
+        <input type="text" id="draft-pov-input" placeholder="Logan Valori, Chloe Sareno, Mason Morune" class="w-full bg-void border border-hudborder rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400">
+      </div>
+      <div class="sm:col-span-3">
+        <label class="block text-slate-300 mb-1">Ringkasan Narasi Singkat / Poin Plot Kunci</label>
+        <textarea id="draft-summary-input" rows="4" placeholder="Tuliskan poin alur, kejadian kunci, atau telemetri yang harus ada di bab ini..." class="w-full bg-void border border-hudborder rounded p-3 text-slate-200 font-sans text-xs leading-relaxed focus:outline-none focus:border-amber-400"></textarea>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-3 border-t border-hudborder font-mono text-xs">
+      <button onclick="closeDraftModal()" class="px-4 py-2 rounded bg-hudborder/60 hover:bg-hudborder text-slate-300">Batal</button>
+      <button onclick="saveDraftModal()" class="px-5 py-2 rounded bg-amber-500 hover:bg-amber-400 text-black font-semibold shadow-[0_0_12px_rgba(245,158,11,0.3)]">Simpan Draft</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  console.log("⚡ Mengaktifkan Modul Draft Naskah Berjalan & Auto-Checklist Status Done...");
+
+  // MASTER DATA SEED 56 BAB KAMPANYE HELLIMAR (DEFAULT INITIALIZER)
+  const SEED_DRAFTS_56 = [
+    { num: 1, title: "Bab 1: Anomali di Koridor Void", act: "Babak I", pov: "Logan Valori, Mason Morune", summary: "Logan mendeteksi penyimpangan gravitasi pada konvoi logistik ketiga di dekat Sterile Sparks; tertangkapnya sinyal transmisi radio artifisial tak terdaftar dari sistem Hellimar." },
+    { num: 2, title: "Bab 2: Fraktur Reaktor Massa-Planck", act: "Babak I", pov: "Chloe Sareno, Mason Morune", summary: "Pemeriksaan ruang mesin Stasiun Vesper-9; Chloe menghitung lonjakan peluruhan energi FTL 40% di luar ambang toleransi akibat distorsi gelombang sub-ruang eksternal." },
+    { num: 3, title: "Bab 3: Dekrit Dingin Meridian", act: "Babak I", pov: "Zoe Calise, Marcus Vhane", summary: "Zoe menerima berkas pembekuan kuota energi UMER darurat dari birokrasi pusat Dancoster Prime; Sektor Vesper terancam pemadaman total jika gagal menyetor suplai baru." },
+    { num: 4, title: "Bab 4: Dekripsi Kuantum Sinyal Liar", act: "Babak I", pov: "Samantha Voss, Mia Danori", summary: "Pemecahan lapisan enkripsi sinyal Hellimar; konfirmasi keberadaan peradaban Tier 22 dengan cadangan isotop eksotik melimpah di sabuk asteroid lokal." },
+    { num: 5, title: "Bab 5: Sidang Rahasia Vesper-9", act: "Babak I", pov: "Eleanor Sterling, Caleb Draven", summary: "Gubernur Jenderal Eleanor mengumpulkan jajaran staf; doktrin aneksasi material terkendali diputuskan demi menyelamatkan kelangsungan hidup sektor." },
+    { num: 6, title: "Bab 6: Dilema Sang Laksamana", act: "Babak I", pov: "Caleb Draven, Lucas Vance", summary: "Draven mencurigai adanya jejak tanda radiasi perisai berfrekuensi Tier 4 yang mustahil diproduksi sendiri oleh peradaban pra-FTL." },
+    { num: 7, title: "Bab 7: Peluncuran Kurir Senyap Aegis-Null", act: "Babak I", pov: "Valerie Kryn, Logan Valori", summary: "Misi intai cepat menembus medan bahaya bintang mandul Sterile Sparks membawa analis untuk memetakan koordinat gravitasi Hellimar." },
+    { num: 8, title: "Bab 8: Di Balik Tirai Oort Hellimar", act: "Babak I", pov: "Valerie Kryn, Julian Romani", summary: "Sensor kapal memindai cincin pertahanan kinetik Hellimar; terdeteksi stasiun relai misterius tak bertuan berdaya tinggi." },
+    { num: 9, title: "Bab 9: Jejak Tangan Valthorun", act: "Babak I", pov: "Beatrice Nolan, Garrett Rix", summary: "Intelijen lapangan mengonfirmasi kehadiran korvet klandestin milik faksi Interstellar Tier 4 (Ordo Valthorun) di balik bayangan orbit Hellimar." },
+    { num: 10, title: "Bab 10: Otorisasi Mandat Aneksasi", act: "Babak I", pov: "Rachel Vryce, Eleanor Sterling", summary: "Rachel Vryce menandatangani anggaran mobilisasi armada; target mengamankan fasilitas komputasi kuantum dalam 4 siklus kalender standar." },
+
+    { num: 11, title: "Bab 11: Pelipatan Armada Garis Pertama", act: "Babak II", pov: "Caleb Draven, Logan Valori", summary: "Tiga kapal penjelajah berat Dancoster melompat keluar dari celah spasial di garis batas gravitasi matahari Hellimar." },
+    { num: 12, title: "Bab 12: Kejutan di Sabuk Karbon", act: "Babak II", pov: "Victoria Hesper, Liam Belano", summary: "Meriam rel magnetik Hellimar merespons kilat; hujan proyektil tungsten berkecepatan 0,05c menyambut armada penyerbu." },
+    { num: 13, title: "Bab 13: Perisai yang Terlalu Maju", act: "Babak II", pov: "Victoria Hesper, Chloe Sareno", summary: "Tembakan artileri plasma Dancoster terbelokkan oleh kubah polarisasi medan gaya alien buatan proksi Valthorun." },
+    { num: 14, title: "Bab 14: Perang Otak di Kedalaman Sub-Ruang", act: "Babak II", pov: "Stella Ronise, Axel Panori", summary: "Perang elektronika defensif untuk meretas stasiun relai Hellimar yang dipasangi superkomputer pengacak frekuensi." },
+    { num: 15, title: "Bab 15: Penangkapan Sensor Pengawas", act: "Babak II", pov: "Lucas Tavori, Owen Selumo", summary: "Skuadron interceptor melumpuhkan drone intai berat Hellimar; pembongkaran data taktis formasi pertahanan musuh." },
+    { num: 16, title: "Bab 16: Manuver Logistik Asteroid", act: "Babak II", pov: "Marcus Lorn, Jonah Melate", summary: "Memanfaatkan asteroid kaya logam sebagai tameng kinetik raksasa untuk melindungi konvoi kargo pendarat." },
+    { num: 17, title: "Bab 17: Kepanikan di Senat Hellimar", act: "Babak II", pov: "Sudut Pandang Hellimar", summary: "Dewan tekno-birokrat Hellimar panik menyaksikan armada kapal raksasa humanoid berketinggian dua meter memblokade langit mereka." },
+    { num: 18, title: "Bab 18: Janji Beracun Utusan Valthorun", act: "Babak II", pov: "Diplomat Valthorun", summary: "Agen rahasia Tier 4 menawarkan senjata terlarang asalkan Hellimar menyerahkan hak monopoli inti kuantum mereka." },
+    { num: 19, title: "Bab 19: Penyusupan Menembus Celah Sensor", act: "Babak II", pov: "Liam Belano, Felix Karone, Chloe", summary: "Tim kecil mengawal Chloe menyusup ke fasilitas penambangan luar untuk mematikan generator polarisasi medan." },
+    { num: 20, title: "Bab 20: Sabotase Generator Fusi Luar", act: "Babak II", pov: "Chloe Sareno, Mason Morune", summary: "Peretasan katup pendingin fusi; perisai polarisasi Tier 4 di sektor utara koloni asteroid berhasil dipadamkan." },
+
+    { num: 21, title: "Bab 21: Badai Kinetik di Orbit Rendah", act: "Babak III", pov: "Harrison Corvo, Lucas Tavori", summary: "Pertarungan udara sengit menembus hujan peluru flak elektromagnetik di atmosfer atas planet tambang." },
+    { num: 22, title: "Bab 22: Logika Dingin di Konsol Taktis", act: "Babak III", pov: "Victoria Hesper", summary: "Kalkulasi tembakan artileri antimateri di tengah distorsi gravitasi dan panas ekstrim lambung kapal induk." },
+    { num: 23, title: "Bab 23: Lambung Retak di Ruang Hampa", act: "Babak III", pov: "Noah Maruso, Mason Morune", summary: "Torpedo sub-kinetik musuh menghantam lambung perusak; pengelasan darurat dalam suhu minus 200 derajat Celsius." },
+    { num: 24, title: "Bab 24: Trauma Gravitasi di Garis Depan", act: "Babak III", pov: "Maya Renuro", summary: "Penanganan medis darurat para awak kapal yang mengalami dekompresi dan kerusakan jaringan seluler." },
+    { num: 25, title: "Bab 25: Jebakan Valthorun Terbuka", act: "Babak III", pov: "Caleb Draven, Beatrice Nolan", summary: "Dua kapal perang siluman Tier 4 Valthorun menampakkan diri dan menyergap sayap logistik armada Dancoster." },
+    { num: 26, title: "Bab 26: Perang Dua Tingkat Teknologi", act: "Babak III", pov: "Caleb Draven, Victoria Hesper", summary: "Atrisi energi: efisiensi skala regional Tier 6 Dancoster melawan taktik gerilya canggih Tier 4 Valthorun." },
+    { num: 27, title: "Bab 27: Pelumpuhan Korvet Bayangan", act: "Babak III", pov: "Caleb Draven, Arthur Galt", summary: "Manuver jepitan gravitasi melumpuhkan salah satu korvet Valthorun tanpa menghancurkannya untuk barang bukti." },
+    { num: 28, title: "Bab 28: Interogasi di Dek Tertutup", act: "Babak III", pov: "Lucas Vance, Garrett Rix", summary: "Pemeriksaan perwira Valthorun yang tertawan membongkar sindikat perdagangan gelap energi antarbintang." },
+    { num: 29, title: "Bab 29: Ancaman Embargo Pusat", act: "Babak III", pov: "Clara Thorne, Zoe Calise", summary: "Transmisi rahasia dari para pialang energi: armada terancam ditarik paksa jika biaya UMER terus melonjak." },
+    { num: 30, title: "Bab 30: Taruhan Menjelang Pendaratan", act: "Babak III", pov: "Logan Valori, Chloe Sareno", summary: "Logan merancang rute terjun gravitasi atmosferik berisiko tinggi guna menghemat 50% alokasi bahan bakar dorong." },
+
+    { num: 31, title: "Bab 31: Terjun Kapsul Atmosferik", act: "Babak IV", pov: "Arthur Galt, Liam Belano", summary: "Ratusan marinir berzirah komposit tebal mendarat di dataran litium Hellimar di bawah gravitasi ringan 0,9G." },
+    { num: 32, title: "Bab 32: Dinding Baja Melawan Meriam Ion", act: "Babak IV", pov: "Arthur Galt, Felix Karone", summary: "Infanteri mekanis Dancoster menerobos gerbang bunker manufaktur silika bawah tanah Hellimar." },
+    { num: 33, title: "Bab 33: Penemuan Inti Komputasi Kuantum", act: "Babak IV", pov: "Nathanial Kael, Evelyn Thrace", summary: "Pemeriksaan arsitektur superkomputer kuantum Hellimar yang didinginkan secara geotermal alami." },
+    { num: 34, title: "Bab 34: Dekrit Asimilasi Biologis", act: "Babak IV", pov: "Sarah Tress, Harper Solune", summary: "Pemetaan genomik buruh Hellimar untuk merancang serum adaptasi kerja di stasiun gravitasi tinggi Dancoster." },
+    { num: 35, title: "Bab 35: Suara yang Menolak Tunduk", act: "Babak IV", pov: "Tobias Vance, Eleanor Sterling", summary: "Ketua advokasi kemanusiaan menentang keras rekayasa fisik paksa populasi lokal yang ditaklukkan." },
+    { num: 36, title: "Bab 36: Api Perlawanan Bawah Tanah", act: "Babak IV", pov: "Pemberontak Hellimar", summary: "Gerilyawan lokal menggunakan sisa bahan peledak Valthorun untuk meledakkan menara relai kargo Dancoster." },
+    { num: 37, title: "Bab 37: Pialang Informasi di Ujung Void", act: "Babak IV", pov: "Lyra Zeth", summary: "Di kedai transit The Void's Edge, data jalur suplai amunisi Dancoster bocor ke pihak ketiga penawar tertinggi." },
+    { num: 38, title: "Bab 38: Serangan Balik Separatis", act: "Babak IV", pov: "Nora Sylvane, Ethan Crix", summary: "Faksi penentang konsorsium menyita tongkang kargo bahan bakar UMER di tengah kekacauan perbatasan." },
+    { num: 39, title: "Bab 39: Wartawan di Medan Aneksasi", act: "Babak IV", pov: "Iris Mander, Ruby Talari", summary: "Penyelundupan rekaman barak kerja Hellimar ke jaringan transmisi independen membongkar narasi propaganda." },
+    { num: 40, title: "Bab 40: Kudeta di Bunker Komando Hellimar", act: "Babak IV", pov: "Faksi Moderat Hellimar", summary: "Oligarki garis keras digulingkan setelah proksi Valthorun terbukti lari meninggalkan mereka tanpa perlindungan." },
+
+    { num: 41, title: "Bab 41: Pengepungan Terakhir di Celah Cincin", act: "Babak V", pov: "Caleb Draven, Victoria Hesper", summary: "Armada Dancoster memojokkan kapal komando Valthorun yang tersisa di sabuk radiasi planet gas Hellimar-IV." },
+    { num: 42, title: "Bab 42: Ultimatum Laksamana Draven", act: "Babak V", pov: "Caleb Draven", summary: "Peringatan satu jam bagi perwira alien Tier 4 untuk segera melompat keluar sektor atau dihancurkan di tempat." },
+    { num: 43, title: "Bab 43: Retret Memalukan Tier 4", act: "Babak V", pov: "Awak Valthorun", summary: "Kapal Valthorun mengaktifkan lompatan darurat dan kabur dari sektor, meninggalkan Hellimar menyerah sepenuhnya." },
+    { num: 44, title: "Bab 44: Meja Negosiasi Besi Dingin", act: "Babak V", pov: "Eleanor Sterling, Zoe Calise", summary: "Penandatanganan dokumen kapitulasi di ruang observasi megastruktur stasiun orbital Dancoster." },
+    { num: 45, title: "Bab 45: Konversi Kedaulatan Menjadi UMER", act: "Babak V", pov: "Rachel Vryce, Clara Thorne", summary: "Penyitaan seluruh cadangan litium tambang dan penggantian mata uang lokal menjadi sistem kuota UMER terpusat." },
+    { num: 46, title: "Bab 46: Audit Kerusakan Infrastruktur", act: "Babak V", pov: "Damian Kross, Evan Gorane", summary: "Rekayasa cincin dok orbital Hellimar agar muat disandari armada kargo raksasa berbobot ratusan ribu ton." },
+    { num: 47, title: "Bab 47: Integrasi Jaringan Pangan Tiruan", act: "Babak V", pov: "Nora Felise", summary: "Pengambilalihan rantai pasok ransum sintetis untuk mencegah kelaparan massal pasca perang blokade." },
+    { num: 48, title: "Bab 48: Ratifikasi Sub-Sektor Vesper-Annex", act: "Babak V", pov: "Eleanor Sterling, Marcus Vhane", summary: "Pengumuman resmi: Sistem Hellimar resmi menjadi Koloni Penyangga Energi Tingkat Bawah Dancoster." },
+
+    { num: 49, title: "Bab 49: Panen Perdana Logam Stabilitas", act: "Babak VI", pov: "Zane Oric, Jonah Melate", summary: "Pengiriman konvoi 500.000 ton litium murni Hellimar perdana melintasi koridor FTL menuju Vesper-9." },
+    { num: 50, title: "Bab 50: Pemulihan Jaringan Reaktor Sektor", act: "Babak VI", pov: "Mason Morune, Julian Vane", summary: "Reaktor massa-Planck Vesper-9 kembali menyala stabil 99,8%; krisis pemadaman energi sektor resmi teratasi." },
+    { num: 51, title: "Bab 51: Barak-Barak Generasi Baru", act: "Babak VI", pov: "Harper Solune, Sarah Tress", summary: "Harper mengamati generasi muda Hellimar mulai menjalani adaptasi seluler; dilema moral antara kemajuan dan penjajahan." },
+    { num: 52, title: "Bab 52: Promosi di Ruang Geodesik", act: "Babak VI", pov: "Logan Valori, Chloe Sareno, Mason", summary: "Upacara penganugerahan medali jasa navigasi dan teknis oleh Gubernur Eleanor Sterling kepada tim protagonis muda." },
+    { num: 53, title: "Bab 53: Percakapan di Ujung Balkon Dok", act: "Babak VI", pov: "Logan Valori, Chloe Sareno", summary: "Logan dan Chloe menatap sistem Hellimar yang kini dipenuhi mercusuar Dancoster, menyadari kepolosan masa lalu telah hilang." },
+    { num: 54, title: "Bab 54: Laporan Intelijen yang Disembunyikan", act: "Babak VI", pov: "Beatrice Nolan, Caleb Draven", summary: "Draven menerima berkas terlarang: Valthorun hanyalah cabang perintis dari koalisi ekspansionis Tier 4 yang jauh lebih besar." },
+    { num: 55, title: "Bab 55: Resonansi di Batas Void", act: "Babak VI", pov: "Julian Romani, Samantha Voss", summary: "Sensor mendeteksi getaran sub-ruang masif puluhan ribu tahun cahaya di barat; pertanda badai perang makro akan datang." },
+    { num: 56, title: "Bab 56: Roda Peradaban yang Terus Berputar", act: "Babak VI", pov: "Ensembel Karakter Dancoster", summary: "Armada Dancoster mengunci rute baru di peta galaksi; penegasan bahwa di Severoz, aneksasi adalah harga mutlak kelangsungan peradaban." }
+  ];
+
+  window.draftsState = [];
+
+  function normalizeTitle(t) {
+    if (!t) return "";
+    return t.toLowerCase()
+      .replace(/^[#\*\s]+/, '')
+      .replace(/[#\*]+$/, '')
+      .replace(/[\s\-_:]+/g, ' ')
+      .trim();
+  }
+
+  // ALGORITMA PENGECEKAN STATUS BAB: MEMERIKSA APAKAH DRAFT SUDAH ADA DI MANUSKRIP
+  window.checkDraftStatus = function(draft) {
+    const chapters = window.chaptersState || [];
+    if (!chapters.length) return false;
+
+    const targetNorm = normalizeTitle(draft.title);
+    const targetNum = Number(draft.num);
+
+    for (let i = 0; i < chapters.length; i++) {
+      const chTitle = normalizeTitle(chapters[i].title);
+      
+      // Cocok 1: Kesamaan teks judul
+      if (chTitle.includes(targetNorm) || targetNorm.includes(chTitle)) return true;
+
+      // Cocok 2: Nomor urut bab terdeteksi di awal judul (contoh: "Bab 1:" atau "Bagian 1:")
+      const numMatch = chTitle.match(/(?:bab|bagian)\s*(\d+)/i);
+      if (numMatch && Number(numMatch[1]) === targetNum) return true;
+
+      // Cocok 3: Index bab sama jika judulnya mengandung kata kunci signifikan
+      const significantWords = targetNorm.split(' ').filter(w => w.length > 4 && !['anomali', 'koridor', 'babak'].includes(w));
+      if (significantWords.some(w => chTitle.includes(w))) return true;
+    }
+
+    return false;
+  };
+
+  // 1. INJEKSI TOMBOL TAB DI HEADER RIBBON
+  function injectDraftTabButton() {
+    const navBar = document.getElementById("main-nav-bar");
+    if (!navBar || document.getElementById("btn-tab-drafts")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "btn-tab-drafts";
+    btn.className = "tab-btn px-3 py-1.5 rounded-md text-xs font-mono font-medium flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200 hover:bg-hud whitespace-nowrap";
+    btn.onclick = () => window.switchTab("tab-drafts");
+    btn.innerHTML = '<i data-lucide="list-todo" class="w-3.5 h-3.5 text-amber-400"></i><span>Draft Berjalan (<span id="tab-draft-counter">0/56</span>)</span>';
+    
+    const btnNaskah = document.getElementById("btn-tab-naskah");
+    if (btnNaskah && btnNaskah.nextSibling) {
+      navBar.insertBefore(btn, btnNaskah.nextSibling);
+    } else {
+      navBar.appendChild(btn);
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // 2. INJEKSI KONTEN TAB DRAFT BERJALAN
+  function injectDraftTabContent() {
+    const mainArea = document.getElementById("main-content-area");
+    if (!mainArea || document.getElementById("tab-drafts")) return;
+
+    const sec = document.createElement("div");
+    sec.id = "tab-drafts";
+    sec.className = "tab-content hidden space-y-6";
+    sec.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card p-4 rounded-xl border border-hudborder">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i data-lucide="list-todo" class="w-5 h-5 text-amber-400"></i> MANAJEMEN DRAFT & OUTLINE BERJALAN (56 BAB HELLIMAR)
+          </h2>
+          <p class="text-xs text-slate-400 font-mono">Engine otomatis memindai judul di Tab Manuskrip dan memberi checklist status [DONE] jika naskah bab sudah dibuat.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <button onclick="openAddDraftModal()" class="px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-400 text-black font-semibold flex items-center gap-1.5 transition-all shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i><span>Tambah Draft</span>
+          </button>
+          <button onclick="renderDraftsList()" class="px-3 py-1.5 rounded bg-hud hover:bg-cyan-950 text-cyan-300 border border-hudborder flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i><span>Pindai Status Selesai</span>
+          </button>
+          <button onclick="exportDraftsJSON()" class="px-3 py-1.5 rounded bg-hud hover:bg-hudborder text-slate-200 border border-hudborder flex items-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i><span>Ekspor JSON</span>
+          </button>
+          <button onclick="document.getElementById('input-import-drafts').click()" class="px-3 py-1.5 rounded bg-hud hover:bg-hudborder text-slate-200 border border-hudborder flex items-center gap-1.5">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i><span>Impor JSON</span>
+          </button>
+          <button onclick="resetDraftsToSeed()" class="px-3 py-1.5 rounded bg-rose-950/40 hover:bg-rose-900 border border-rose-800 text-rose-300 flex items-center gap-1.5" title="Muat Ulang 56 Bab Standar">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i><span>Reset 56 Bab</span>
+          </button>
+          <input type="file" id="input-import-drafts" style="display:none;" onchange="handleImportDraftsJSON(event)" accept=".json">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-slate-400 block">TOTAL RENCANA</span>
+          <div id="stat-draft-total" class="text-2xl font-bold text-white mt-1">56 Bab</div>
+          <span class="text-[11px] text-slate-500">Kampanye Aneksasi</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-slate-400 block">STATUS SELESAI (DONE)</span>
+          <div id="stat-draft-done" class="text-2xl font-bold text-emerald-400 mt-1">0 Bab</div>
+          <span class="text-[11px] text-emerald-500/80">Tercatat di Manuskrip</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-slate-400 block">BELUM DITULIS</span>
+          <div id="stat-draft-pending" class="text-2xl font-bold text-amber-400 mt-1">56 Bab</div>
+          <span class="text-[11px] text-amber-500/80">Dalam Antrean Draft</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl border border-hudborder">
+          <span class="text-slate-400 block">PROGRES NASKAH</span>
+          <div id="stat-draft-percent" class="text-2xl font-bold text-cyan-300 mt-1">0%</div>
+          <div class="w-full bg-void rounded-full h-1.5 mt-2 border border-hudborder overflow-hidden">
+            <div id="stat-draft-bar" class="bg-cyan-400 h-1.5 rounded-full" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        <button onclick="filterDraftActs('all')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-cyan-950 border border-cyan-500 text-cyan-300">Semua Babak</button>
+        <button onclick="filterDraftActs('Babak I')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">Babak I (Bab 1–10)</button>
+        <button onclick="filterDraftActs('Babak II')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">Babak II (Bab 11–20)</button>
+        <button onclick="filterDraftActs('Babak III')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">Babak III (Bab 21–30)</button>
+        <button onclick="filterDraftActs('Babak IV')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">Babak IV (Bab 31–40)</button>
+        <button onclick="filterDraftActs('Babak V')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">Babak V (Bab 41–48)</button>
+        <button onclick="filterDraftActs('Babak VI')" class="draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white">Babak VI (Bab 49–56)</button>
+      </div>
+
+      <div id="drafts-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    `;
+
+    mainArea.appendChild(sec);
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  // 3. LOGIKA RENDER & SINKRONISASI DRAFT DENGAN MANUSKRIP
+  let currentActFilter = 'all';
+
+  window.renderDraftsList = function() {
+    const container = document.getElementById("drafts-cards-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const list = window.draftsState || [];
+    let doneCount = 0;
+
+    const filtered = list.filter(d => currentActFilter === 'all' || d.act === currentActFilter);
+
+    filtered.forEach(d => {
+      const isDone = window.checkDraftStatus(d);
+      if (isDone) doneCount++;
+
+      const statusBadge = isDone ? 
+        '<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/60 flex items-center gap-1 shadow-[0_0_8px_rgba(16,185,129,0.25)]"><i data-lucide="check-check" class="w-3 h-3"></i> DONE (TERTULIS)</span>' :
+        '<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950/60 text-amber-300 border border-amber-600/50 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> DRAFT (PENDING)</span>';
+
+      const card = document.createElement("div");
+      card.className = `glass-card rounded-xl p-5 border flex flex-col justify-between space-y-3 transition-all ${isDone ? 'border-emerald-500/40 bg-emerald-950/10' : 'border-hudborder hover:border-amber-500/40'}`;
+      card.innerHTML = `
+        <div class="space-y-2">
+          <div class="flex items-start justify-between gap-2 border-b border-hudborder/60 pb-2">
+            <div>
+              <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider block">${escapeHtml(d.act || 'Rencana Bab')}</span>
+              <h3 class="text-sm font-bold text-white mt-0.5">${escapeHtml(d.title)}</h3>
+            </div>
+            ${statusBadge}
+          </div>
+          
+          <div class="text-[11px] font-mono text-slate-400">
+            <span class="text-slate-500">Tokoh Kunci:</span> <span class="text-amber-300 font-semibold">${escapeHtml(d.pov || '-')}</span>
+          </div>
+          
+          <div class="pt-1">
+            <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider block">Ringkasan Narasi Plot:</span>
+            <p class="text-xs text-slate-300 font-sans leading-relaxed mt-1">${escapeHtml(d.summary || 'Belum ada ringkasan naskah.')}</p>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-hudborder/60 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <button onclick="copyDraftPromptPrompt(${d.num})" class="text-cyan-400 hover:text-white flex items-center gap-1" title="Salin Prompt Instruksi Bab">
+            <i data-lucide="terminal" class="w-3.5 h-3.5"></i> Salin Prompt
+          </button>
+          <div class="flex items-center gap-1.5">
+            <button onclick="editDraftModal(${d.num})" class="px-2 py-1 rounded bg-hud hover:bg-hudborder text-amber-300 border border-hudborder flex items-center gap-1">
+              <i data-lucide="edit-2" class="w-3 h-3"></i> Edit
+            </button>
+            <button onclick="deleteDraftModal(${d.num})" class="p-1 rounded bg-hud hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-hudborder">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    const totalAll = list.length;
+    const totalDoneAll = list.filter(d => window.checkDraftStatus(d)).length;
+    const totalPendingAll = totalAll - totalDoneAll;
+    const pct = totalAll ? Math.round((totalDoneAll / totalAll) * 100) : 0;
+
+    const elTotal = document.getElementById("stat-draft-total");
+    const elDone = document.getElementById("stat-draft-done");
+    const elPending = document.getElementById("stat-draft-pending");
+    const elPct = document.getElementById("stat-draft-percent");
+    const elBar = document.getElementById("stat-draft-bar");
+    const elNavCounter = document.getElementById("tab-draft-counter");
+
+    if (elTotal) elTotal.innerText = `${totalAll} Bab`;
+    if (elDone) elDone.innerText = `${totalDoneAll} Bab`;
+    if (elPending) elPending.innerText = `${totalPendingAll} Bab`;
+    if (elPct) elPct.innerText = `${pct}%`;
+    if (elBar) elBar.style.width = `${pct}%`;
+    if (elNavCounter) elNavCounter.innerText = `${totalDoneAll}/${totalAll}`;
+
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.filterDraftActs = function(act) {
+    currentActFilter = act;
+    document.querySelectorAll(".draft-act-btn").forEach(b => {
+      b.className = "draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-hud border border-hudborder text-slate-400 hover:text-white";
+    });
+    if (window.event && window.event.target) {
+      window.event.target.className = "draft-act-btn px-3 py-1 rounded-lg text-xs font-mono bg-cyan-950 border border-cyan-500 text-cyan-300";
+    }
+    renderDraftsList();
+  };
+
+  // 4. GENERATOR PROMPT SALIN INSTAN UNTUK PERINTAH MENULIS BAB
+  window.copyDraftPromptPrompt = function(num) {
+    const d = (window.draftsState || []).find(x => Number(x.num) === Number(num));
+    if (!d) return;
+    const promptText = `Tuliskan naskah ${d.title} dengan panjang 1.500–1.800 kata format Bab Reguler.
+Fase: ${d.act}
+Tokoh Kunci: ${d.pov}
+Ringkasan Alur: ${d.summary}
+Pastikan detail teknis hard sci-fi peradaban Dancoster Tier 6 dan Hellimar Tier 22 tercakup secara mendalam.`;
+    navigator.clipboard.writeText(promptText).then(() => {
+      if (window.showToast) window.showToast(`Prompt untuk "${d.title}" berhasil disalin!`);
+      else alert("Prompt disalin!");
+    });
+  };
+
+  // 5. MODAL CRUD DRAFT
+  window.openAddDraftModal = function() {
+    const nextNum = (window.draftsState || []).length + 1;
+    document.getElementById("modal-draft-title-head").innerHTML = '<i data-lucide="plus-circle" class="w-4 h-4 text-amber-400"></i> Tambah Rencana Bab Baru';
+    document.getElementById("draft-id-input").value = "";
+    document.getElementById("draft-num-input").value = nextNum;
+    document.getElementById("draft-title-input").value = `Bab ${nextNum}: `;
+    document.getElementById("draft-act-input").value = "Babak I";
+    document.getElementById("draft-pov-input").value = "";
+    document.getElementById("draft-summary-input").value = "";
+    document.getElementById("modal-edit-draft-dan").classList.remove("hidden");
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.editDraftModal = function(num) {
+    const d = (window.draftsState || []).find(x => Number(x.num) === Number(num));
+    if (!d) return;
+    document.getElementById("modal-draft-title-head").innerHTML = '<i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Sunting: ' + escapeHtml(d.title);
+    document.getElementById("draft-id-input").value = d.num;
+    document.getElementById("draft-num-input").value = d.num;
+    document.getElementById("draft-title-input").value = d.title;
+    document.getElementById("draft-act-input").value = d.act || "Babak I";
+    document.getElementById("draft-pov-input").value = d.pov || "";
+    document.getElementById("draft-summary-input").value = d.summary || "";
+    document.getElementById("modal-edit-draft-dan").classList.remove("hidden");
+    if (window.lucide) window.lucide.createIcons();
+  };
+
+  window.closeDraftModal = function() {
+    document.getElementById("modal-edit-draft-dan").classList.add("hidden");
+  };
+
+  window.saveDraftModal = async function() {
+    const id = document.getElementById("draft-id-input").value;
+    const num = Number(document.getElementById("draft-num-input").value) || 1;
+    const title = document.getElementById("draft-title-input").value.trim();
+    if (!title) return alert("Judul bab tidak boleh kosong!");
+
+    const draftObj = {
+      num: num,
+      title: title,
+      act: document.getElementById("draft-act-input").value.trim() || "Babak I",
+      pov: document.getElementById("draft-pov-input").value.trim(),
+      summary: document.getElementById("draft-summary-input").value.trim()
+    };
+
+    if (id) {
+      const idx = window.draftsState.findIndex(x => Number(x.num) === Number(id));
+      if (idx !== -1) window.draftsState[idx] = draftObj;
+    } else {
+      window.draftsState.push(draftObj);
+    }
+
+    window.draftsState.sort((a, b) => Number(a.num) - Number(b.num));
+
+    await persistDrafts();
+    closeDraftModal();
+    renderDraftsList();
+    if (window.showToast) window.showToast(`Draft "${title}" tersimpan!`);
+  };
+
+  window.deleteDraftModal = async function(num) {
+    const d = (window.draftsState || []).find(x => Number(x.num) === Number(num));
+    if (!d || !confirm(`Hapus rencana "${d.title}"?`)) return;
+
+    window.draftsState = window.draftsState.filter(x => Number(x.num) !== Number(num));
+    await persistDrafts();
+    renderDraftsList();
+    if (window.showToast) window.showToast(`Draft "${d.title}" dihapus.`);
+  };
+
+  window.resetDraftsToSeed = async function() {
+    if (!confirm("Reset daftar draft kembali ke master 56 Bab Kampanye Hellimar standar?")) return;
+    window.draftsState = JSON.parse(JSON.stringify(SEED_DRAFTS_56));
+    await persistDrafts();
+    renderDraftsList();
+    if (window.showToast) window.showToast("56 Bab master berhasil dipulihkan!");
+  };
+
+  // 6. PERSISTENSI KE INDEXEDDB & LOCALSTORAGE SHADOW
+  async function persistDrafts() {
+    try {
+      localStorage.setItem("DONCASTER_DRAFTS_BACKUP", JSON.stringify(window.draftsState));
+      if (window.openIDB) {
+        const db = await window.openIDB();
+        const tx = db.transaction("state", "readwrite");
+        tx.objectStore("state").put({ key: "manuscript_drafts", data: window.draftsState });
+      }
+    } catch(e) { console.warn("Gagal menyimpan draft:", e); }
+  }
+
+  async function loadPersistedDrafts() {
+    let loaded = false;
+    if (window.openIDB) {
+      try {
+        const db = await window.openIDB();
+        const tx = db.transaction("state", "readonly");
+        const req = tx.objectStore("state").get("manuscript_drafts");
+        req.onsuccess = function(e) {
+          if (e.target.result && Array.isArray(e.target.result.data) && e.target.result.data.length > 0) {
+            window.draftsState = e.target.result.data;
+            loaded = true;
+            renderDraftsList();
+          }
+        };
+      } catch(err) {}
+    }
+
+    if (!loaded) {
+      const mirror = localStorage.getItem("DONCASTER_DRAFTS_BACKUP");
+      if (mirror) {
+        try {
+          const parsed = JSON.parse(mirror);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            window.draftsState = parsed;
+            loaded = true;
+            renderDraftsList();
+          }
+        } catch(e) {}
+      }
+    }
+
+    if (!loaded && (!window.draftsState || !window.draftsState.length)) {
+      window.draftsState = JSON.parse(JSON.stringify(SEED_DRAFTS_56));
+      persistDrafts();
+      renderDraftsList();
+    }
+  }
+
+  // 7. EKSPOR & IMPOR JSON DRAFT
+  window.exportDraftsJSON = function() {
+    const blob = new Blob([JSON.stringify(window.draftsState || [], null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Doncaster_Drafts_56Bab_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+  };
+
+  window.handleImportDraftsJSON = async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async function(evt) {
+      try {
+        const list = JSON.parse(evt.target.result);
+        if (!Array.isArray(list)) throw new Error("Format JSON harus berupa array draft bab.");
+        window.draftsState = list;
+        await persistDrafts();
+        renderDraftsList();
+        if (window.showToast) window.showToast(`Berhasil memuat ${list.length} draft dari JSON!`);
+      } catch(err) { alert("Gagal impor JSON: " + err.message); }
+    };
+    reader.readAsText(file);
+  };
+
+  // 8. HOOK KETIKA BAB BARU DITAMBAHKAN DI TAB NASKAH AGAR OTOMATIS MEMPERBARUI STATUS CEKLIST
+  const originalSaveSection = window.saveSectionModal;
+  if (typeof originalSaveSection === 'function') {
+    window.saveSectionModal = async function() {
+      await originalSaveSection();
+      renderDraftsList();
+    };
+  }
+
+  const originalQuickImport = window.executeQuickImport;
+  if (typeof originalQuickImport === 'function') {
+    window.executeQuickImport = async function() {
+      await originalQuickImport();
+      renderDraftsList();
+    };
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  // INISIALISASI MODUL KETIKA HALAMAN SELESAI DIMUAT
+  function initDraftsModule() {
+    injectDraftTabButton();
+    injectDraftTabContent();
+    loadPersistedDrafts();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initDraftsModule, 450));
+  } else {
+    setTimeout(initDraftsModule, 450);
+  }
+})();
+</script>
+<!-- ========================================================================= -->
+
+</body>
+</html>
